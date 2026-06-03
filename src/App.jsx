@@ -171,13 +171,14 @@ export default function App() {
     <main className="app">
       <header className="masthead">
         <div className="masthead-actions">
-          <button
-            type="button"
-            className="zui-button zui-button-variant-ghost zui-button-icon"
+          <Button
             aria-label="Statistics"
             title="Statistics"
             onClick={openStats}
+            variant="ghost"
+            size="xs"
           >
+            Stats
             <svg
               width="18"
               height="18"
@@ -192,16 +193,16 @@ export default function App() {
               <line x1="12" y1="20" x2="12" y2="4" />
               <line x1="18" y1="20" x2="18" y2="9" />
             </svg>
-          </button>
-          <button
-            type="button"
-            className="zui-button zui-button-variant-ghost zui-button-icon"
+          </Button>
+          <Button
             aria-label="How to play"
             title="How to play"
             onClick={() => setHelpOpen(true)}
+            variant="ghost"
+            size="xs"
           >
-            ?
-          </button>
+            Help ?
+          </Button>
         </div>
         <h1 className="wordmark">Reps</h1>
         <p className="tagline">A daily JavaScript puzzle for your coding muscles</p>
