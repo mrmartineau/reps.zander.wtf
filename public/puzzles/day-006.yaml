@@ -1,8 +1,10 @@
 day: 6
 title: "Count Vowels"
-prompt: >-
+prompt: |
   Implement `countVowels(str)` so it returns the number of vowels
   (a, e, i, o, u — case insensitive) in `str`.
+
+  For example, `countVowels("Hello World")` returns `3` — the `e`, `o` and `o`.
 functionName: countVowels
 starterCode: |
   function countVowels(str) {

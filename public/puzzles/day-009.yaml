@@ -1,9 +1,12 @@
 day: 9
 title: "Longest Word"
-prompt: >-
+prompt: |
   Implement `longestWord(sentence)` so it returns the longest word in the
   sentence. Words are separated by spaces. If several share the longest
   length, return the first one. Punctuation counts as part of the word.
+
+  For example, `longestWord("the quick brown fox")` returns `"quick"`. When
+  there's a tie, `longestWord("cat dog pig")` returns `"cat"` — the first one.
 functionName: longestWord
 starterCode: |
   function longestWord(sentence) {

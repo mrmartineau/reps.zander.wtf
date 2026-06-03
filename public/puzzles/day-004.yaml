@@ -1,9 +1,13 @@
 day: 4
 title: "Palindrome Check"
-prompt: >-
+prompt: |
   Implement `isPalindrome(str)` so it returns `true` when `str` reads the same
   forwards and backwards, ignoring case, spaces and punctuation. Otherwise
   return `false`.
+
+  For example, `isPalindrome("racecar")` is `true`, and so is
+  `isPalindrome("A man, a plan, a canal: Panama")` once you strip the spaces,
+  punctuation and casing. `isPalindrome("hello")` is `false`.
 functionName: isPalindrome
 starterCode: |
   function isPalindrome(str) {

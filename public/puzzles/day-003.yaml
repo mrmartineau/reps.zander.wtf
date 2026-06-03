@@ -1,8 +1,10 @@
 day: 3
 title: "Sum of Digits"
-prompt: >-
+prompt: |
   Implement `sumDigits(n)` so it returns the sum of the digits of a
   non-negative integer `n`.
+
+  For example, `sumDigits(1234)` returns `10`, because `1 + 2 + 3 + 4 = 10`.
 functionName: sumDigits
 starterCode: |
   function sumDigits(n) {

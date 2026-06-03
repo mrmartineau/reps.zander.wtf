@@ -1,9 +1,12 @@
 day: 10
 title: "Caesar Cipher"
-prompt: >-
+prompt: |
   Implement `caesar(str, shift)` so it shifts each letter forward by `shift`
   positions in the alphabet, wrapping around (z -> a). Preserve case. Leave
   non-letters unchanged. `shift` can be larger than 26.
+
+  For example, `caesar("abc", 1)` returns `"bcd"`, and `caesar("Xyz", 3)`
+  returns `"Abc"` — wrapping past `z` and keeping the capital `X` capital.
 functionName: caesar
 starterCode: |
   function caesar(str, shift) {

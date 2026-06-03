@@ -1,8 +1,10 @@
 day: 1
 title: "Reverse a String"
-prompt: >-
+prompt: |
   Implement `reverseString(str)` so it returns the input string with its
   characters in reverse order.
+
+  For example, `reverseString("hello")` returns `"olleh"`.
 functionName: reverseString
 starterCode: |
   function reverseString(str) {

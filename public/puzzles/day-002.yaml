@@ -1,9 +1,11 @@
 day: 2
 title: "FizzBuzz Array"
-prompt: >-
+prompt: |
   Implement `fizzbuzz(n)` so it returns an array of length `n` (for values
-  1..n). For multiples of 3 use "Fizz", multiples of 5 use "Buzz", multiples
-  of both use "FizzBuzz", otherwise the number itself (as a number).
+  1..n). For multiples of 3 use `"Fizz"`, multiples of 5 use `"Buzz"`,
+  multiples of both use `"FizzBuzz"`, otherwise the number itself (as a number).
+
+  For example, `fizzbuzz(5)` returns `[1, 2, "Fizz", 4, "Buzz"]`.
 functionName: fizzbuzz
 starterCode: |
   function fizzbuzz(n) {

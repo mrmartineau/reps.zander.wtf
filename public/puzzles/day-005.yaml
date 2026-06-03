@@ -1,9 +1,14 @@
 day: 5
 title: "Two Sum"
-prompt: >-
-  Implement `twoSum(nums, target)` so it returns the indices of the two
-  numbers that add up to `target`, as an array `[i, j]` with `i < j`. Exactly
-  one solution exists. Return `[]` if somehow none is found.
+prompt: |
+  You're given an array of numbers, `nums`, and a `target`. Find the **two**
+  numbers in the array that add up to `target`, and return their positions
+  (indices) as an array `[i, j]`, lowest index first.
+
+  For example, `twoSum([2, 7, 11, 15], 9)` returns `[0, 1]`, because the
+  numbers at positions 0 and 1 are `2` and `7` — and `2 + 7 = 9`.
+
+  There's always exactly one pair that works.
 functionName: twoSum
 starterCode: |
   function twoSum(nums, target) {
