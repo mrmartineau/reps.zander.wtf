@@ -1,0 +1,250 @@
+/*
+  Reps — visual language
+  -----------------------
+  Monospace-forward "terminal puzzle" feel with an editorial wordmark.
+  Theming uses light-dark() to match zui's approach, so it follows the
+  user's system colour scheme automatically. Tokens are scoped locally so
+  the app looks right regardless of which zui token names are in play.
+*/
+
+:root {
+  color-scheme: light dark;
+
+  --bg: light-dark(#f4f1ea, #14130f);
+  --surface: light-dark(#fffdf8, #1d1b16);
+  --border: light-dark(#e2dccd, #2e2b23);
+  --ink: light-dark(#1a1813, #f0ece1);
+  --muted: light-dark(#6b6557, #948c79);
+  --accent: light-dark(#b4451f, #e8895f);
+  --pass: light-dark(#3f7d4f, #5fb874);
+
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --display: 'Fraunces', Georgia, serif;
+
+  --radius: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--mono);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  /* faint grid texture for atmosphere */
+  background-image: radial-gradient(
+    var(--border) 1px,
+    transparent 1px
+  );
+  background-size: 22px 22px;
+}
+
+.app {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: clamp(1.5rem, 4vw, 3.5rem) 1.25rem 4rem;
+}
+
+/* ---- masthead ---- */
+.masthead {
+  margin-bottom: 2.5rem;
+}
+
+.wordmark {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: clamp(3rem, 12vw, 5rem);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  margin: 0;
+  font-variation-settings: 'SOFT' 0, 'WONK' 1;
+}
+
+.tagline {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+}
+
+/* ---- puzzle card ---- */
+.puzzle {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  box-shadow: 0 1px 0 var(--border), 0 18px 40px -28px rgba(0, 0, 0, 0.4);
+}
+
+.puzzle-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.puzzle-number {
+  font-family: var(--display);
+  font-size: 1.5rem;
+  color: var(--accent);
+}
+
+.puzzle-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  flex: 1;
+}
+
+.timer {
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  font-size: 1.1rem;
+}
+
+.prompt {
+  white-space: pre-wrap;
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--bg);
+  border-left: 3px solid var(--accent);
+  padding: 0.85rem 1rem;
+  border-radius: 0 6px 6px 0;
+  margin: 0 0 1.25rem;
+  font-size: 0.92rem;
+}
+
+/* ---- editor ---- */
+.editor {
+  width: 100%;
+  min-height: 220px;
+  resize: vertical;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  tab-size: 2;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1rem;
+  caret-color: var(--accent);
+}
+
+.editor:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.actions {
+  display: flex;
+  gap: 0.6rem;
+  margin: 1rem 0 0.5rem;
+}
+
+/* ---- results ---- */
+.results {
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.result {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+}
+
+.result.pass {
+  border-color: color-mix(in oklab, var(--pass) 45%, var(--border));
+}
+
+.result-icon {
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.result-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.result-name {
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.result-detail {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.result-detail code {
+  color: var(--accent);
+}
+
+/* ---- share ---- */
+.share-card {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border: 1px dashed var(--accent);
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+.share-headline {
+  font-family: var(--display);
+  font-size: 1.4rem;
+  margin: 0 0 0.75rem;
+}
+
+.streak {
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.share-preview {
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.85rem;
+  margin: 0 0 1rem;
+  white-space: pre-wrap;
+}
+
+/* ---- footer ---- */
+.footer {
+  margin-top: 2rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.footer a {
+  color: var(--accent);
+}
+
+.loading,
+.error {
+  color: var(--muted);
+  font-size: 0.95rem;
+}

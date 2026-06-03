@@ -1,0 +1,21 @@
+day: 2
+title: "FizzBuzz Array"
+prompt: |
+  Implement `fizzbuzz(n)` so it returns an array of length `n` (for values
+  1..n). For multiples of 3 use "Fizz", multiples of 5 use "Buzz", multiples
+  of both use "FizzBuzz", otherwise the number itself (as a number).
+functionName: fizzbuzz
+starterCode: |
+  function fizzbuzz(n) {
+    // your code here
+  }
+tests:
+  - name: "First five"
+    args: [5]
+    expected: [1, 2, "Fizz", 4, "Buzz"]
+  - name: "Hits FizzBuzz at 15"
+    args: [15]
+    expected: [1, 2, "Fizz", 4, "Buzz", "Fizz", 7, 8, "Fizz", "Buzz", 11, "Fizz", 13, 14, "FizzBuzz"]
+  - name: "Zero length"
+    args: [0]
+    expected: []

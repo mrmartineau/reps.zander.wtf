@@ -1,0 +1,20 @@
+day: 3
+title: "Sum of Digits"
+prompt: |
+  Implement `sumDigits(n)` so it returns the sum of the digits of a
+  non-negative integer `n`.
+functionName: sumDigits
+starterCode: |
+  function sumDigits(n) {
+    // your code here
+  }
+tests:
+  - name: "Multi-digit"
+    args: [1234]
+    expected: 10
+  - name: "Single digit"
+    args: [7]
+    expected: 7
+  - name: "Zero"
+    args: [0]
+    expected: 0

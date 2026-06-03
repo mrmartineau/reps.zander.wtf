@@ -1,0 +1,20 @@
+day: 1
+title: "Reverse a String"
+prompt: |
+  Implement `reverseString(str)` so it returns the input string with its
+  characters in reverse order.
+functionName: reverseString
+starterCode: |
+  function reverseString(str) {
+    // your code here
+  }
+tests:
+  - name: "Basic word"
+    args: ["hello"]
+    expected: "olleh"
+  - name: "Empty string"
+    args: [""]
+    expected: ""
+  - name: "Sentence with spaces"
+    args: ["the quick brown fox"]
+    expected: "xof nworb kciuq eht"

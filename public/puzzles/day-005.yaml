@@ -1,0 +1,21 @@
+day: 5
+title: "Two Sum"
+prompt: |
+  Implement `twoSum(nums, target)` so it returns the indices of the two
+  numbers that add up to `target`, as an array `[i, j]` with i < j. Exactly
+  one solution exists. Return `[]` if somehow none is found.
+functionName: twoSum
+starterCode: |
+  function twoSum(nums, target) {
+    // your code here
+  }
+tests:
+  - name: "Basic case"
+    args: [[2, 7, 11, 15], 9]
+    expected: [0, 1]
+  - name: "Later in array"
+    args: [[3, 2, 4], 6]
+    expected: [1, 2]
+  - name: "Duplicates"
+    args: [[3, 3], 6]
+    expected: [0, 1]
