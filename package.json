@@ -23,16 +23,10 @@
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.39.2",
+    "@cloudflare/vite-plugin": "^1.39.0",
     "@vitejs/plugin-react": "^6.0.2",
     "vite": "^8.0.16",
     "wrangler": "^4.97.0"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "workerd"
-    ]
   },
   "packageManager": "pnpm@11.5.0"
 }
