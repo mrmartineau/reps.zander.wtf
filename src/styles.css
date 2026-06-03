@@ -132,25 +132,29 @@ body {
 }
 
 /* ---- editor ---- */
-.editor {
-  width: 100%;
-  min-height: 220px;
-  resize: vertical;
-  font-family: var(--mono);
-  font-size: 0.9rem;
-  line-height: 1.6;
-  tab-size: 2;
-  color: var(--ink);
-  background: var(--bg);
+.editor-shell {
   border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 1rem;
-  caret-color: var(--accent);
+  overflow: hidden;
 }
 
-.editor:focus {
+.editor-shell:focus-within {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
+}
+
+/* Monaco paints its own padding/background via the theme; just give the
+   internal element room to breathe. */
+.editor-shell .monaco-editor {
+  --vscode-focusBorder: transparent;
+}
+
+.editor-loading {
+  min-height: 260px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
 .actions {

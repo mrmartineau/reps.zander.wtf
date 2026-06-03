@@ -1,42 +1,68 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import Editor from '@monaco-editor/react';
+// Side-effect import: configures Monaco workers, themes, and the loader.
+import '../lib/monacoSetup.js';
 
-// Deliberately a styled textarea, not a heavyweight editor — keeps the PoC
-// dependency-free. Swap in CodeMirror later if you want syntax highlighting.
+function prefersDark() {
+  return Boolean(window.matchMedia?.('(prefers-color-scheme: dark)').matches);
+}
+
+// Monaco-backed editor: syntax highlighting, bracket matching, multi-cursor,
+// the usual. Keeps the original component's contract (value / onChange /
+// onFirstEdit / disabled) so App.jsx is unchanged.
 export function CodeEditor({ value, onChange, onFirstEdit, disabled }) {
   const touched = useRef(false);
+  const [dark, setDark] = useState(prefersDark);
 
-  function handleChange(e) {
+  // Follow the system colour scheme, matching the app's light-dark() theming.
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const onChangeScheme = (e) => setDark(e.matches);
+    mq.addEventListener('change', onChangeScheme);
+    return () => mq.removeEventListener('change', onChangeScheme);
+  }, []);
+
+  // The wrapper suppresses onChange for programmatic value updates (initial load,
+  // Reset), so this only fires on genuine user edits — exactly what arms the timer.
+  function handleChange(next) {
     if (!touched.current) {
       touched.current = true;
       onFirstEdit?.();
     }
-    onChange(e.target.value);
-  }
-
-  function handleKeyDown(e) {
-    if (e.key === 'Tab') {
-      e.preventDefault();
-      const el = e.target;
-      const { selectionStart: s, selectionEnd: end } = el;
-      const next = value.slice(0, s) + '  ' + value.slice(end);
-      onChange(next);
-      requestAnimationFrame(() => {
-        el.selectionStart = el.selectionEnd = s + 2;
-      });
-    }
+    onChange(next ?? '');
   }
 
   return (
-    <textarea
-      className="editor"
-      spellCheck={false}
-      autoCapitalize="off"
-      autoCorrect="off"
-      value={value}
-      disabled={disabled}
-      onChange={handleChange}
-      onKeyDown={handleKeyDown}
-      aria-label="Solution editor"
-    />
+    <div className="editor-shell">
+      <Editor
+        height="260px"
+        language="javascript"
+        theme={dark ? 'reps-dark' : 'reps-light'}
+        value={value}
+        onChange={handleChange}
+        loading={<div className="editor-loading">Loading editor…</div>}
+        options={{
+          readOnly: disabled,
+          fontFamily: "'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace",
+          fontLigatures: true,
+          fontSize: 14,
+          lineHeight: 22,
+          tabSize: 2,
+          insertSpaces: true,
+          minimap: { enabled: false },
+          scrollBeyondLastLine: false,
+          padding: { top: 14, bottom: 14 },
+          renderLineHighlight: 'line',
+          automaticLayout: true,
+          fixedOverflowWidgets: true,
+          overviewRulerLanes: 0,
+          smoothScrolling: true,
+          scrollbar: {
+            verticalScrollbarSize: 8,
+            horizontalScrollbarSize: 8,
+          },
+        }}
+      />
+    </div>
   );
 }
