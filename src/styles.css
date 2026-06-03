@@ -280,6 +280,52 @@ body {
   word-break: break-all;
 }
 
+/* running placeholder + reveal animation */
+.result-pending {
+  color: var(--color-muted);
+  opacity: 0.85;
+}
+
+.result-spinner {
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.15rem;
+  border-radius: var(--radius-round, 50%);
+  border: 2px solid color-mix(in oklab, var(--color-border) 60%, transparent);
+  border-top-color: var(--color-accent);
+  animation: result-spin 0.6s linear infinite;
+}
+
+.result-revealed {
+  animation: result-pop 0.22s var(--ease-out, ease-out) both;
+}
+
+@keyframes result-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes result-pop {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .result-spinner {
+    animation-duration: 1.2s;
+  }
+  .result-revealed {
+    animation: none;
+  }
+}
+
 /* ---- share ---- */
 .share-card {
   margin-top: 1.5rem;

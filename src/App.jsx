@@ -25,11 +25,16 @@ import { SolutionPanel } from './components/SolutionPanel.jsx';
 import { Markdown } from './components/Markdown.jsx';
 import { StatsDialog } from './components/StatsDialog.jsx';
 
+// Delay between revealing each test result, so a run reads like live execution.
+const REVEAL_STAGGER_MS = 100;
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export default function App() {
   const [puzzle, setPuzzle] = useState(null);
   const [loadError, setLoadError] = useState(null);
   const [code, setCode] = useState('');
   const [results, setResults] = useState(null);
+  const [pendingNames, setPendingNames] = useState([]);
   const [running, setRunning] = useState(false);
   const [startedAt, setStartedAt] = useState(null);
   const [elapsedMs, setElapsedMs] = useState(null);
@@ -116,11 +121,22 @@ export default function App() {
     const begun = startedAt ?? Date.now();
     if (startedAt == null) setStartedAt(begun);
 
+    // Show every test as "running" up front, then reveal results one at a time
+    // so it reads like a live test run even though the worker is near-instant.
+    setResults([]);
+    setPendingNames(puzzle.tests.map((t) => t.name));
+
     const res = await runTests(code, puzzle);
     const took = Date.now() - begun;
-
-    setResults(res);
+    // Freeze the timer at the true run time, not the animated reveal duration.
     setElapsedMs(took);
+
+    for (let i = 0; i < res.length; i++) {
+      await delay(REVEAL_STAGGER_MS);
+      setResults(res.slice(0, i + 1));
+      setPendingNames(puzzle.tests.slice(i + 1).map((t) => t.name));
+    }
+
     setRunning(false);
 
     // Preview runs are throwaway — don't persist to the daily state or streak.
@@ -144,6 +160,7 @@ export default function App() {
   function handleReset() {
     setCode(puzzle.starterCode || '');
     setResults(null);
+    setPendingNames([]);
     setElapsedMs(null);
     setStartedAt(null);
   }
@@ -164,7 +181,8 @@ export default function App() {
     );
   }
 
-  const done = results != null;
+  // "Done" only once the staggered reveal has finished — not mid-animation.
+  const done = !running && results != null && results.length > 0;
   const streak = done ? computeStreak(dateISO) : 0;
 
   return (
@@ -271,7 +289,10 @@ export default function App() {
           </Button>
         </div>
 
-        <TestResults results={results} />
+        <TestResults
+          results={results}
+          pendingNames={pendingNames}
+        />
 
         {done && (
           <ShareCard
