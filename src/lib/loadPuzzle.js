@@ -36,10 +36,23 @@ export function getPreviewParams(search = window.location.search) {
 export async function loadPuzzleByDay(dayNumber) {
   const padded = String(dayNumber).padStart(3, '0');
   const res = await fetch(`/puzzles/day-${padded}.yaml`);
-  if (!res.ok) {
+  // A real static host 404s a missing file; dev servers and SPA-fallback hosts
+  // answer 200 with index.html instead, so we also validate the parsed shape.
+  const missing = () => {
     throw new Error(`No puzzle file for day ${dayNumber} (day-${padded}.yaml)`);
+  };
+  if (!res.ok) missing();
+
+  let puzzle;
+  try {
+    puzzle = yaml.load(await res.text());
+  } catch {
+    missing();
   }
-  const puzzle = yaml.load(await res.text());
+  if (!puzzle || typeof puzzle !== 'object' || puzzle.functionName == null) {
+    missing();
+  }
+
   puzzle.dateISO = todayISO();
   puzzle.preview = true;
   return puzzle;
