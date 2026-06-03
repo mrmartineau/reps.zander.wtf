@@ -18,3 +18,7 @@ tests:
   - name: "Sentence with spaces"
     args: ["the quick brown fox"]
     expected: "xof nworb kciuq eht"
+solution: |
+  function reverseString(str) {
+    return str.split('').reverse().join('');
+  }

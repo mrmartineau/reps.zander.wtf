@@ -19,3 +19,11 @@ tests:
   - name: "Shift over 26, keeps punctuation"
     args: ["Hello, World!", 29]
     expected: "Khoor, Zruog!"
+solution: |
+  function caesar(str, shift) {
+    const s = ((shift % 26) + 26) % 26;
+    return str.replace(/[a-z]/gi, (ch) => {
+      const base = ch <= 'Z' ? 65 : 97;
+      return String.fromCharCode(((ch.charCodeAt(0) - base + s) % 26) + base);
+    });
+  }

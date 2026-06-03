@@ -19,3 +19,9 @@ tests:
   - name: "Single word"
     args: ["hello"]
     expected: "hello"
+solution: |
+  function longestWord(sentence) {
+    return sentence
+      .split(' ')
+      .reduce((best, word) => (word.length > best.length ? word : best), '');
+  }

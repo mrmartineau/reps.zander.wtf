@@ -18,3 +18,9 @@ tests:
   - name: "Zero"
     args: [0]
     expected: 0
+solution: |
+  function sumDigits(n) {
+    return String(n)
+      .split('')
+      .reduce((sum, d) => sum + Number(d), 0);
+  }

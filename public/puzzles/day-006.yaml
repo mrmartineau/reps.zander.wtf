@@ -18,3 +18,7 @@ tests:
   - name: "All vowels, mixed case"
     args: ["AeIoU"]
     expected: 5
+solution: |
+  function countVowels(str) {
+    return (str.match(/[aeiou]/gi) || []).length;
+  }

@@ -13,6 +13,7 @@ import { CodeEditor } from './components/CodeEditor.jsx';
 import { TestResults } from './components/TestResults.jsx';
 import { ShareCard } from './components/ShareCard.jsx';
 import { HelpDialog } from './components/HelpDialog.jsx';
+import { SolutionPanel } from './components/SolutionPanel.jsx';
 
 export default function App() {
   const [puzzle, setPuzzle] = useState(null);
@@ -182,6 +183,8 @@ export default function App() {
           onFirstEdit={handleFirstEdit}
           disabled={running}
         />
+
+        <SolutionPanel solution={puzzle.solution} />
 
         <div className="actions">
           <Button onClick={handleRun} disabled={running}>

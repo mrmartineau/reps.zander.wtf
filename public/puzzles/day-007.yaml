@@ -18,3 +18,11 @@ tests:
   - name: "Already flat"
     args: [[1, 2, 3]]
     expected: [1, 2, 3]
+solution: |
+  function flatten(arr) {
+    return arr.reduce(
+      (out, item) =>
+        Array.isArray(item) ? out.concat(flatten(item)) : out.concat(item),
+      []
+    );
+  }

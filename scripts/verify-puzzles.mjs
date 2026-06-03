@@ -43,6 +43,11 @@ for (const file of files) {
   if (p.functionName && p.starterCode && !p.starterCode.includes(p.functionName)) {
     fail(file, `starterCode doesn't mention "${p.functionName}"`);
   }
+  if (p.solution == null) {
+    fail(file, 'missing "solution" (the recommended answer shown on demand)');
+  } else if (p.functionName && !p.solution.includes(p.functionName)) {
+    fail(file, `solution doesn't define "${p.functionName}"`);
+  }
   if (ok) console.log(`✅ ${file} — ${p.title}`);
 }
 
