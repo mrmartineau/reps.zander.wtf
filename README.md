@@ -1,108 +1,134 @@
 # Reps
 
-A daily coding-puzzle game — like Wordle, but you write a small function and it
-runs against three tests in your browser. One rep a day to keep the coding
-muscles warm.
+A daily coding-puzzle game — like Wordle, but you write a small JavaScript
+function and it runs against three tests in your browser. One rep a day to keep
+the coding muscles warm.
 
-> Working name. Rename freely — it's referenced in `index.html`, the `.wordmark`
-> in `src/App.jsx`, and the share string in `src/lib/share.js`.
+## What's here
 
-## What's here (proof of concept)
-
-- **JavaScript-only** to start — runs entirely in the browser, no backend.
-- **10 puzzles** as plain YAML files in `public/puzzles/`.
-- **Three tests per puzzle** of increasing strictness (happy path → edge case →
-  trickier/constraint). No easy/medium/hard labels; some days just bite harder.
+- **JavaScript-only** — runs entirely in the browser, no backend.
+- **40 puzzles** as plain YAML files in `public/puzzles/`, spanning strings,
+  numbers, arrays, objects, classic algorithms, and real-world data
+  transformations.
+- **Difficulty labels** (`easy` / `medium` / `hard`) shown as a badge. The daily
+  order is deliberately mixed so newcomers aren't scared off by a hard run.
+- **Three tests per puzzle**, ordered happy path → second case → edge case.
+- **Monaco editor** with JavaScript syntax highlighting; your in-progress code is
+  saved to `localStorage`, so a refresh or back-button never loses edits.
+- **Markdown prompts** (GitHub-flavoured) with worked examples.
+- **Animated test runner** — results reveal one at a time, like a live run.
+- **Recommended solution** revealable on demand, plus a **code-golf** character
+  count.
 - **Timer** that starts on first edit and freezes on first run.
-- **Wordle-style share string** — coloured squares + solve time, never the
-  answer or your code.
-- **Streaks** persisted in `localStorage`.
+- **Stats overlay** — games played, win %, streaks, best/avg time, best golf, and
+  a per-day history.
+- **Wordle-style share string** — coloured squares, solve time, and char count;
+  never the answer or your code.
 - Solutions run in a **Web Worker with a 2s timeout**, so an infinite loop fails
   cleanly instead of hanging the page.
-- Built with **[zui](https://zui.zander.wtf)** (`@mrmartineau/zui`).
+- Built with **[zui](https://zui.zander.wtf)** (`@mrmartineau/zui`), Vite, and
+  the **[Cloudflare Vite plugin](https://developers.cloudflare.com/workers/vite-plugin/)**.
 
 ## Run it
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 Then open the printed local URL.
 
 ```bash
-npm run build      # production build
-npm run verify-puzzles   # structural check on all puzzle files
+pnpm build               # production build (emits dist/ + dist/wrangler.json)
+pnpm validate-puzzles    # structure + run every reference solution against its tests
+pnpm deploy              # build and deploy to Cloudflare (needs auth)
 ```
 
-## Adding a puzzle
+### Previewing upcoming puzzles
 
-Drop a new file in `public/puzzles/`, e.g. `day-011.yaml`:
+Contributors and admins can preview any puzzle without affecting their real
+progress (no auth — see the caveat below):
+
+- `?preview=5` (or `?day=5`) — load that puzzle file directly.
+- `?date=2026-07-01` — simulate the live date-cycling for a future day.
+
+Preview sessions don't read or write `localStorage`, so your streak and drafts
+stay untouched. Note these are convenience, not secrecy — puzzle YAML lives in
+`public/` and is fetchable regardless.
+
+## Contributing a puzzle
+
+See **[CONTRIBUTORS.md](./CONTRIBUTORS.md)** for the full guidelines on what makes
+a good puzzle and the submission workflow. In short: drop a draft `.yaml` in
+[`submissions/`](./submissions/) with `day: 0`, run `pnpm validate-submissions`,
+and open a PR. A maintainer reviews it, then promotes accepted puzzles into the
+live rotation and assigns the real day number. CI runs the same validation on any
+PR that touches puzzle files.
+
+### Puzzle format
 
 ```yaml
 day: 11
-title: "Your Puzzle"
+title: "Chunk an Array"
+difficulty: medium # easy | medium | hard
 prompt: |
-  Implement `solve(x)` so it does the thing.
-functionName: solve
+  Implement `chunk(arr, size)` so it splits `arr` into sub-arrays of length
+  `size` (the last chunk may be shorter).
+
+  For example, `chunk([1, 2, 3, 4, 5], 2)` returns `[[1, 2], [3, 4], [5]]`.
+functionName: chunk
 starterCode: |
-  function solve(x) {
+  function chunk(arr, size) {
     // your code here
   }
 tests:
-  - name: "Happy path"
-    args: [1]
-    expected: 2
-  - name: "Edge case"
-    args: [0]
-    expected: 0
-  - name: "The tricky one"
-    args: [-1]
-    expected: -2
+  - name: "Even split"
+    args: [[1, 2, 3, 4, 5], 2]
+    expected: [[1, 2], [3, 4], [5]]
+  - name: "Exact fit"
+    args: [[1, 2, 3], 3]
+    expected: [[1, 2, 3]]
+  - name: "Empty input"
+    args: [[], 3]
+    expected: []
+solution: |
+  function chunk(arr, size) {
+    const out = [];
+    for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+    return out;
+  }
 ```
 
-Then add its day number to `public/puzzles/index.json` and run
-`npm run verify-puzzles`. Each `args` array is spread into the function call, so
-`args: [[1,2,3], 9]` calls `solve([1,2,3], 9)`. `expected` is compared with deep
-equality, so arrays and objects work.
-
-The validator checks structure (required fields, exactly three tests, function
-name present in the starter) — it doesn't check that your answer is correct,
-since the answer isn't stored in the file. Sanity-check your own solution before
-committing.
+Each `args` array is spread into the call, so `args: [[1,2,3], 9]` calls
+`chunk([1,2,3], 9)`. `expected` is compared with deep equality, so arrays and
+plain objects work (but not `Map`/`Set` — convert those first). Unlike a pure
+structural check, `validate-puzzles` also **compiles the `solution` and runs it
+against every test**, so a stored `expected` can't drift from a working answer.
 
 ## How "today's puzzle" is chosen
 
-`public/puzzles/index.json` has a launch `epoch` date and a list of `days`. The
-app shows `(daysSinceEpoch mod numberOfPuzzles)`, so during the PoC it cycles
-through the ten puzzles forever and there's always something to solve. Swap the
-modulo in `src/lib/loadPuzzle.js` for a strict 1:1 date→day mapping once you
-have a full calendar.
+`public/puzzles/index.json` has a launch `epoch` date and an ordered list of
+`days`. The app shows `days[daysSinceEpoch mod days.length]`, cycling through the
+full set. The order is curated to interleave difficulty rather than ramp it, so a
+daily player gets variety. The running puzzle number (Wordle-style `#N`) is the
+day count since launch, independent of which file is shown. Swap the modulo in
+`src/lib/loadPuzzle.js` for a strict 1:1 date→day mapping once there's a full
+calendar.
+
+## Deployment
+
+Site deployed to **Cloudflare Workers**. The
+[`Deploy to Cloudflare`](.github/workflows/deploy.yml) workflow runs on manual
+dispatch.
 
 ## Where this goes next
 
-- **Community puzzles**: the YAML format is the contribution interface. A PR that
-  adds a validated `day-NNN.yaml` is the whole workflow. A light review keeps
-  difficulty fair.
 - **More languages**: same puzzle, language-idiomatic implementations. JS/TS run
   in-browser; Python (Pyodide) and Rust (wasm) can too with more setup; Go, PHP,
   Swift want a sandboxed backend test runner. Keep the YAML schema language-aware
-  (a `language` field + per-language `starterCode`/`tests`) so one puzzle file
-  can describe all variants.
-- **Editor upgrade**: swap the `<textarea>` in `src/components/CodeEditor.jsx`
-  for CodeMirror for syntax highlighting.
+  (a `language` field + per-language `starterCode`/`tests`) so one puzzle file can
+  describe all variants.
+- **Leaderboards / sharing**: the share string is spoiler-free today; a backend
+  could aggregate times and golf scores.
 
-## Project layout
-
-```
-public/puzzles/        YAML puzzles + index.json manifest
-src/lib/loadPuzzle.js  picks today's puzzle, parses YAML
-src/lib/runner.js      runs each test in a worker with a timeout
-src/lib/worker.js      executes user code in isolation
-src/lib/equal.js       deep equality for outputs
-src/lib/share.js       spoiler-free share string
-src/lib/storage.js     daily state + streak (localStorage)
-src/components/        Timer, CodeEditor, TestResults, ShareCard
-src/App.jsx            wires it together
-scripts/verify-puzzles.mjs  structural validator
-```
+> Made by [Zander Martineau](https://zander.wtf)

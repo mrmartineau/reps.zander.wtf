@@ -58,17 +58,34 @@ export async function loadPuzzleByDay(dayNumber) {
   return puzzle;
 }
 
-// Picks the puzzle for a given date. During the proof-of-concept we cycle
-// through the available days so there's always something to solve, even past
-// day 10. Swap this for a strict 1:1 date mapping once you have a full
-// calendar of puzzles.
+// Picks the puzzle for a given date. For now we CYCLE through the available
+// days (modulo), so there's always something to solve even after the calendar
+// runs out. Once there's a full calendar of puzzles, switch to the strict 1:1
+// date→day mapping shown in the commented block below.
 export async function loadTodaysPuzzle(dateISO = todayISO(), { preview = false } = {}) {
   const manifest = await fetch('/puzzles/index.json').then((r) => r.json());
   const total = manifest.days.length;
 
   const elapsed = daysBetween(manifest.epoch, dateISO);
-  const index = ((elapsed % total) + total) % total; // safe modulo
+
+  // --- Cycling mode (active) ---------------------------------------------
+  // `elapsed` wrapped back into [0, total) so day `total` shows the first
+  // puzzle again, day `total + 1` the second, and so on — forever.
+  const index = ((elapsed % total) + total) % total; // safe modulo (handles negatives)
   const dayNumber = manifest.days[index];
+
+  // --- Strict 1:1 mode (swap in when you have a full calendar) ------------
+  // Each calendar day maps to exactly one puzzle, in `days` order, with no
+  // cycling. Past the end of the list there simply is no puzzle — surface a
+  // "you're all caught up" state in App.jsx rather than letting this throw.
+  //
+  //   if (elapsed < 0 || elapsed >= total) {
+  //     throw new Error('No puzzle scheduled for this date');
+  //   }
+  //   const dayNumber = manifest.days[elapsed];
+  //
+  // `puzzleNumber` below (elapsed + 1) already matches a 1:1 calendar, so it
+  // needs no change when you switch.
 
   const padded = String(dayNumber).padStart(3, '0');
   const text = await fetch(`/puzzles/day-${padded}.yaml`).then((r) => r.text());
