@@ -24,8 +24,6 @@ jobs:
           git diff --name-only "origin/${{ github.base_ref }}"...HEAD \
             | grep -E '^(public/puzzles|submissions)/.*\.yaml$' || echo "  (none)"
       - uses: pnpm/action-setup@v6
-        with:
-          version: 10
       - uses: actions/setup-node@v6
         with:
           node-version: 'latest'
