@@ -12,6 +12,7 @@ import { Timer } from './components/Timer.jsx';
 import { CodeEditor } from './components/CodeEditor.jsx';
 import { TestResults } from './components/TestResults.jsx';
 import { ShareCard } from './components/ShareCard.jsx';
+import { HelpDialog } from './components/HelpDialog.jsx';
 
 export default function App() {
   const [puzzle, setPuzzle] = useState(null);
@@ -21,6 +22,7 @@ export default function App() {
   const [running, setRunning] = useState(false);
   const [startedAt, setStartedAt] = useState(null);
   const [elapsedMs, setElapsedMs] = useState(null);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   const dateISO = useMemo(() => todayISO(), []);
   const preview = useMemo(() => getPreviewParams(), []);
@@ -48,6 +50,20 @@ export default function App() {
       })
       .catch((e) => setLoadError(e.message || String(e)));
   }, [dateISO, preview]);
+
+  // Wordle-style: show the rules automatically the first time someone visits,
+  // then never again (unless they tap the ? button). Preview sessions skip it.
+  useEffect(() => {
+    if (preview) return;
+    try {
+      if (!localStorage.getItem('reps:seenHelp')) {
+        setHelpOpen(true);
+        localStorage.setItem('reps:seenHelp', '1');
+      }
+    } catch {
+      /* storage blocked — just don't auto-open */
+    }
+  }, [preview]);
 
   function handleFirstEdit() {
     if (startedAt == null && elapsedMs == null) setStartedAt(Date.now());
@@ -108,9 +124,23 @@ export default function App() {
   return (
     <main className="app">
       <header className="masthead">
+        <button
+          type="button"
+          className="zui-button zui-button-variant-ghost zui-button-icon help-trigger"
+          aria-label="How to play"
+          title="How to play"
+          onClick={() => setHelpOpen(true)}
+        >
+          ?
+        </button>
         <h1 className="wordmark">Reps</h1>
         <p className="tagline">A daily rep for your coding muscles</p>
       </header>
+
+      <HelpDialog
+        open={helpOpen}
+        onClose={() => setHelpOpen(false)}
+      />
 
       {puzzle.preview && (
         <div
