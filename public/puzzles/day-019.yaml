@@ -1,0 +1,31 @@
+day: 19
+title: Count Words
+difficulty: easy
+prompt: |
+  Implement `countWords(str)` so it returns how many words are in the string.
+  Words are runs of non-space characters; ignore extra whitespace.
+
+  For example, `countWords("hello   world")` returns `2`.
+functionName: countWords
+starterCode: |
+  function countWords(str) {
+    // your code here
+  }
+tests:
+  - name: Case 1
+    args:
+      - hello   world
+    expected: 2
+  - name: Case 2
+    args:
+      - '  the quick  brown fox '
+    expected: 4
+  - name: Case 3
+    args:
+      - ''
+    expected: 0
+solution: |
+  function countWords(str) {
+    const trimmed = str.trim();
+    return trimmed ? trimmed.split(/\s+/).length : 0;
+  }

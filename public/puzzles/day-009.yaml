@@ -1,5 +1,6 @@
 day: 9
 title: "Longest Word"
+difficulty: easy
 prompt: |
   Implement `longestWord(sentence)` so it returns the longest word in the
   sentence. Words are separated by spaces. If several share the longest

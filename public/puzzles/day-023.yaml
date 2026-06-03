@@ -1,0 +1,32 @@
+day: 23
+title: Prime Check
+difficulty: medium
+prompt: |
+  Implement `isPrime(n)` so it returns `true` when `n` is a prime number
+  (greater than 1, divisible only by 1 and itself).
+
+  For example, `isPrime(7)` is `true` and `isPrime(12)` is `false`.
+functionName: isPrime
+starterCode: |
+  function isPrime(n) {
+    // your code here
+  }
+tests:
+  - name: Case 1
+    args:
+      - 7
+    expected: true
+  - name: Case 2
+    args:
+      - 1
+    expected: false
+  - name: Case 3
+    args:
+      - 12
+    expected: false
+solution: |
+  function isPrime(n) {
+    if (n < 2) return false;
+    for (let i = 2; i * i <= n; i++) if (n % i === 0) return false;
+    return true;
+  }

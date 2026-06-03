@@ -1,0 +1,99 @@
+day: 35
+title: Find the Priciest Order
+difficulty: medium
+prompt: |
+  Implement `priciestOrder(orders)` to return the single order object with the
+  highest `price`.
+
+  A max-by-field is a `reduce` that keeps a running winner — the first item seeds it.
+functionName: priciestOrder
+starterCode: |
+  function priciestOrder(orders) {
+    // your code here
+  }
+tests:
+  - name: Case 1
+    args:
+      - - id: 1
+          customer: Ada
+          product: Keyboard
+          category: tech
+          price: 80
+          status: shipped
+        - id: 2
+          customer: Bram
+          product: Mug
+          category: home
+          price: 12
+          status: pending
+        - id: 3
+          customer: Ada
+          product: Monitor
+          category: tech
+          price: 240
+          status: shipped
+        - id: 4
+          customer: Cleo
+          product: Notebook
+          category: office
+          price: 6
+          status: cancelled
+    expected:
+      id: 3
+      customer: Ada
+      product: Monitor
+      category: tech
+      price: 240
+      status: shipped
+  - name: Case 2
+    args:
+      - - id: 10
+          customer: Dee
+          product: Lamp
+          category: home
+          price: 45
+          status: shipped
+        - id: 11
+          customer: Eve
+          product: Pen
+          category: office
+          price: 3
+          status: pending
+        - id: 12
+          customer: Dee
+          product: Chair
+          category: home
+          price: 90
+          status: cancelled
+    expected:
+      id: 12
+      customer: Dee
+      product: Chair
+      category: home
+      price: 90
+      status: cancelled
+  - name: Case 3
+    args:
+      - - id: 20
+          customer: Fin
+          product: Cable
+          category: tech
+          price: 9
+          status: shipped
+        - id: 21
+          customer: Fin
+          product: Desk
+          category: home
+          price: 150
+          status: shipped
+    expected:
+      id: 21
+      customer: Fin
+      product: Desk
+      category: home
+      price: 150
+      status: shipped
+solution: |
+  function priciestOrder(orders) {
+    return orders.reduce((top, order) => (order.price > top.price ? order : top));
+  }

@@ -1,0 +1,33 @@
+day: 12
+title: Fibonacci
+difficulty: medium
+prompt: |
+  Implement `fib(n)` so it returns the `n`-th Fibonacci number (0-indexed):
+  `fib(0)` is `0`, `fib(1)` is `1`, and each number after is the sum of the
+  previous two.
+
+  For example, `fib(10)` returns `55`.
+functionName: fib
+starterCode: |
+  function fib(n) {
+    // your code here
+  }
+tests:
+  - name: Case 1
+    args:
+      - 0
+    expected: 0
+  - name: Case 2
+    args:
+      - 1
+    expected: 1
+  - name: Case 3
+    args:
+      - 10
+    expected: 55
+solution: |
+  function fib(n) {
+    let a = 0, b = 1;
+    for (let i = 0; i < n; i++) [a, b] = [b, a + b];
+    return a;
+  }

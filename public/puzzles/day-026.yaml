@@ -1,0 +1,45 @@
+day: 26
+title: Most Frequent
+difficulty: medium
+prompt: |
+  Implement `mostFrequent(arr)` so it returns the value that appears most often.
+  If several tie, return the one that appears first.
+
+  For example, `mostFrequent([1, 2, 2, 3, 2])` returns `2`.
+functionName: mostFrequent
+starterCode: |
+  function mostFrequent(arr) {
+    // your code here
+  }
+tests:
+  - name: Case 1
+    args:
+      - - 1
+        - 2
+        - 2
+        - 3
+        - 2
+    expected: 2
+  - name: Case 2
+    args:
+      - - a
+        - b
+        - a
+        - b
+        - a
+    expected: a
+  - name: Case 3
+    args:
+      - - 5
+    expected: 5
+solution: |
+  function mostFrequent(arr) {
+    const counts = new Map();
+    for (const x of arr) counts.set(x, (counts.get(x) ?? 0) + 1);
+    let best = arr[0], bestCount = 0;
+    for (const x of arr) {
+      const c = counts.get(x);
+      if (c > bestCount) { bestCount = c; best = x; }
+    }
+    return best;
+  }

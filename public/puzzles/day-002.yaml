@@ -1,5 +1,6 @@
 day: 2
 title: "FizzBuzz Array"
+difficulty: easy
 prompt: |
   Implement `fizzbuzz(n)` so it returns an array of length `n` (for values
   1..n). For multiples of 3 use `"Fizz"`, multiples of 5 use `"Buzz"`,

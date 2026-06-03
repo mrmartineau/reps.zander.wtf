@@ -1,5 +1,6 @@
 day: 6
 title: "Count Vowels"
+difficulty: easy
 prompt: |
   Implement `countVowels(str)` so it returns the number of vowels
   (a, e, i, o, u — case insensitive) in `str`.

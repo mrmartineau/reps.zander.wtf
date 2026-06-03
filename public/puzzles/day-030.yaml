@@ -1,0 +1,38 @@
+day: 30
+title: Run-Length Encode
+difficulty: medium
+prompt: |
+  Implement `runLengthEncode(str)` so it compresses runs of the same character
+  into the character followed by its count.
+
+  For example, `runLengthEncode("aaabbc")` returns `"a3b2c1"`.
+functionName: runLengthEncode
+starterCode: |
+  function runLengthEncode(str) {
+    // your code here
+  }
+tests:
+  - name: Case 1
+    args:
+      - aaabbc
+    expected: a3b2c1
+  - name: Case 2
+    args:
+      - abc
+    expected: a1b1c1
+  - name: Case 3
+    args:
+      - ''
+    expected: ''
+solution: |
+  function runLengthEncode(str) {
+    let out = '';
+    let i = 0;
+    while (i < str.length) {
+      let j = i;
+      while (j < str.length && str[j] === str[i]) j++;
+      out += str[i] + (j - i);
+      i = j;
+    }
+    return out;
+  }

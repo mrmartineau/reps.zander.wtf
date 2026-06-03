@@ -1,0 +1,35 @@
+day: 13
+title: Anagram Check
+difficulty: medium
+prompt: |
+  Implement `isAnagram(a, b)` so it returns `true` when the two strings contain
+  the same letters in any order, ignoring case, spaces and punctuation.
+
+  For example, `isAnagram("listen", "silent")` is `true`, and
+  `isAnagram("hello", "world")` is `false`.
+functionName: isAnagram
+starterCode: |
+  function isAnagram(a, b) {
+    // your code here
+  }
+tests:
+  - name: Case 1
+    args:
+      - listen
+      - silent
+    expected: true
+  - name: Case 2
+    args:
+      - hello
+      - world
+    expected: false
+  - name: Case 3
+    args:
+      - Dormitory
+      - Dirty room
+    expected: true
+solution: |
+  function isAnagram(a, b) {
+    const norm = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, '').split('').sort().join('');
+    return norm(a) === norm(b);
+  }

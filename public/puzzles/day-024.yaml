@@ -1,0 +1,37 @@
+day: 24
+title: Sum of Evens
+difficulty: easy
+prompt: |
+  Implement `sumEvens(nums)` so it returns the sum of only the even numbers in
+  the array.
+
+  For example, `sumEvens([1, 2, 3, 4])` returns `6`.
+functionName: sumEvens
+starterCode: |
+  function sumEvens(nums) {
+    // your code here
+  }
+tests:
+  - name: Case 1
+    args:
+      - - 1
+        - 2
+        - 3
+        - 4
+    expected: 6
+  - name: Case 2
+    args:
+      - - 1
+        - 3
+        - 5
+    expected: 0
+  - name: Case 3
+    args:
+      - - 2
+        - 4
+        - 6
+    expected: 12
+solution: |
+  function sumEvens(nums) {
+    return nums.filter((n) => n % 2 === 0).reduce((a, b) => a + b, 0);
+  }

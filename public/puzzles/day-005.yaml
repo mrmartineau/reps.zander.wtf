@@ -1,5 +1,6 @@
 day: 5
 title: "Two Sum"
+difficulty: medium
 prompt: |
   You're given an array of numbers, `nums`, and a `target`. Find the **two**
   numbers in the array that add up to `target`, and return their positions

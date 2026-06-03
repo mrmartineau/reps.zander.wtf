@@ -1,0 +1,32 @@
+day: 17
+title: Factorial
+difficulty: easy
+prompt: |
+  Implement `factorial(n)` so it returns `n!` — the product of all integers
+  from 1 to `n`. `factorial(0)` is `1`.
+
+  For example, `factorial(5)` returns `120`.
+functionName: factorial
+starterCode: |
+  function factorial(n) {
+    // your code here
+  }
+tests:
+  - name: Case 1
+    args:
+      - 0
+    expected: 1
+  - name: Case 2
+    args:
+      - 5
+    expected: 120
+  - name: Case 3
+    args:
+      - 6
+    expected: 720
+solution: |
+  function factorial(n) {
+    let out = 1;
+    for (let i = 2; i <= n; i++) out *= i;
+    return out;
+  }

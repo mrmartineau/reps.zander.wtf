@@ -1,0 +1,36 @@
+day: 27
+title: Clamp
+difficulty: easy
+prompt: |
+  Implement `clamp(n, min, max)` so it returns `n` limited to the range
+  `[min, max]` — never below `min`, never above `max`.
+
+  For example, `clamp(99, 0, 10)` returns `10`.
+functionName: clamp
+starterCode: |
+  function clamp(n, min, max) {
+    // your code here
+  }
+tests:
+  - name: Case 1
+    args:
+      - 5
+      - 0
+      - 10
+    expected: 5
+  - name: Case 2
+    args:
+      - -3
+      - 0
+      - 10
+    expected: 0
+  - name: Case 3
+    args:
+      - 99
+      - 0
+      - 10
+    expected: 10
+solution: |
+  function clamp(n, min, max) {
+    return Math.min(Math.max(n, min), max);
+  }

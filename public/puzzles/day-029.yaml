@@ -1,0 +1,38 @@
+day: 29
+title: Balanced Brackets
+difficulty: hard
+prompt: |
+  Implement `isBalanced(str)` so it returns `true` when every bracket
+  `()`, `[]` and `{}` is correctly opened and closed in the right order.
+
+  For example, `isBalanced("([{}])")` is `true` and `isBalanced("(]")` is `false`.
+functionName: isBalanced
+starterCode: |
+  function isBalanced(str) {
+    // your code here
+  }
+tests:
+  - name: Case 1
+    args:
+      - ()[]{}
+    expected: true
+  - name: Case 2
+    args:
+      - (]
+    expected: false
+  - name: Case 3
+    args:
+      - ([{}])
+    expected: true
+solution: |
+  function isBalanced(str) {
+    const pairs = { ')': '(', ']': '[', '}': '{' };
+    const stack = [];
+    for (const c of str) {
+      if (c === '(' || c === '[' || c === '{') stack.push(c);
+      else if (c in pairs) {
+        if (stack.pop() !== pairs[c]) return false;
+      }
+    }
+    return stack.length === 0;
+  }
