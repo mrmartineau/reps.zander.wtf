@@ -15,6 +15,7 @@ import { TestResults } from './components/TestResults.jsx';
 import { ShareCard } from './components/ShareCard.jsx';
 import { HelpDialog } from './components/HelpDialog.jsx';
 import { SolutionPanel } from './components/SolutionPanel.jsx';
+import { Markdown } from './components/Markdown.jsx';
 import { StatsDialog } from './components/StatsDialog.jsx';
 
 export default function App() {
@@ -220,7 +221,7 @@ export default function App() {
           />
         </div>
 
-        <p className="prompt">{puzzle.prompt}</p>
+        <Markdown className="prompt">{puzzle.prompt}</Markdown>
 
         <CodeEditor
           value={code}
