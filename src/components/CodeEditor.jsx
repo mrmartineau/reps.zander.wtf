@@ -40,10 +40,20 @@ export function CodeEditor({ value, onChange, onFirstEdit, disabled }) {
         theme={dark ? 'reps-dark' : 'reps-light'}
         value={value}
         onChange={handleChange}
+        onMount={(_editor, monaco) => {
+          // Monaco caches glyph metrics at mount. If Geist Mono is still
+          // loading then, it measures with a fallback and the caret/selection
+          // drift. Remeasure once the webfont is actually ready.
+          const remeasure = () => monaco.editor.remeasureFonts();
+          if (document.fonts?.ready) {
+            document.fonts.load('14px "Geist Mono"').then(remeasure).catch(remeasure);
+            document.fonts.ready.then(remeasure);
+          }
+        }}
         loading={<div className="editor-loading">Loading editor…</div>}
         options={{
           readOnly: disabled,
-          fontFamily: "'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace",
+          fontFamily: "'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace",
           fontLigatures: true,
           fontSize: 14,
           lineHeight: 22,
