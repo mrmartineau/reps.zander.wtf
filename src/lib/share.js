@@ -1,5 +1,6 @@
 // Builds the spoiler-free share string: squares for test pass/fail plus the
-// solve time. Never includes the user's code or the puzzle answer.
+// solve time and code-golf char count. Never includes the user's code or the
+// puzzle answer.
 
 export function formatTime(ms) {
   const total = Math.round(ms / 1000);
@@ -8,13 +9,21 @@ export function formatTime(ms) {
   return `${m}:${String(s).padStart(2, '0')}`;
 }
 
-export function buildShareText(puzzle, results, elapsedMs) {
+// Code-golf metric: characters in the submitted solution, ignoring surrounding
+// whitespace. A secondary score — time is still the headline.
+export function charCount(code) {
+  return (code || '').trim().length;
+}
+
+export function buildShareText(puzzle, results, elapsedMs, chars) {
   const squares = results.map((r) => (r.pass ? '🟩' : '⬛')).join('');
   const passed = results.filter((r) => r.pass).length;
   const time = formatTime(elapsedMs);
 
+  const meta = typeof chars === 'number' ? `${time} · ${chars} chars` : time;
+
   return [
-    `Reps #${puzzle.puzzleNumber} · ${time}`,
+    `Reps #${puzzle.puzzleNumber} · ${meta}`,
     squares,
     `${passed}/${results.length} tests`,
     'reps.zander.wtf',

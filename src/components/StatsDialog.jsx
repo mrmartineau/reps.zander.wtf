@@ -45,6 +45,7 @@ export function StatsDialog({ open, onClose, stats }) {
               <Stat value={s.maxStreak} label="Max streak" />
               <Stat value={s.bestTimeMs != null ? formatTime(s.bestTimeMs) : '—'} label="Best time" />
               <Stat value={s.avgTimeMs != null ? formatTime(s.avgTimeMs) : '—'} label="Avg time" />
+              <Stat value={s.bestCharCount != null ? `${s.bestCharCount} ch` : '—'} label="Best golf" />
             </div>
 
             <h3 className="stats-subhead">History</h3>
@@ -57,12 +58,18 @@ export function StatsDialog({ open, onClose, stats }) {
                   <span className={`stats-mark ${h.solved ? 'is-solved' : 'is-missed'}`}>
                     {h.solved ? '✓' : '✗'}
                   </span>
-                  <span className="stats-date">{h.dateISO}</span>
+                  <span className="stats-main">
+                    <span className="stats-puzzle">{h.title || `Day ${h.day}`}</span>
+                    <span className="stats-date">{h.dateISO}</span>
+                  </span>
                   <span className="stats-detail">
-                    {h.total ? `${h.passed}/${h.total} tests` : '—'}
+                    {h.total ? `${h.passed}/${h.total}` : '—'}
                   </span>
                   <span className="stats-time">
                     {h.elapsedMs != null ? formatTime(h.elapsedMs) : ''}
+                  </span>
+                  <span className="stats-chars">
+                    {h.chars != null ? `${h.chars} ch` : ''}
                   </span>
                 </li>
               ))}

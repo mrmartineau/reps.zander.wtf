@@ -49,17 +49,23 @@ export function computeStreak(dateISO) {
   return streak;
 }
 
-// Every recorded day, newest first: [{ dateISO, day, solved, elapsedMs, passed, total }].
+// Every recorded day, newest first:
+// [{ dateISO, day, solved, elapsedMs, chars, passed, total }].
 export function getHistory() {
   const state = read();
   return Object.entries(state)
     .map(([dateISO, s]) => {
       const results = Array.isArray(s.results) ? s.results : [];
+      // `chars` was added later; fall back to the stored code for older entries.
+      const chars =
+        typeof s.chars === 'number' ? s.chars : s.code ? s.code.trim().length : null;
       return {
         dateISO,
         day: s.day,
+        title: s.title || null,
         solved: Boolean(s.solved),
         elapsedMs: s.elapsedMs ?? null,
+        chars,
         passed: results.filter((r) => r.pass).length,
         total: results.length,
       };
@@ -98,6 +104,9 @@ export function computeStats(dateISO) {
   const times = solvedDays
     .map((h) => h.elapsedMs)
     .filter((ms) => typeof ms === 'number' && ms >= 0);
+  const charCounts = solvedDays
+    .map((h) => h.chars)
+    .filter((c) => typeof c === 'number' && c > 0);
 
   return {
     played,
@@ -107,6 +116,8 @@ export function computeStats(dateISO) {
     maxStreak: maxStreak(history),
     bestTimeMs: times.length ? Math.min(...times) : null,
     avgTimeMs: times.length ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : null,
+    // Code golf: fewest characters wins.
+    bestCharCount: charCounts.length ? Math.min(...charCounts) : null,
     history,
   };
 }

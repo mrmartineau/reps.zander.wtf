@@ -275,6 +275,13 @@ body {
   margin: 0 0 0.75rem;
 }
 
+.share-golf {
+  font-family: var(--font-code);
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  margin: -0.4rem 0 0.85rem;
+}
+
 .streak {
   font-family: var(--font-code);
   font-size: 0.95rem;
@@ -403,7 +410,7 @@ body {
 
 .stats-row {
   display: grid;
-  grid-template-columns: 1.2rem 1fr auto auto;
+  grid-template-columns: 1.2rem 1fr auto auto auto;
   align-items: center;
   gap: 0.6rem;
   padding: 0.45rem 0.1rem;
@@ -427,13 +434,33 @@ body {
   color: var(--color-muted);
 }
 
+.stats-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.stats-puzzle {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stats-date {
+  color: var(--color-muted);
+  font-size: 0.72rem;
+}
+
 .stats-detail,
-.stats-time {
+.stats-time,
+.stats-chars {
   color: var(--color-muted);
   font-size: 0.8rem;
 }
 
-.stats-time {
+.stats-time,
+.stats-chars {
   font-variant-numeric: tabular-nums;
 }
 

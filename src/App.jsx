@@ -7,6 +7,7 @@ import {
   todayISO,
 } from './lib/loadPuzzle.js';
 import { runTests } from './lib/runner.js';
+import { charCount } from './lib/share.js';
 import { getDayState, saveDayState, computeStreak, computeStats } from './lib/storage.js';
 import { Timer } from './components/Timer.jsx';
 import { CodeEditor } from './components/CodeEditor.jsx';
@@ -98,9 +99,11 @@ export default function App() {
     const solved = res.every((r) => r.pass);
     saveDayState(dateISO, {
       day: puzzle.day,
+      title: puzzle.title,
       results: res,
       elapsedMs: took,
       code,
+      chars: charCount(code),
       solved,
     });
 
@@ -244,6 +247,7 @@ export default function App() {
             puzzle={puzzle}
             results={results}
             elapsedMs={elapsedMs}
+            chars={charCount(code)}
             streak={streak}
           />
         )}
