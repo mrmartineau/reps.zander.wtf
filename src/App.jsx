@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@mrmartineau/zui/react';
-import { loadTodaysPuzzle, todayISO } from './lib/loadPuzzle.js';
+import {
+  loadTodaysPuzzle,
+  loadPuzzleByDay,
+  getPreviewParams,
+  todayISO,
+} from './lib/loadPuzzle.js';
 import { runTests } from './lib/runner.js';
 import { getDayState, saveDayState, computeStreak } from './lib/storage.js';
 import { Timer } from './components/Timer.jsx';
@@ -18,13 +23,22 @@ export default function App() {
   const [elapsedMs, setElapsedMs] = useState(null);
 
   const dateISO = useMemo(() => todayISO(), []);
+  const preview = useMemo(() => getPreviewParams(), []);
 
   useEffect(() => {
-    loadTodaysPuzzle(dateISO)
+    const load = preview
+      ? preview.kind === 'day'
+        ? loadPuzzleByDay(preview.day)
+        : loadTodaysPuzzle(preview.date, { preview: true })
+      : loadTodaysPuzzle(dateISO);
+
+    load
       .then((p) => {
         setPuzzle(p);
         setCode(p.starterCode || '');
-        // Restore a completed run from earlier today, if any.
+        // Restore a completed run from earlier today — never in preview mode,
+        // so testing an upcoming puzzle can't read or clobber real progress.
+        if (p.preview) return;
         const saved = getDayState(dateISO);
         if (saved && saved.day === p.day) {
           setResults(saved.results);
@@ -33,7 +47,7 @@ export default function App() {
         }
       })
       .catch((e) => setLoadError(e.message || String(e)));
-  }, [dateISO]);
+  }, [dateISO, preview]);
 
   function handleFirstEdit() {
     if (startedAt == null && elapsedMs == null) setStartedAt(Date.now());
@@ -51,6 +65,9 @@ export default function App() {
     setResults(res);
     setElapsedMs(took);
     setRunning(false);
+
+    // Preview runs are throwaway — don't persist to the daily state or streak.
+    if (puzzle.preview) return;
 
     const solved = res.every((r) => r.pass);
     saveDayState(dateISO, {
@@ -94,6 +111,28 @@ export default function App() {
         <h1 className="wordmark">Reps</h1>
         <p className="tagline">A daily rep for your coding muscles</p>
       </header>
+
+      {puzzle.preview && (
+        <div
+          className="preview-banner"
+          role="status"
+        >
+          <span className="zui-badge zui-badge-variant-fill zui-badge-color-amber">
+            Preview
+          </span>
+          <span>
+            Testing day {puzzle.day}
+            {preview?.kind === 'date' ? ` (as of ${puzzle.dateISO})` : ''} —
+            results aren't saved and your streak is untouched.
+          </span>
+          <a
+            className="zui-link"
+            href={window.location.pathname}
+          >
+            Exit preview
+          </a>
+        </div>
+      )}
 
       <section className="puzzle">
         <div className="puzzle-meta">
