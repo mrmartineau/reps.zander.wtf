@@ -7,22 +7,32 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "deploy": "vite build && wrangler deploy",
     "verify-puzzles": "node scripts/verify-puzzles.mjs",
     "validate-puzzles": "node scripts/validate-puzzles.mjs public/puzzles",
     "validate-submissions": "node scripts/validate-puzzles.mjs submissions"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
-    "@mrmartineau/zui": "latest",
+    "@mrmartineau/zui": "^1.2.0",
     "js-yaml": "^4.1.0",
     "monaco-editor": "^0.55.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.3.4",
-    "vite": "^5.4.11"
-  }
+    "@cloudflare/vite-plugin": "^1.39.2",
+    "@vitejs/plugin-react": "^6.0.2",
+    "vite": "^8.0.16",
+    "wrangler": "^4.97.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "workerd"
+    ]
+  },
+  "packageManager": "pnpm@11.5.0"
 }

@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "reps",
+  "compatibility_date": "2026-06-03",
+  // Static-assets-only site (no Worker entry). The @cloudflare/vite-plugin
+  // auto-populates assets.directory with the client build output at build time
+  // (into dist/wrangler.json) — don't set it here. SPA fallback returns
+  // index.html for unknown paths; loadPuzzleByDay guards the resulting 200s for
+  // missing /puzzles/*.yaml by validating the parsed shape.
+  "assets": {
+    "not_found_handling": "single-page-application"
+  }
+}

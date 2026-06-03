@@ -14,7 +14,7 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # Show which puzzle files this PR changed, for reviewer context.
       - name: List changed puzzle files
@@ -23,24 +23,21 @@ jobs:
           echo "Changed puzzle files in this PR:"
           git diff --name-only "origin/${{ github.base_ref }}"...HEAD \
             | grep -E '^(public/puzzles|submissions)/.*\.yaml$' || echo "  (none)"
-
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           version: 10
-
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 'latest'
           cache: pnpm
-
+      - name: Install safe-chain
+        run: curl -fsSL https://github.com/AikidoSec/safe-chain/releases/latest/download/install-safe-chain.sh | sh -s -- --ci
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
       # Live puzzles: structure + every reference solution must pass its tests,
       # day numbers must be unique.
       - name: Validate live puzzles
         run: pnpm validate-puzzles
-
       # Proposed puzzles in submissions/ get the same structural + correctness
       # check (no-op if the folder has none).
       - name: Validate submitted puzzles
