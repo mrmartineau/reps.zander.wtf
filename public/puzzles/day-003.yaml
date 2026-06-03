@@ -1,6 +1,6 @@
 day: 3
 title: "Sum of Digits"
-prompt: |
+prompt: >-
   Implement `sumDigits(n)` so it returns the sum of the digits of a
   non-negative integer `n`.
 functionName: sumDigits

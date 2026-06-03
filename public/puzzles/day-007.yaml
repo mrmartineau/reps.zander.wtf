@@ -1,6 +1,6 @@
 day: 7
 title: "Deep Flatten"
-prompt: |
+prompt: >-
   Implement `flatten(arr)` so it returns a single-level array containing every
   value from a nested array, at any depth, left to right.
 functionName: flatten

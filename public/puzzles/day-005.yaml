@@ -1,8 +1,8 @@
 day: 5
 title: "Two Sum"
-prompt: |
+prompt: >-
   Implement `twoSum(nums, target)` so it returns the indices of the two
-  numbers that add up to `target`, as an array `[i, j]` with i < j. Exactly
+  numbers that add up to `target`, as an array `[i, j]` with `i < j`. Exactly
   one solution exists. Return `[]` if somehow none is found.
 functionName: twoSum
 starterCode: |

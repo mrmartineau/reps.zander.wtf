@@ -1,6 +1,6 @@
 day: 4
 title: "Palindrome Check"
-prompt: |
+prompt: >-
   Implement `isPalindrome(str)` so it returns `true` when `str` reads the same
   forwards and backwards, ignoring case, spaces and punctuation. Otherwise
   return `false`.

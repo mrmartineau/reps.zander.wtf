@@ -1,6 +1,6 @@
 day: 6
 title: "Count Vowels"
-prompt: |
+prompt: >-
   Implement `countVowels(str)` so it returns the number of vowels
   (a, e, i, o, u — case insensitive) in `str`.
 functionName: countVowels
