@@ -283,6 +283,7 @@ body {
 .result-detail code {
   color: var(--color-accent);
   word-break: break-all;
+  font-family: var(--font-code);
 }
 
 /* running placeholder + reveal animation */
