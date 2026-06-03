@@ -29,6 +29,9 @@ import { StatsDialog } from './components/StatsDialog.jsx';
 const REVEAL_STAGGER_MS = 100;
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Difficulty → ZUI badge colour.
+const DIFFICULTY_COLOR = { easy: 'emerald', medium: 'amber', hard: 'rose' };
+
 export default function App() {
   const [puzzle, setPuzzle] = useState(null);
   const [loadError, setLoadError] = useState(null);
@@ -263,6 +266,13 @@ export default function App() {
         <div className="puzzle-meta">
           <span className="puzzle-number">#{puzzle.puzzleNumber}</span>
           <span className="puzzle-title">{puzzle.title}</span>
+          {puzzle.difficulty && (
+            <span
+              className={`zui-badge zui-badge-variant-subtle zui-badge-color-${DIFFICULTY_COLOR[puzzle.difficulty]} difficulty-badge`}
+            >
+              {puzzle.difficulty}
+            </span>
+          )}
           <Timer
             startedAt={startedAt}
             frozenMs={elapsedMs}

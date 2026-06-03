@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "verify-puzzles": "node scripts/verify-puzzles.mjs"
+    "verify-puzzles": "node scripts/verify-puzzles.mjs",
+    "validate-puzzles": "node scripts/validate-puzzles.mjs public/puzzles",
+    "validate-submissions": "node scripts/validate-puzzles.mjs submissions"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",

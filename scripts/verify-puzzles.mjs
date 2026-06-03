@@ -48,6 +48,9 @@ for (const file of files) {
   } else if (p.functionName && !p.solution.includes(p.functionName)) {
     fail(file, `solution doesn't define "${p.functionName}"`);
   }
+  if (!['easy', 'medium', 'hard'].includes(p.difficulty)) {
+    fail(file, `"difficulty" must be easy | medium | hard (got ${JSON.stringify(p.difficulty)})`);
+  }
   if (ok) console.log(`✅ ${file} — ${p.title}`);
 }
 
