@@ -8,7 +8,14 @@ import {
 } from './lib/loadPuzzle.js';
 import { runTests } from './lib/runner.js';
 import { charCount } from './lib/share.js';
-import { getDayState, saveDayState, computeStreak, computeStats } from './lib/storage.js';
+import {
+  getDayState,
+  saveDayState,
+  computeStreak,
+  computeStats,
+  getDraft,
+  saveDraft,
+} from './lib/storage.js';
 import { Timer } from './components/Timer.jsx';
 import { CodeEditor } from './components/CodeEditor.jsx';
 import { TestResults } from './components/TestResults.jsx';
@@ -50,18 +57,40 @@ export default function App() {
       .then((p) => {
         setPuzzle(p);
         setCode(p.starterCode || '');
-        // Restore a completed run from earlier today — never in preview mode,
-        // so testing an upcoming puzzle can't read or clobber real progress.
+        // Never read or write real progress in preview mode, so testing an
+        // upcoming puzzle can't clobber it.
         if (p.preview) return;
+
+        // Restore a completed run from earlier today (results + time).
         const saved = getDayState(dateISO);
         if (saved && saved.day === p.day) {
           setResults(saved.results);
           setElapsedMs(saved.elapsedMs);
-          setCode(saved.code || p.starterCode || '');
         }
+
+        // Restore the editor itself, preferring the most recent in-progress
+        // draft over the last submitted code, so a refresh never loses edits.
+        const draft = getDraft(dateISO);
+        const restoredCode =
+          (draft && draft.day === p.day && draft.code) ||
+          (saved && saved.day === p.day && saved.code) ||
+          p.starterCode ||
+          '';
+        setCode(restoredCode);
       })
       .catch((e) => setLoadError(e.message || String(e)));
   }, [dateISO, preview]);
+
+  // Persist the editor draft as the user types, so a refresh or back-button
+  // never loses work. Debounced to avoid a write on every keystroke. Skipped in
+  // preview mode and before the puzzle has loaded.
+  useEffect(() => {
+    if (!puzzle || puzzle.preview) return;
+    const id = setTimeout(() => {
+      saveDraft(dateISO, { day: puzzle.day, code });
+    }, 400);
+    return () => clearTimeout(id);
+  }, [code, puzzle, dateISO]);
 
   // Wordle-style: show the rules automatically the first time someone visits,
   // then never again (unless they tap the ? button). Preview sessions skip it.

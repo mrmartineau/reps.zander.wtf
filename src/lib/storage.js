@@ -24,6 +24,33 @@ export function getDayState(dateISO) {
   return read()[dateISO] || null;
 }
 
+// In-progress editor drafts, kept separate from completed-run state so typing
+// can be saved on every keystroke without touching results/streak data. Keyed
+// by date: { day, code }.
+const DRAFT_KEY = 'reps:draft:v1';
+
+function readDrafts() {
+  try {
+    return JSON.parse(localStorage.getItem(DRAFT_KEY)) || {};
+  } catch {
+    return {};
+  }
+}
+
+export function getDraft(dateISO) {
+  return readDrafts()[dateISO] || null;
+}
+
+export function saveDraft(dateISO, payload) {
+  const drafts = readDrafts();
+  drafts[dateISO] = payload;
+  try {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(drafts));
+  } catch {
+    /* storage full or blocked — non-fatal */
+  }
+}
+
 export function saveDayState(dateISO, payload) {
   const state = read();
   state[dateISO] = payload;
