@@ -7,13 +7,14 @@ import {
   todayISO,
 } from './lib/loadPuzzle.js';
 import { runTests } from './lib/runner.js';
-import { getDayState, saveDayState, computeStreak } from './lib/storage.js';
+import { getDayState, saveDayState, computeStreak, computeStats } from './lib/storage.js';
 import { Timer } from './components/Timer.jsx';
 import { CodeEditor } from './components/CodeEditor.jsx';
 import { TestResults } from './components/TestResults.jsx';
 import { ShareCard } from './components/ShareCard.jsx';
 import { HelpDialog } from './components/HelpDialog.jsx';
 import { SolutionPanel } from './components/SolutionPanel.jsx';
+import { StatsDialog } from './components/StatsDialog.jsx';
 
 export default function App() {
   const [puzzle, setPuzzle] = useState(null);
@@ -24,6 +25,14 @@ export default function App() {
   const [startedAt, setStartedAt] = useState(null);
   const [elapsedMs, setElapsedMs] = useState(null);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [statsOpen, setStatsOpen] = useState(false);
+  const [stats, setStats] = useState(null);
+
+  // Snapshot stats from localStorage whenever the overlay is opened.
+  function openStats() {
+    setStats(computeStats(dateISO));
+    setStatsOpen(true);
+  }
 
   const dateISO = useMemo(() => todayISO(), []);
   const preview = useMemo(() => getPreviewParams(), []);
@@ -94,6 +103,9 @@ export default function App() {
       code,
       solved,
     });
+
+    // Reveal the stats overlay once a solve lands, the way Wordle does.
+    if (solved) openStats();
   }
 
   function handleReset() {
@@ -125,15 +137,39 @@ export default function App() {
   return (
     <main className="app">
       <header className="masthead">
-        <button
-          type="button"
-          className="zui-button zui-button-variant-ghost zui-button-icon help-trigger"
-          aria-label="How to play"
-          title="How to play"
-          onClick={() => setHelpOpen(true)}
-        >
-          ?
-        </button>
+        <div className="masthead-actions">
+          <button
+            type="button"
+            className="zui-button zui-button-variant-ghost zui-button-icon"
+            aria-label="Statistics"
+            title="Statistics"
+            onClick={openStats}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              aria-hidden="true"
+            >
+              <line x1="6" y1="20" x2="6" y2="13" />
+              <line x1="12" y1="20" x2="12" y2="4" />
+              <line x1="18" y1="20" x2="18" y2="9" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            className="zui-button zui-button-variant-ghost zui-button-icon"
+            aria-label="How to play"
+            title="How to play"
+            onClick={() => setHelpOpen(true)}
+          >
+            ?
+          </button>
+        </div>
         <h1 className="wordmark">Reps</h1>
         <p className="tagline">A daily rep for your coding muscles</p>
       </header>
@@ -141,6 +177,12 @@ export default function App() {
       <HelpDialog
         open={helpOpen}
         onClose={() => setHelpOpen(false)}
+      />
+
+      <StatsDialog
+        open={statsOpen}
+        onClose={() => setStatsOpen(false)}
+        stats={stats}
       />
 
       {puzzle.preview && (
