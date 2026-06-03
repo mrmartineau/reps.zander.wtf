@@ -277,6 +277,7 @@ body {
 
 .result-detail code {
   color: var(--color-accent);
+  word-break: break-all;
 }
 
 /* ---- share ---- */
