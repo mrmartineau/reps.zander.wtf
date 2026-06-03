@@ -34,6 +34,10 @@ export function CodeEditor({ value, onChange, onFirstEdit, disabled }) {
 
   return (
     <div className="editor-shell">
+      <div className="editor-lang">
+        <span className="editor-lang-dot" aria-hidden="true" />
+        JavaScript
+      </div>
       <Editor
         height="260px"
         language="javascript"

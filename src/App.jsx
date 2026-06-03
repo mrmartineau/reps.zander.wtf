@@ -171,7 +171,7 @@ export default function App() {
           </button>
         </div>
         <h1 className="wordmark">Reps</h1>
-        <p className="tagline">A daily rep for your coding muscles</p>
+        <p className="tagline">A daily JavaScript puzzle for your coding muscles</p>
       </header>
 
       <HelpDialog

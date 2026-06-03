@@ -19,13 +19,13 @@ export function HelpDialog({ open, onClose }) {
     >
       <DialogHeader>
         <DialogTitle>How to play</DialogTitle>
-        <DialogDescription>One coding rep a day. Keep the streak alive.</DialogDescription>
+        <DialogDescription>One JavaScript coding rep a day. Keep the streak alive.</DialogDescription>
       </DialogHeader>
 
       <DialogBody>
         <ol className="help-steps">
           <li>
-            <strong>Read the prompt.</strong> Each day brings one short coding puzzle —
+            <strong>Read the prompt.</strong> Each day brings one short JavaScript puzzle —
             implement the function it describes.
           </li>
           <li>
