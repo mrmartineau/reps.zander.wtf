@@ -7,8 +7,15 @@ function daysBetween(epochISO, todayISO) {
   return Math.floor((b - a) / 86_400_000);
 }
 
-export function todayISO() {
-  return new Date().toISOString().slice(0, 10);
+// The player's LOCAL calendar date as YYYY-MM-DD. Deliberately not
+// `toISOString()` (which is UTC) — otherwise everyone east of UTC would still
+// see "yesterday's" puzzle for the first few hours of their day. Wordle-style:
+// the puzzle rolls over at the player's own local midnight.
+export function todayISO(date = new Date()) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }
 
 // Reads preview intent from the URL querystring. Lets contributors/admins
