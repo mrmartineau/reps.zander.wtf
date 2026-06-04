@@ -407,7 +407,7 @@ export default function App() {
       </section>
 
       <footer className="footer">
-        Built by <a href="https://zander.wtf" className="zui-link">Zander Martineau</a> with <a href="https://zui.zander.wtf" className="zui-link">ZUI</a> · puzzles are
+        Built by <a href="https://zander.wtf" className="zui-link">Zander Martineau</a> with <a href="https://zui.zander.wtf" className="zui-link">ZUI</a>. Puzzles are
         plain YAML, contribute one a day.
         <br/>
         Read about how you can contribute <a href="https://github.com/mrmartineau/reps.zander.wtf/blob/main/CONTRIBUTORS.md" className="zui-link">here</a>.
