@@ -48,8 +48,12 @@ tests:
       - 2
 solution: |
   function rotate(arr, k) {
-    const n = arr.length;
-    if (n === 0) return [];
-    const s = ((k % n) + n) % n;
-    return arr.slice(n - s).concat(arr.slice(0, n - s));
+    const len = arr.length;
+    if (len === 0) return [];
+    // How far to rotate, normalised into 0..len-1.
+    const offset = ((k % len) + len) % len;
+    // Move the last `offset` items to the front.
+    const tail = arr.slice(len - offset);
+    const head = arr.slice(0, len - offset);
+    return [...tail, ...head];
   }

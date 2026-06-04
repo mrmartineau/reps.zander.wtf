@@ -26,6 +26,13 @@ tests:
     expected: 6
 solution: |
   function digitalRoot(n) {
-    while (n >= 10) n = String(n).split('').reduce((s, d) => s + Number(d), 0);
+    // Keep summing the digits until a single digit is left.
+    while (n >= 10) {
+      let sum = 0;
+      for (const digit of String(n)) {
+        sum += Number(digit);
+      }
+      n = sum;
+    }
     return n;
   }

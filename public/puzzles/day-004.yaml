@@ -26,6 +26,8 @@ tests:
     expected: true
 solution: |
   function isPalindrome(str) {
-    const clean = str.toLowerCase().replace(/[^a-z0-9]/g, '');
-    return clean === clean.split('').reverse().join('');
+    // Drop anything that isn't a letter or number, and lowercase the rest.
+    const cleaned = str.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const reversed = cleaned.split('').reverse().join('');
+    return cleaned === reversed;
   }

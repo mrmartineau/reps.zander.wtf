@@ -29,6 +29,11 @@ tests:
     expected: 20
 solution: |
   function gcd(a, b) {
-    while (b) [a, b] = [b, a % b];
+    // Euclid's algorithm: replace (a, b) with (b, a mod b) until b is 0.
+    while (b !== 0) {
+      const remainder = a % b;
+      a = b;
+      b = remainder;
+    }
     return a;
   }

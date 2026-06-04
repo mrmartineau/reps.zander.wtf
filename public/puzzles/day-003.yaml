@@ -23,7 +23,10 @@ tests:
     expected: 0
 solution: |
   function sumDigits(n) {
-    return String(n)
-      .split('')
-      .reduce((sum, d) => sum + Number(d), 0);
+    let total = 0;
+    // Add up each digit of n.
+    for (const digit of String(n)) {
+      total += Number(digit);
+    }
+    return total;
   }

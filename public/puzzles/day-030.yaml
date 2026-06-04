@@ -26,13 +26,16 @@ tests:
     expected: ''
 solution: |
   function runLengthEncode(str) {
-    let out = '';
+    let result = '';
     let i = 0;
     while (i < str.length) {
-      let j = i;
-      while (j < str.length && str[j] === str[i]) j++;
-      out += str[i] + (j - i);
-      i = j;
+      // Extend runEnd over every repeat of the current character.
+      let runEnd = i;
+      while (runEnd < str.length && str[runEnd] === str[i]) {
+        runEnd++;
+      }
+      result += str[i] + (runEnd - i);
+      i = runEnd;
     }
-    return out;
+    return result;
   }

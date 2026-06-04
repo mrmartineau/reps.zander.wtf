@@ -25,7 +25,12 @@ tests:
     expected: "hello"
 solution: |
   function longestWord(sentence) {
-    return sentence
-      .split(' ')
-      .reduce((best, word) => (word.length > best.length ? word : best), '');
+    let longest = '';
+    for (const word of sentence.split(' ')) {
+      // Only replace on a strictly longer word, so ties keep the first one.
+      if (word.length > longest.length) {
+        longest = word;
+      }
+    }
+    return longest;
   }

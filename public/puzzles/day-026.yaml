@@ -34,12 +34,20 @@ tests:
     expected: 5
 solution: |
   function mostFrequent(arr) {
+    // Count how many times each value appears.
     const counts = new Map();
-    for (const x of arr) counts.set(x, (counts.get(x) ?? 0) + 1);
-    let best = arr[0], bestCount = 0;
-    for (const x of arr) {
-      const c = counts.get(x);
-      if (c > bestCount) { bestCount = c; best = x; }
+    for (const value of arr) {
+      counts.set(value, (counts.get(value) ?? 0) + 1);
+    }
+    // Scan in order so ties resolve to the first-seen value.
+    let best = arr[0];
+    let bestCount = 0;
+    for (const value of arr) {
+      const count = counts.get(value);
+      if (count > bestCount) {
+        bestCount = count;
+        best = value;
+      }
     }
     return best;
   }

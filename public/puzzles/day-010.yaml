@@ -25,9 +25,13 @@ tests:
     expected: "Khoor, Zruog!"
 solution: |
   function caesar(str, shift) {
-    const s = ((shift % 26) + 26) % 26;
-    return str.replace(/[a-z]/gi, (ch) => {
-      const base = ch <= 'Z' ? 65 : 97;
-      return String.fromCharCode(((ch.charCodeAt(0) - base + s) % 26) + base);
+    // Normalise the shift into 0–25 (handles values larger than 26).
+    const steps = ((shift % 26) + 26) % 26;
+    return str.replace(/[a-z]/gi, (letter) => {
+      // 'A' is char code 65, 'a' is 97 — pick the right base for the letter's case.
+      const base = letter <= 'Z' ? 65 : 97;
+      const position = letter.charCodeAt(0) - base;
+      const shifted = (position + steps) % 26;
+      return String.fromCharCode(base + shifted);
     });
   }

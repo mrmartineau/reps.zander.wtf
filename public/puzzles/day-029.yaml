@@ -26,13 +26,16 @@ tests:
     expected: true
 solution: |
   function isBalanced(str) {
-    const pairs = { ')': '(', ']': '[', '}': '{' };
-    const stack = [];
-    for (const c of str) {
-      if (c === '(' || c === '[' || c === '{') stack.push(c);
-      else if (c in pairs) {
-        if (stack.pop() !== pairs[c]) return false;
+    const closerToOpener = { ')': '(', ']': '[', '}': '{' };
+    const openers = [];
+    for (const char of str) {
+      if (char === '(' || char === '[' || char === '{') {
+        openers.push(char);
+      } else if (char in closerToOpener) {
+        // The most recent opener must match this closer.
+        if (openers.pop() !== closerToOpener[char]) return false;
       }
     }
-    return stack.length === 0;
+    // Anything still open was never closed.
+    return openers.length === 0;
   }

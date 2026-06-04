@@ -25,9 +25,14 @@ tests:
     expected: [1, 2, 3]
 solution: |
   function flatten(arr) {
-    return arr.reduce(
-      (out, item) =>
-        Array.isArray(item) ? out.concat(flatten(item)) : out.concat(item),
-      []
-    );
+    const result = [];
+    for (const item of arr) {
+      // Arrays get flattened recursively; everything else is kept as-is.
+      if (Array.isArray(item)) {
+        result.push(...flatten(item));
+      } else {
+        result.push(item);
+      }
+    }
+    return result;
   }

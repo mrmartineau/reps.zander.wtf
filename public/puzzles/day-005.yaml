@@ -27,11 +27,15 @@ tests:
     expected: [0, 1]
 solution: |
   function twoSum(nums, target) {
-    const seen = new Map();
+    // Remember each number we've seen, mapped to its index.
+    const seenIndexByValue = new Map();
     for (let i = 0; i < nums.length; i++) {
-      const need = target - nums[i];
-      if (seen.has(need)) return [seen.get(need), i];
-      seen.set(nums[i], i);
+      const complement = target - nums[i];
+      // If the number that completes the pair is already seen, we're done.
+      if (seenIndexByValue.has(complement)) {
+        return [seenIndexByValue.get(complement), i];
+      }
+      seenIndexByValue.set(nums[i], i);
     }
     return [];
   }

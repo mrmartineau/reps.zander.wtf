@@ -30,6 +30,8 @@ tests:
     expected: true
 solution: |
   function isAnagram(a, b) {
-    const norm = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, '').split('').sort().join('');
-    return norm(a) === norm(b);
+    // Reduce a string to its sorted letters/digits, lowercased.
+    const normalise = (s) =>
+      s.toLowerCase().replace(/[^a-z0-9]/g, '').split('').sort().join('');
+    return normalise(a) === normalise(b);
   }
