@@ -57,8 +57,8 @@ export function CodeEditor({ value, onChange, onFirstEdit, disabled }) {
         loading={<div className="editor-loading">Loading editor…</div>}
         options={{
           readOnly: disabled,
-          fontFamily: "'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace",
-          fontLigatures: true,
+          fontFamily: "var(--font-code)",
+          fontLigatures: false,
           fontSize: 14,
           lineHeight: 22,
           tabSize: 2,
