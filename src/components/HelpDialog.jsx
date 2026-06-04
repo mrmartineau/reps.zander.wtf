@@ -10,13 +10,18 @@ import {
 
 // How-to-play modal, in the spirit of Wordle's help dialog. Controlled by the
 // parent via `open` / `onClose`.
-export function HelpDialog({ open, onClose }) {
+export function HelpDialog({ open, onClose, title = 'Reps', subtitle }) {
   return (
     <Dialog
       open={open}
       onClose={onClose}
       size="md"
     >
+      <div className="help-brand">
+        <span className="help-wordmark">{title}</span>
+        {subtitle && <span className="help-subtitle">{subtitle}</span>}
+      </div>
+
       <DialogHeader>
         <DialogTitle>How to play</DialogTitle>
         <DialogDescription>One JavaScript coding rep a day. Keep the streak alive.</DialogDescription>

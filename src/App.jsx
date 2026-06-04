@@ -4,6 +4,7 @@ import {
   loadTodaysPuzzle,
   loadPuzzleByDay,
   getPreviewParams,
+  listPastPuzzles,
   todayISO,
 } from './lib/loadPuzzle.js';
 import { runTests } from './lib/runner.js';
@@ -15,6 +16,7 @@ import {
   computeStats,
   getDraft,
   saveDraft,
+  getHistory,
 } from './lib/storage.js';
 import { Timer } from './components/Timer.jsx';
 import { CodeEditor } from './components/CodeEditor.jsx';
@@ -24,6 +26,10 @@ import { HelpDialog } from './components/HelpDialog.jsx';
 import { SolutionPanel } from './components/SolutionPanel.jsx';
 import { Markdown } from './components/Markdown.jsx';
 import { StatsDialog } from './components/StatsDialog.jsx';
+import { ArchiveDialog } from './components/ArchiveDialog.jsx';
+
+const TITLE = 'Reps';
+const TAGLINE = 'A daily JavaScript puzzle for your coding muscles';
 
 // Delay between revealing each test result, so a run reads like live execution.
 const REVEAL_STAGGER_MS = 100;
@@ -44,23 +50,61 @@ export default function App() {
   const [helpOpen, setHelpOpen] = useState(false);
   const [statsOpen, setStatsOpen] = useState(false);
   const [stats, setStats] = useState(null);
+  const [archiveOpen, setArchiveOpen] = useState(false);
+  const [archiveEntries, setArchiveEntries] = useState([]);
+  const [archiveLoading, setArchiveLoading] = useState(false);
+  const [archiveProgress, setArchiveProgress] = useState({ solved: new Set(), played: new Set() });
 
-  // Snapshot stats from localStorage whenever the overlay is opened.
+  const today = useMemo(() => todayISO(), []);
+  const preview = useMemo(() => getPreviewParams(), []);
+
+  // The day currently being played. Defaults to today; the archive can point it
+  // at any past date. Ignored in preview mode (the querystring drives that).
+  const [activeDate, setActiveDate] = useState(today);
+
+  // Snapshot stats from localStorage whenever the overlay is opened. Streaks are
+  // always measured ending today, regardless of which day you're replaying.
   function openStats() {
-    setStats(computeStats(dateISO));
+    setStats(computeStats(today));
     setStatsOpen(true);
   }
 
-  const dateISO = useMemo(() => todayISO(), []);
-  const preview = useMemo(() => getPreviewParams(), []);
+  // Open the past-puzzle archive, snapshotting which days are solved/played.
+  function openArchive() {
+    setArchiveLoading(true);
+    setArchiveOpen(true);
+    const history = getHistory();
+    setArchiveProgress({
+      solved: new Set(history.filter((h) => h.solved).map((h) => h.dateISO)),
+      played: new Set(history.map((h) => h.dateISO)),
+    });
+    listPastPuzzles(today)
+      .then((entries) => setArchiveEntries(entries))
+      .catch(() => setArchiveEntries([]))
+      .finally(() => setArchiveLoading(false));
+  }
+
+  // Switch to a different day. Clears the transient run state so nothing from
+  // the previous day lingers; the load effect then restores that day's saved
+  // results/draft.
+  function playDate(nextDate) {
+    setArchiveOpen(false);
+    if (nextDate === activeDate) return;
+    setResults(null);
+    setPendingNames([]);
+    setElapsedMs(null);
+    setStartedAt(null);
+    setActiveDate(nextDate);
+  }
 
   useEffect(() => {
     const load = preview
       ? preview.kind === 'day'
         ? loadPuzzleByDay(preview.day)
         : loadTodaysPuzzle(preview.date, { preview: true })
-      : loadTodaysPuzzle(dateISO);
+      : loadTodaysPuzzle(activeDate);
 
+    setLoadError(null);
     load
       .then((p) => {
         setPuzzle(p);
@@ -69,8 +113,8 @@ export default function App() {
         // upcoming puzzle can't clobber it.
         if (p.preview) return;
 
-        // Restore a completed run from earlier today (results + time).
-        const saved = getDayState(dateISO);
+        // Restore a completed run for this day (results + time).
+        const saved = getDayState(activeDate);
         if (saved && saved.day === p.day) {
           setResults(saved.results);
           setElapsedMs(saved.elapsedMs);
@@ -78,7 +122,7 @@ export default function App() {
 
         // Restore the editor itself, preferring the most recent in-progress
         // draft over the last submitted code, so a refresh never loses edits.
-        const draft = getDraft(dateISO);
+        const draft = getDraft(activeDate);
         const restoredCode =
           (draft && draft.day === p.day && draft.code) ||
           (saved && saved.day === p.day && saved.code) ||
@@ -87,7 +131,7 @@ export default function App() {
         setCode(restoredCode);
       })
       .catch((e) => setLoadError(e.message || String(e)));
-  }, [dateISO, preview]);
+  }, [activeDate, preview]);
 
   // Persist the editor draft as the user types, so a refresh or back-button
   // never loses work. Debounced to avoid a write on every keystroke. Skipped in
@@ -95,10 +139,10 @@ export default function App() {
   useEffect(() => {
     if (!puzzle || puzzle.preview) return;
     const id = setTimeout(() => {
-      saveDraft(dateISO, { day: puzzle.day, code });
+      saveDraft(activeDate, { day: puzzle.day, code });
     }, 400);
     return () => clearTimeout(id);
-  }, [code, puzzle, dateISO]);
+  }, [code, puzzle, activeDate]);
 
   // Wordle-style: show the rules automatically the first time someone visits,
   // then never again (unless they tap the ? button). Preview sessions skip it.
@@ -146,7 +190,7 @@ export default function App() {
     if (puzzle.preview) return;
 
     const solved = res.every((r) => r.pass);
-    saveDayState(dateISO, {
+    saveDayState(activeDate, {
       day: puzzle.day,
       title: puzzle.title,
       results: res,
@@ -186,12 +230,24 @@ export default function App() {
 
   // "Done" only once the staggered reveal has finished — not mid-animation.
   const done = !running && results != null && results.length > 0;
-  const streak = done ? computeStreak(dateISO) : 0;
+  const streak = done ? computeStreak(activeDate) : 0;
+  const isPastDay = !preview && activeDate !== today;
 
   return (
     <main className="app">
       <header className="masthead">
         <div className="masthead-actions">
+          {!preview && (
+            <Button
+              aria-label="Past puzzles"
+              title="Past puzzles"
+              onClick={openArchive}
+              variant="ghost"
+              size="xs"
+            >
+              Archive
+            </Button>
+          )}
           <Button
             aria-label="Statistics"
             title="Statistics"
@@ -225,13 +281,15 @@ export default function App() {
             Help ?
           </Button>
         </div>
-        <h1 className="wordmark">Reps</h1>
-        <p className="tagline">A daily JavaScript puzzle for your coding muscles</p>
+        <h1 className="wordmark">{TITLE}</h1>
+        <p className="tagline">{TAGLINE}</p>
       </header>
 
       <HelpDialog
         open={helpOpen}
         onClose={() => setHelpOpen(false)}
+        title={TITLE}
+        subtitle={TAGLINE}
       />
 
       <StatsDialog
@@ -239,6 +297,39 @@ export default function App() {
         onClose={() => setStatsOpen(false)}
         stats={stats}
       />
+
+      <ArchiveDialog
+        open={archiveOpen}
+        onClose={() => setArchiveOpen(false)}
+        entries={archiveEntries}
+        loading={archiveLoading}
+        solvedDates={archiveProgress.solved}
+        playedDates={archiveProgress.played}
+        activeDate={activeDate}
+        today={today}
+        onPick={playDate}
+      />
+
+      {isPastDay && (
+        <div
+          className="preview-banner"
+          role="status"
+        >
+          <span className="zui-badge zui-badge-variant-fill zui-badge-color-sky">
+            Past puzzle
+          </span>
+          <span>
+            Playing {activeDate} (#{puzzle.puzzleNumber}) — your progress is saved for that day.
+          </span>
+          <button
+            type="button"
+            className="zui-link"
+            onClick={() => playDate(today)}
+          >
+            Back to today
+          </button>
+        </div>
+      )}
 
       {puzzle.preview && (
         <div

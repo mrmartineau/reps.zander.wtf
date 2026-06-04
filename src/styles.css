@@ -399,9 +399,107 @@ body {
   line-height: 1.4;
 }
 
-.preview-banner a {
+.preview-banner a,
+.preview-banner button.zui-link {
   margin-left: auto;
   color: var(--color-accent);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+/* ---- help dialog ---- */
+.help-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  margin-bottom: 1rem;
+}
+
+.help-wordmark {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 2rem;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.help-subtitle {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+/* ---- archive dialog ---- */
+.archive-empty {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.archive-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.archive-row {
+  display: grid;
+  grid-template-columns: 1.1rem 1fr auto;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 0.4rem;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--color-border);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  border-radius: var(--radius-sm, 4px);
+}
+
+.archive-row:hover {
+  background: var(--color-background);
+}
+
+.archive-row.is-active {
+  background: color-mix(in oklab, var(--color-accent) 12%, transparent);
+}
+
+.archive-mark {
+  font-weight: 600;
+  text-align: center;
+  color: var(--color-pass);
+}
+
+.archive-mark.is-played {
+  color: var(--color-muted);
+}
+
+.archive-main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.archive-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.archive-date {
+  font-size: 0.72rem;
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---- help dialog ---- */

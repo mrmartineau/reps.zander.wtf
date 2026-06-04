@@ -98,3 +98,50 @@ export async function loadTodaysPuzzle(dateISO = todayISO(), { preview = false }
   if (preview) puzzle.preview = true;
   return puzzle;
 }
+
+// Adds `n` days to a YYYY-MM-DD date (UTC), returning YYYY-MM-DD.
+function addDays(dateISO, n) {
+  return new Date(Date.parse(dateISO + 'T00:00:00Z') + n * 86_400_000)
+    .toISOString()
+    .slice(0, 10);
+}
+
+// Lists every playable date from launch up to `today` (inclusive), newest
+// first, for the "play a past puzzle" archive. Each entry carries the date, the
+// running puzzle number, which day file it maps to, and that file's title +
+// difficulty. Titles/difficulties are fetched once per unique day file.
+export async function listPastPuzzles(today = todayISO()) {
+  const manifest = await fetch('/puzzles/index.json').then((r) => r.json());
+  const total = manifest.days.length;
+  const todayElapsed = daysBetween(manifest.epoch, today);
+  if (todayElapsed < 0) return [];
+
+  // Fetch metadata once per distinct day file in the manifest.
+  const metaByDay = new Map();
+  await Promise.all(
+    [...new Set(manifest.days)].map(async (day) => {
+      const padded = String(day).padStart(3, '0');
+      try {
+        const p = yaml.load(await fetch(`/puzzles/day-${padded}.yaml`).then((r) => r.text()));
+        metaByDay.set(day, { title: p.title, difficulty: p.difficulty });
+      } catch {
+        metaByDay.set(day, { title: `Day ${day}`, difficulty: null });
+      }
+    }),
+  );
+
+  const list = [];
+  for (let elapsed = 0; elapsed <= todayElapsed; elapsed++) {
+    const index = ((elapsed % total) + total) % total;
+    const day = manifest.days[index];
+    const meta = metaByDay.get(day) || {};
+    list.push({
+      dateISO: addDays(manifest.epoch, elapsed),
+      puzzleNumber: elapsed + 1,
+      day,
+      title: meta.title,
+      difficulty: meta.difficulty,
+    });
+  }
+  return list.reverse(); // newest first
+}
