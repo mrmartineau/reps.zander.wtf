@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@mrmartineau/zui/react';
+import { ReadOnlyCode } from './ReadOnlyCode.jsx';
 
 // Reveals the puzzle's recommended solution beneath the editor. Hidden behind a
 // click so it never spoils the puzzle by accident.
@@ -42,9 +43,7 @@ export function SolutionPanel({ solution }) {
               {copied ? 'Copied' : 'Copy'}
             </Button>
           </div>
-          <pre className="solution-code">
-            <code>{solution.trimEnd()}</code>
-          </pre>
+          <ReadOnlyCode value={solution} />
         </div>
       )}
     </section>

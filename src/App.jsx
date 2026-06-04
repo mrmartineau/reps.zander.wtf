@@ -390,6 +390,10 @@ export default function App() {
           </Button>
         </div>
 
+        <p className="run-hint">
+          Tip: any <code>console.log</code> output shows beneath each test when you run.
+        </p>
+
         <TestResults
           results={results}
           pendingNames={pendingNames}
