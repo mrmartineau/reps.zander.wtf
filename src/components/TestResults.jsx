@@ -21,6 +21,15 @@ export function TestResults({ results, pendingNames = [] }) {
                 <code>{r.received}</code>
               </span>
             )}
+            {r.logs?.length > 0 && (
+              <pre className="result-logs">
+                {r.logs.map((line, j) => (
+                  <span key={j} className="result-log-line">
+                    {line}
+                  </span>
+                ))}
+              </pre>
+            )}
           </div>
         </li>
       ))}
