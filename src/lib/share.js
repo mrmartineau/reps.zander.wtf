@@ -26,7 +26,7 @@ export function buildShareText(puzzle, results, elapsedMs, chars) {
     `Reps #${puzzle.puzzleNumber} · ${meta}`,
     squares,
     `${passed}/${results.length} tests`,
-    'reps.zander.wtf',
+    'https://reps.zander.wtf',
   ].join('\n');
 }
 
