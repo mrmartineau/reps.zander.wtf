@@ -43,9 +43,12 @@ export function SubmissionsApp() {
       .catch(() => setManifest([]));
   }, [initialFile]);
 
-  // Load the selected submission's YAML.
+  // Load the selected submission's YAML. Guarded against out-of-order
+  // responses: if `file` changes (or the component unmounts) before the fetch
+  // resolves, the stale result is ignored so it can't overwrite the new puzzle.
   useEffect(() => {
     if (!file) return;
+    let cancelled = false;
     setPuzzle(null);
     setLoadError(null);
     setResults(null);
@@ -56,11 +59,17 @@ export function SubmissionsApp() {
         return r.text();
       })
       .then((text) => {
+        if (cancelled) return;
         const p = yaml.load(text);
         setPuzzle(p);
         setCode(p.starterCode || '');
       })
-      .catch((e) => setLoadError(e.message || String(e)));
+      .catch((e) => {
+        if (!cancelled) setLoadError(e.message || String(e));
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [file]);
 
   async function handleRun() {
@@ -119,6 +128,7 @@ export function SubmissionsApp() {
               className="zui-select"
               value={file ?? ''}
               onChange={(e) => setFile(e.target.value)}
+              disabled={running}
             >
               {manifest.map((s) => (
                 <option key={s.file} value={s.file}>

@@ -74,12 +74,18 @@ jobs:
       # --- Below here only runs when a submission changed ---
 
       - name: Build site
-        if: steps.changes.outputs.has_new == 'true'
+        # Same-repo PRs only: fork PRs can't read secrets or get write
+        # permission for the comment, so skip the preview gracefully for them
+        # (validation above still runs).
+        if: steps.changes.outputs.has_new == 'true' && github.event.pull_request.head.repo.full_name == github.repository
         run: pnpm build
 
       - name: Deploy preview version
         id: deploy
-        if: steps.changes.outputs.has_new == 'true'
+        # Same-repo PRs only: fork PRs can't read secrets or get write
+        # permission for the comment, so skip the preview gracefully for them
+        # (validation above still runs).
+        if: steps.changes.outputs.has_new == 'true' && github.event.pull_request.head.repo.full_name == github.repository
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -89,7 +95,10 @@ jobs:
           command: versions upload --preview-alias pr-${{ github.event.pull_request.number }}
 
       - name: Comment preview link
-        if: steps.changes.outputs.has_new == 'true'
+        # Same-repo PRs only: fork PRs can't read secrets or get write
+        # permission for the comment, so skip the preview gracefully for them
+        # (validation above still runs).
+        if: steps.changes.outputs.has_new == 'true' && github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/github-script@v7
         env:
           CHANGED: ${{ steps.changes.outputs.files }}
