@@ -4,10 +4,11 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "prepare-submissions": "node scripts/prepare-submissions.mjs",
+    "dev": "node scripts/prepare-submissions.mjs && vite",
+    "build": "node scripts/prepare-submissions.mjs && vite build",
     "preview": "vite preview",
-    "deploy": "vite build && wrangler deploy",
+    "deploy": "pnpm build && wrangler deploy",
     "verify-puzzles": "node scripts/verify-puzzles.mjs",
     "validate-puzzles": "node scripts/validate-puzzles.mjs public/puzzles",
     "validate-submissions": "node scripts/validate-puzzles.mjs submissions"

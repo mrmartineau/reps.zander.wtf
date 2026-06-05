@@ -229,6 +229,20 @@ body {
   margin: 1rem 0 0.5rem;
 }
 
+.submission-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0 0 1.5rem;
+}
+
+.submission-picker-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+}
+
 .run-hint {
   margin: 0;
   color: var(--color-muted);
