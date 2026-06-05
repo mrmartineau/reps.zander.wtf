@@ -1,0 +1,31 @@
+day: 0 # leave as 0 — a maintainer assigns the real day on acceptance
+title: "Sum an Array"
+difficulty: easy
+prompt: |
+  Implement `sumArray(nums)` so it returns the total of all the numbers in the
+  array. An empty array sums to `0`.
+
+  For example, `sumArray([1, 2, 3, 4])` returns `10`.
+functionName: sumArray
+starterCode: |
+  function sumArray(nums) {
+    // your code here
+  }
+tests:
+  - name: "A few numbers"
+    args: [[1, 2, 3, 4]]
+    expected: 10
+  - name: "Single value"
+    args: [[42]]
+    expected: 42
+  - name: "Empty array"
+    args: [[]]
+    expected: 0
+solution: |
+  function sumArray(nums) {
+    let total = 0;
+    for (const n of nums) {
+      total += n;
+    }
+    return total;
+  }

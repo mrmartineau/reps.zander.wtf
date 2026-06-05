@@ -1,0 +1,34 @@
+day: 0 # leave as 0 — a maintainer assigns the real day on acceptance
+title: "Count the Vowels"
+difficulty: easy
+prompt: |
+  Implement `countVowels(str)` so it returns how many vowels (`a`, `e`, `i`,
+  `o`, `u`) appear in the string. Counting is case-insensitive, and an empty
+  string has `0` vowels.
+
+  For example, `countVowels("Hello World")` returns `3`.
+functionName: countVowels
+starterCode: |
+  function countVowels(str) {
+    // your code here
+  }
+tests:
+  - name: "A short phrase"
+    args: ["Hello World"]
+    expected: 3
+  - name: "Mixed case"
+    args: ["AEIOUaeiou"]
+    expected: 10
+  - name: "No vowels"
+    args: ["rhythm"]
+    expected: 0
+solution: |
+  function countVowels(str) {
+    let count = 0;
+    for (const ch of str.toLowerCase()) {
+      if ("aeiou".includes(ch)) {
+        count += 1;
+      }
+    }
+    return count;
+  }
