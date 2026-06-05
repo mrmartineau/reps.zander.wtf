@@ -28,6 +28,33 @@ So instead:
 This keeps the barrier to contributing low (just write a good puzzle) while
 letting maintainers own pacing and ordering.
 
+## Preview your submission on the web
+
+When your PR adds or changes a file in `submissions/`, CI deploys a live
+**preview** of the site and a bot leaves a comment linking to it — so you (and
+reviewers) can actually play your puzzle in the browser before it's accepted:
+
+> 🧩 **Submission preview**
+>
+> Preview the submission(s) in this PR on the deployed site:
+> - [`count-vowels.yaml`](#)
+> - [`sum-array.yaml`](#)
+>
+> All submissions: `pr-<number>-reps.zanderwtf.workers.dev/submissions.html`
+
+Each link opens the submission-preview page with your puzzle pre-selected (there's
+also a dropdown to switch between all submissions in the PR). The preview is a
+non-production Cloudflare Workers version — it never touches the live game.
+
+A couple of things to know:
+
+- The comment **updates in place** on each push, so the link always points at
+  your latest commit.
+- Previews only run for PRs **from a branch in this repo** — for security, PRs
+  opened from a fork can't deploy (no access to deploy credentials). If you're
+  contributing from a fork, a maintainer can still preview it locally, or you can
+  run the page yourself with `npm run dev` and open `/submissions.html`.
+
 ## What makes a good puzzle
 
 The sweet spot is a **small, self-contained transform** that a working

@@ -3,3 +3,5 @@ dist
 .DS_Store
 *.local
 .wrangler
+# generated from submissions/ at build time
+public/submissions

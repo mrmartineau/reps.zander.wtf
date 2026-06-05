@@ -2,6 +2,9 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "reps",
   "compatibility_date": "2026-06-03",
+  // Enable Workers preview URLs so PR previews get a versioned alias at
+  // <alias>-reps.<subdomain>.workers.dev (see .github/workflows/pr-preview.yml).
+  "preview_urls": true,
   // Static-assets-only site (no Worker entry). The @cloudflare/vite-plugin
   // auto-populates assets.directory with the client build output at build time
   // (into dist/wrangler.json) — don't set it here. SPA fallback returns

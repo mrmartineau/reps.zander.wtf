@@ -1,0 +1,154 @@
+name: PR preview
+
+# Validates puzzle files on every PR that touches them. When a PR adds or
+# changes a submission (submissions/*.yaml), it also deploys a Workers preview
+# version and comments a link to the submission-preview page.
+on:
+  pull_request:
+    paths:
+      - 'public/puzzles/**'
+      - 'submissions/**'
+      - 'src/**'
+      - 'scripts/**'
+      - 'index.html'
+      - 'submissions.html'
+      - 'vite.config.js'
+      - 'wrangler.jsonc'
+      - '.github/workflows/pr-preview.yml'
+
+# Needed to leave the preview-link comment on the PR.
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+  CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+  # workers.dev subdomain for this account; preview URLs are <alias>-reps.<sub>.workers.dev
+  PREVIEW_SUBDOMAIN: zanderwtf
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      # Which submission files did this PR add or change?
+      - name: Detect changed submissions
+        id: changes
+        run: |
+          git fetch --no-tags origin "${{ github.base_ref }}"
+          changed=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD" \
+            | grep -E '^submissions/.*\.yaml$' || true)
+          echo "Changed submissions:"
+          echo "${changed:-  (none)}"
+          {
+            echo "files<<EOF"
+            echo "$changed"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+          if [ -n "$changed" ]; then
+            echo "has_new=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_new=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 'latest'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Live puzzles + any submissions: structure + every reference solution must
+      # pass its tests (and live day numbers must be unique).
+      - name: Validate live puzzles
+        run: pnpm validate-puzzles
+      - name: Validate submitted puzzles
+        run: pnpm validate-submissions
+
+      # --- Below here only runs when a submission changed ---
+
+      - name: Build site
+        # Same-repo PRs only: fork PRs can't read secrets or get write
+        # permission for the comment, so skip the preview gracefully for them
+        # (validation above still runs).
+        if: steps.changes.outputs.has_new == 'true' && github.event.pull_request.head.repo.full_name == github.repository
+        run: pnpm build
+
+      - name: Deploy preview version
+        id: deploy
+        # Same-repo PRs only: fork PRs can't read secrets or get write
+        # permission for the comment, so skip the preview gracefully for them
+        # (validation above still runs).
+        if: steps.changes.outputs.has_new == 'true' && github.event.pull_request.head.repo.full_name == github.repository
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # Uploads a new version (does NOT touch production) with a stable
+          # per-PR alias, so the URL is deterministic.
+          command: versions upload --preview-alias pr-${{ github.event.pull_request.number }}
+
+      - name: Comment preview link
+        # Same-repo PRs only: fork PRs can't read secrets or get write
+        # permission for the comment, so skip the preview gracefully for them
+        # (validation above still runs).
+        if: steps.changes.outputs.has_new == 'true' && github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/github-script@v7
+        env:
+          CHANGED: ${{ steps.changes.outputs.files }}
+          PREVIEW_SUBDOMAIN: ${{ env.PREVIEW_SUBDOMAIN }}
+        with:
+          script: |
+            const pr = context.payload.pull_request.number;
+            const previewBase = `https://pr-${pr}-reps.${process.env.PREVIEW_SUBDOMAIN}.workers.dev`;
+            const files = (process.env.CHANGED || '')
+              .split('\n')
+              .map((f) => f.trim())
+              .filter(Boolean);
+            const links = files
+              .map((f) => {
+                const name = f.replace(/^submissions\//, '');
+                return `- [\`${name}\`](${previewBase}/submissions.html?file=${encodeURIComponent(name)})`;
+              })
+              .join('\n');
+            const marker = '<!-- reps-preview -->';
+            const body = [
+              marker,
+              '### 🧩 Submission preview',
+              '',
+              `Preview the submission(s) in this PR on the deployed site:`,
+              '',
+              links || `- [Open the submission preview](${previewBase}/submissions.html)`,
+              '',
+              `All submissions: ${previewBase}/submissions.html`,
+              '',
+              '<sub>Preview is a non-production Workers version — it does not change the live game.</sub>',
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr,
+            });
+            const existing = comments.find((c) => c.body?.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr,
+                body,
+              });
+            }
