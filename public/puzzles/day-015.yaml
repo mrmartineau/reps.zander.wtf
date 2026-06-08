@@ -43,3 +43,5 @@ solution: |
     for (let i = start; i <= end; i++) out.push(i);
     return out;
   }
+solutionExplanation: |
+  A simple loop from `start` to `end`, pushing each integer. `<=` is what makes `end` inclusive.

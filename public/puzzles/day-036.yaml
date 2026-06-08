@@ -145,3 +145,5 @@ solution: |
     }
     return groups;
   }
+solutionExplanation: |
+  Walk the list and drop each order into a bucket keyed by its category. `groups[key] ??= []` creates the array the first time a category appears, then you push the order into it.

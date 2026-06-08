@@ -35,3 +35,5 @@ solution: |
       return String.fromCharCode(base + shifted);
     });
   }
+solutionExplanation: |
+  Shift each letter forward by `shift`, wrapping z→a. Normalise the shift into 0–25 with `((shift % 26) + 26) % 26` so values over 26 (or negative ones) behave. For each letter pick base `65` (uppercase) or `97` (lowercase), convert to a 0–25 position, add the shift mod 26, then convert back. The regex `/[a-z]/gi` means non-letters are skipped untouched, preserving spaces and punctuation.

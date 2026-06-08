@@ -31,3 +31,5 @@ solution: |
       .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w))
       .join(' ');
   }
+solutionExplanation: |
+  Split on spaces, upper-case the first character of each word and keep the rest with `slice(1)`, then re-join. The `w ? … : w` guard returns empty words unchanged so double-spaces (which split to `''`) don't crash on `w[0]`.

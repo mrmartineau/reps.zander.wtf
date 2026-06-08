@@ -36,3 +36,7 @@ solution: |
     }
     return n;
   }
+solutionExplanation: |
+  Keep summing digits until a single digit is left — the outer `while (n >= 10)` repeats the digit-sum each round.
+
+  Math shortcut: for `n > 0` the digital root equals `1 + (n - 1) % 9`.

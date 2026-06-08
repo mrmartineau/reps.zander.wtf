@@ -160,3 +160,5 @@ solution: |
       tier: tierByName.get(order.customer) ?? 'none',
     }));
   }
+solutionExplanation: |
+  Indexing beats searching. Build a `Map` of name→tier once (O(n)), then `map` the orders, looking each tier up in O(1). Doing `.find` inside the loop instead would be O(n²). `?? 'none'` covers any customer with no match.

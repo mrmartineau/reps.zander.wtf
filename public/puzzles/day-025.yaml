@@ -57,3 +57,5 @@ solution: |
     const head = arr.slice(0, len - offset);
     return [...tail, ...head];
   }
+solutionExplanation: |
+  Rotating right by `k` moves the last `k` items to the front. Normalise `k` with `((k % len) + len) % len` so it handles `k` larger than the array (and negatives). Then it's just `tail` followed by `head`.

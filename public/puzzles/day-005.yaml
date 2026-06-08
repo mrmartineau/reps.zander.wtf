@@ -39,3 +39,5 @@ solution: |
     }
     return [];
   }
+solutionExplanation: |
+  The brute-force way is two nested loops — O(n²). The `Map` trick does it in a single pass: for each number, the value that completes the pair is `target - num`. Remember every value→index you've already seen, and the moment a number's complement is in the map, you've found the answer. O(n).

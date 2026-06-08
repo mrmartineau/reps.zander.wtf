@@ -37,3 +37,5 @@ solution: |
     }
     return a;
   }
+solutionExplanation: |
+  Euclid's algorithm: the GCD of `a` and `b` equals the GCD of `b` and `a % b`. Keep replacing the pair until the remainder hits 0; the other number is the answer. Far faster than testing every possible divisor.

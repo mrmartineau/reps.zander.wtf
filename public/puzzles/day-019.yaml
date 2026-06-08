@@ -29,3 +29,5 @@ solution: |
     const trimmed = str.trim();
     return trimmed ? trimmed.split(/\s+/).length : 0;
   }
+solutionExplanation: |
+  `trim()` first so leading/trailing spaces don't count, then split on `/\s+/` (one or more whitespace) to collapse runs of spaces into a single separator. The guard returns 0 for an empty/whitespace string, which would otherwise split to `['']` and miscount as 1.

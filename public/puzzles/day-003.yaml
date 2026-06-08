@@ -30,3 +30,5 @@ solution: |
     }
     return total;
   }
+solutionExplanation: |
+  Turn the number into a string so you can walk it character by character, convert each character back to a `Number`, and add them to a running total. Each character is exactly one digit, so this just sums the digits.

@@ -31,3 +31,5 @@ solution: |
       .map((w, i) => (i === 0 ? w : w[0].toUpperCase() + w.slice(1)))
       .join('');
   }
+solutionExplanation: |
+  Split on `-` or `_`. Leave the first word lowercase, capitalise the first letter of every *later* word, then join with nothing. The `i === 0` check is exactly what keeps it camelCase rather than PascalCase.

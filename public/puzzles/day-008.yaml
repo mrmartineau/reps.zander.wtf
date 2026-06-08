@@ -40,3 +40,5 @@ solution: |
     }
     return total;
   }
+solutionExplanation: |
+  Scan left to right. Normally you add each numeral's value, but when a smaller numeral sits *before* a larger one (e.g. `IV` = 4, `IX` = 9) it's subtracted instead. Comparing each value to its right-hand neighbour tells you which to do.

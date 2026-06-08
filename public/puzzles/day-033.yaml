@@ -79,3 +79,5 @@ solution: |
   function totalRevenue(orders) {
     return orders.reduce((total, order) => total + order.price, 0);
   }
+solutionExplanation: |
+  `reduce` collapses the list down to one value. Seed the running total at `0` and add each `order.price`.

@@ -101,3 +101,5 @@ solution: |
       label: `${order.product} — ${order.customer}`,
     }));
   }
+solutionExplanation: |
+  A textbook `map` — same number of items out, each reshaped to just `{ id, label }`. The label is built with a template literal and an em-dash.

@@ -34,3 +34,5 @@ solution: |
     }
     return longest;
   }
+solutionExplanation: |
+  Split on spaces and keep the longest word seen so far. The important detail is `>` (strictly greater), not `>=` — so on a tie the first of the equal-length words stays the winner.

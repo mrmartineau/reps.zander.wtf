@@ -89,3 +89,5 @@ solution: |
       return counts;
     }, {});
   }
+solutionExplanation: |
+  A tally is a `reduce` whose accumulator is a plain object. For each order, bump the count stored at its status key — `?? 0` handles the first time a status is seen — and return the accumulator each step.

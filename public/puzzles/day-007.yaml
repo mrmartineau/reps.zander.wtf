@@ -36,3 +36,7 @@ solution: |
     }
     return result;
   }
+solutionExplanation: |
+  Recursion. Walk the array; if an item is itself an array, flatten it and spread the results in, otherwise push the value as-is. Each nested array recurses one level deeper, so it flattens any depth.
+
+  Built-in shortcut: `arr.flat(Infinity)`.

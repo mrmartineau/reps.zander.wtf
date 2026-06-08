@@ -39,3 +39,5 @@ solution: |
     // Anything still open was never closed.
     return openers.length === 0;
   }
+solutionExplanation: |
+  Classic stack problem. Push every opening bracket; on a closing bracket, the most recent opener (top of the stack) must be its match — if not, it's unbalanced. At the end the stack must be empty, otherwise some bracket was opened and never closed.

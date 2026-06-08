@@ -86,3 +86,5 @@ solution: |
   function uniqueCategories(orders) {
     return [...new Set(orders.map((order) => order.category))];
   }
+solutionExplanation: |
+  `map` to pull out the categories, wrap them in a `Set` to dedupe, and spread back into an array. The `Set` preserves first-seen order.

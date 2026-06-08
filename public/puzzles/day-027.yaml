@@ -34,3 +34,5 @@ solution: |
   function clamp(n, min, max) {
     return Math.min(Math.max(n, min), max);
   }
+solutionExplanation: |
+  Nest the two bounds: `Math.max(n, min)` pulls the value up to at least `min`, then `Math.min(…, max)` pushes it down to at most `max`. The result lands inside `[min, max]`.

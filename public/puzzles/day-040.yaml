@@ -109,3 +109,5 @@ solution: |
       revenue: group.reduce((total, order) => total + order.price, 0),
     }));
   }
+solutionExplanation: |
+  A realistic three-step pipeline. Skip cancelled orders, bucket the rest by category (the same `??= []` grouping trick), then turn each bucket into a `{ category, orderCount, revenue }` summary — `orderCount` is the bucket length, `revenue` is a `reduce` over its prices. `Object.entries` preserves first-seen key order.

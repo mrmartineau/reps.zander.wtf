@@ -39,3 +39,5 @@ solution: |
   function unique(arr) {
     return [...new Set(arr)];
   }
+solutionExplanation: |
+  A `Set` keeps only distinct values *and* preserves insertion order, so building one from the array and spreading it back drops duplicates while keeping first-seen order — in a single line.

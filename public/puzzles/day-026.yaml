@@ -51,3 +51,5 @@ solution: |
     }
     return best;
   }
+solutionExplanation: |
+  Two passes. First tally every value into a `Map`. Then scan the array **in order**, keeping the value with the highest count — because you walk in order and only replace on a *strictly* higher count, ties resolve to the first-seen value.

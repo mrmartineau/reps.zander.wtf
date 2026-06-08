@@ -41,3 +41,5 @@ solution: |
     }
     return depthOf(arr);
   }
+solutionExplanation: |
+  Recursion that returns a number. A non-array has depth 0; an array is `1 + the deepest of its children`. `Math.max` over the items finds the deepest branch at each level.

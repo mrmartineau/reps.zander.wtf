@@ -39,3 +39,5 @@ solution: |
     }
     return result;
   }
+solutionExplanation: |
+  Walk the string with an inner loop that extends over each run of identical characters. Append the character plus the run length, then jump the index past the run. The count is recorded even when it's 1 (so `abc` → `a1b1c1`).

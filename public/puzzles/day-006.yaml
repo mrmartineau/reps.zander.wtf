@@ -27,3 +27,5 @@ solution: |
     const vowels = str.match(/[aeiou]/gi);
     return vowels ? vowels.length : 0;
   }
+solutionExplanation: |
+  `match(/[aeiou]/gi)` returns an array of every vowel — the `g` flag finds all matches, `i` makes it case-insensitive. When there are no vowels it returns `null` instead of an empty array, so guard with `? vowels.length : 0`.

@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Button } from '@mrmartineau/zui/react';
 import { ReadOnlyCode } from './ReadOnlyCode.jsx';
+import { Markdown } from './Markdown.jsx';
 
 // Reveals the puzzle's recommended solution beneath the editor. Hidden behind a
-// click so it never spoils the puzzle by accident.
-export function SolutionPanel({ solution }) {
+// click so it never spoils the puzzle by accident. `explanation` is optional
+// Markdown that walks through how the solution works.
+export function SolutionPanel({ solution, explanation }) {
   const [shown, setShown] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -44,6 +46,9 @@ export function SolutionPanel({ solution }) {
             </Button>
           </div>
           <ReadOnlyCode value={solution} />
+          {explanation && (
+            <Markdown className="solution-explanation markdown">{explanation}</Markdown>
+          )}
         </div>
       )}
     </section>

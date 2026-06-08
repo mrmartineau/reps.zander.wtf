@@ -31,3 +31,5 @@ solution: |
     const reversed = cleaned.split('').reverse().join('');
     return cleaned === reversed;
   }
+solutionExplanation: |
+  Two steps: normalise, then compare. The regex `/[^a-z0-9]/g` strips everything that isn't a letter or digit (after lowercasing), so case, spaces and punctuation stop mattering. Then reverse the cleaned string and check it equals itself.

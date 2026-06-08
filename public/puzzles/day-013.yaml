@@ -35,3 +35,5 @@ solution: |
       s.toLowerCase().replace(/[^a-z0-9]/g, '').split('').sort().join('');
     return normalise(a) === normalise(b);
   }
+solutionExplanation: |
+  Two strings are anagrams when they contain the same letters. Reduce each to a canonical form — lowercase, strip non-alphanumerics, sort the characters — and the two forms are identical exactly when the strings are anagrams.

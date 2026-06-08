@@ -97,3 +97,5 @@ solution: |
   function priciestOrder(orders) {
     return orders.reduce((top, order) => (order.price > top.price ? order : top));
   }
+solutionExplanation: |
+  A max-by-field is a `reduce` that keeps a running winner. With no seed value, the first order seeds the accumulator; each step keeps whichever order has the higher `price`.

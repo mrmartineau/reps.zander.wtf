@@ -162,7 +162,10 @@ export function SubmissionsApp() {
                 disabled={running}
               />
 
-              <SolutionPanel solution={puzzle.solution} />
+              <SolutionPanel
+                solution={puzzle.solution}
+                explanation={puzzle.solutionExplanation}
+              />
 
               <div className="actions">
                 <Button onClick={handleRun} disabled={running}>

@@ -58,6 +58,10 @@ export default function App() {
   const today = useMemo(() => todayISO(), []);
   const preview = useMemo(() => getPreviewParams(), []);
 
+  // Highest available puzzle-day file, so `?day=N` preview nav knows where to
+  // stop. Only fetched when stepping through days in preview.
+  const [maxDay, setMaxDay] = useState(null);
+
   // The day currently being played. Defaults to today; the archive can point it
   // at any past date. Ignored in preview mode (the querystring drives that).
   const [activeDate, setActiveDate] = useState(today);
@@ -132,6 +136,23 @@ export default function App() {
       })
       .catch((e) => setLoadError(e.message || String(e)));
   }, [activeDate, preview]);
+
+  // In `?day=N` preview, learn the highest day file so the Next button can
+  // disable at the end. The manifest lists every available day number.
+  useEffect(() => {
+    if (preview?.kind !== 'day') return;
+    fetch('/puzzles/index.json')
+      .then((r) => r.json())
+      .then((m) => setMaxDay(Math.max(...m.days)))
+      .catch(() => {});
+  }, [preview]);
+
+  // Jump to another preview day by reloading with a new querystring. A full
+  // reload (rather than SPA state) keeps the preview params, read once on
+  // mount, the single source of truth.
+  function gotoPreviewDay(day) {
+    window.location.search = `?day=${day}`;
+  }
 
   // Persist the editor draft as the user types, so a refresh or back-button
   // never loses work. Debounced to avoid a write on every keystroke. Skipped in
@@ -344,12 +365,35 @@ export default function App() {
             {preview?.kind === 'date' ? ` (as of ${puzzle.dateISO})` : ''} —
             results aren't saved and your streak is untouched.
           </span>
-          <a
-            className="zui-link"
-            href={window.location.pathname}
-          >
-            Exit preview
-          </a>
+          <div className="flex-center gap-xs">
+            {preview?.kind === 'day' && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="xs"
+                  disabled={preview.day <= 1}
+                  onClick={() => gotoPreviewDay(preview.day - 1)}
+                  aria-label="Previous day"
+                >
+                  ← Prev
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="xs"
+                  disabled={maxDay != null && preview.day >= maxDay}
+                  onClick={() => gotoPreviewDay(preview.day + 1)}
+                  aria-label="Next day"
+                >
+                  Next →
+                </Button></>
+            )}
+            <a
+              className="zui-link"
+              href={window.location.pathname}
+            >
+              Exit preview
+            </a>
+          </div>
         </div>
       )}
 
@@ -379,7 +423,10 @@ export default function App() {
           disabled={running}
         />
 
-        <SolutionPanel solution={puzzle.solution} />
+        <SolutionPanel
+          solution={puzzle.solution}
+          explanation={puzzle.solutionExplanation}
+        />
 
         <div className="actions">
           <Button onClick={handleRun} disabled={running}>

@@ -33,3 +33,5 @@ solution: |
     }
     return true;
   }
+solutionExplanation: |
+  Reject anything below 2, then look for a divisor. You only need to test up to √n: if `n` had a factor larger than its square root, the matching co-factor would be smaller and you'd already have found it. That's why the loop condition is `divisor * divisor <= n`.

@@ -52,3 +52,5 @@ solution: |
   function flattenPages(pages) {
     return pages.flatMap((page) => page.results);
   }
+solutionExplanation: |
+  `flatMap` is `map` followed by a one-level flatten, in a single call. Mapping each page to its `results` array and flattening once gives a single flat list of every result, in order.

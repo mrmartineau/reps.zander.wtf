@@ -109,3 +109,5 @@ solution: |
   function shippedOrders(orders) {
     return orders.filter((order) => order.status === 'shipped');
   }
+solutionExplanation: |
+  `filter` keeps only the items where your test is true — same object shape, just a shorter list. Use `===` for an exact `"shipped"` match.

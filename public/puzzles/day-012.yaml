@@ -37,3 +37,5 @@ solution: |
     }
     return prev;
   }
+solutionExplanation: |
+  Iterative, O(n) time, constant memory. Hold just the last two numbers and step the pair forward `n` times — no exponential blow-up like naive recursion. After the loop, `prev` holds `fib(n)`.

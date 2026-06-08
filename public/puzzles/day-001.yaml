@@ -25,3 +25,7 @@ solution: |
   function reverseString(str) {
     return str.split('').reverse().join('');
   }
+solutionExplanation: |
+  Strings have no `.reverse()`, but arrays do. `split('')` turns the string into an array of single characters, `reverse()` flips that array, and `join('')` glues it back into a string.
+
+  ⚠️ This splits by UTF-16 code unit, so emoji and other astral characters can break apart — fine for plain text.

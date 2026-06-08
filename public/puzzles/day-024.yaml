@@ -35,3 +35,5 @@ solution: |
   function sumEvens(nums) {
     return nums.filter((n) => n % 2 === 0).reduce((a, b) => a + b, 0);
   }
+solutionExplanation: |
+  `filter` keeps the even numbers (`n % 2 === 0`), then `reduce` adds them up. The `0` seed makes an empty result total to 0.

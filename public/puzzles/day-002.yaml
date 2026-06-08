@@ -33,3 +33,5 @@ solution: |
     }
     return out;
   }
+solutionExplanation: |
+  Loop from 1 to `n` and test divisibility. Check `% 15` **first**: a number divisible by both 3 and 5 is divisible by 15, and if you tested 3 or 5 before it you'd never reach the `"FizzBuzz"` case. Anything matching none of the rules is pushed as the number itself.
