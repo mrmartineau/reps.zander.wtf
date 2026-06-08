@@ -23,7 +23,7 @@ export function buildShareText(puzzle, results, elapsedMs, chars) {
   const meta = typeof chars === 'number' ? `${time} · ${chars} chars` : time;
 
   return [
-    `Reps #${puzzle.puzzleNumber} · ${meta}`,
+    `Reps #${puzzle.puzzleNumber} · ${puzzle.title} · ${meta}`,
     squares,
     `${passed}/${results.length} tests`,
     'https://reps.zander.wtf',
