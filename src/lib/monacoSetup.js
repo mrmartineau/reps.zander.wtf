@@ -64,6 +64,13 @@ function tuneDiagnostics() {
     noSemanticValidation: true,
     noSyntaxValidation: false,
   });
+  // Let the JS language service parse JSX so React puzzles don't light up with
+  // bogus syntax errors. Harmless for the plain-JS puzzles, which contain none.
+  defaults.setCompilerOptions({
+    ...defaults.getCompilerOptions(),
+    jsx: monaco.languages.typescript.JsxEmit.React,
+    allowJs: true,
+  });
   return true;
 }
 if (!tuneDiagnostics()) {

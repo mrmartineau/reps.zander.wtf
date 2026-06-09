@@ -27,26 +27,39 @@ for (const file of files) {
     continue;
   }
 
-  for (const field of ['day', 'title', 'prompt', 'functionName', 'starterCode', 'tests']) {
+  // Components are keyed by `componentName`; functions and hooks by
+  // `functionName`. Their tests differ too: components assert against rendered
+  // DOM, everything else maps args → expected.
+  const kind = p.kind ?? 'function';
+  const isComponent = kind === 'react-component';
+  const entryField = isComponent ? 'componentName' : 'functionName';
+  const entryName = p[entryField];
+
+  for (const field of ['day', 'title', 'prompt', 'starterCode', 'tests']) {
     if (p[field] == null) fail(file, `missing "${field}"`);
   }
+  if (entryName == null) fail(file, `missing "${entryField}"`);
   if (Array.isArray(p.tests)) {
     if (p.tests.length !== 3) fail(file, `expected 3 tests, found ${p.tests.length}`);
     p.tests.forEach((t, i) => {
       if (!t.name) fail(file, `test ${i} missing "name"`);
-      if (!Array.isArray(t.args)) fail(file, `test ${i} "args" must be an array`);
-      if (!('expected' in t)) fail(file, `test ${i} missing "expected"`);
+      if (isComponent) {
+        if (!t.assert || typeof t.assert !== 'object') fail(file, `test ${i} missing "assert" object`);
+      } else {
+        if (!Array.isArray(t.args)) fail(file, `test ${i} "args" must be an array`);
+        if (!('expected' in t)) fail(file, `test ${i} missing "expected"`);
+      }
     });
   } else {
     fail(file, '"tests" must be an array');
   }
-  if (p.functionName && p.starterCode && !p.starterCode.includes(p.functionName)) {
-    fail(file, `starterCode doesn't mention "${p.functionName}"`);
+  if (entryName && p.starterCode && !p.starterCode.includes(entryName)) {
+    fail(file, `starterCode doesn't mention "${entryName}"`);
   }
   if (p.solution == null) {
     fail(file, 'missing "solution" (the recommended answer shown on demand)');
-  } else if (p.functionName && !p.solution.includes(p.functionName)) {
-    fail(file, `solution doesn't define "${p.functionName}"`);
+  } else if (entryName && !p.solution.includes(entryName)) {
+    fail(file, `solution doesn't define "${entryName}"`);
   }
   if (!['easy', 'medium', 'hard'].includes(p.difficulty)) {
     fail(file, `"difficulty" must be easy | medium | hard (got ${JSON.stringify(p.difficulty)})`);

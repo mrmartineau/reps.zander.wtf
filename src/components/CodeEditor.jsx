@@ -10,7 +10,14 @@ function prefersDark() {
 // Monaco-backed editor: syntax highlighting, bracket matching, multi-cursor,
 // the usual. Keeps the original component's contract (value / onChange /
 // onFirstEdit / disabled) so App.jsx is unchanged.
-export function CodeEditor({ value, onChange, onFirstEdit, disabled }) {
+export function CodeEditor({
+  value,
+  onChange,
+  onFirstEdit,
+  disabled,
+  language = 'javascript',
+  label = 'JavaScript',
+}) {
   const touched = useRef(false);
   const [dark, setDark] = useState(prefersDark);
 
@@ -36,11 +43,11 @@ export function CodeEditor({ value, onChange, onFirstEdit, disabled }) {
     <div className="editor-shell">
       <div className="editor-lang">
         <span className="editor-lang-dot" aria-hidden="true" />
-        JavaScript
+        {label}
       </div>
       <Editor
         height="260px"
-        language="javascript"
+        language={language}
         theme={dark ? 'reps-dark' : 'reps-light'}
         value={value}
         onChange={handleChange}

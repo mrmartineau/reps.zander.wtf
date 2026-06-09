@@ -38,6 +38,15 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 // Difficulty → ZUI badge colour.
 const DIFFICULTY_COLOR = { easy: 'emerald', medium: 'amber', hard: 'rose' };
 
+// React puzzle kinds author JSX; everything else is plain JavaScript. Drives the
+// editor's language mode and the little label in its corner.
+const REACT_KINDS = new Set(['react-component', 'react-hook']);
+function editorLang(kind) {
+  return REACT_KINDS.has(kind)
+    ? { language: 'javascript', label: 'JSX' }
+    : { language: 'javascript', label: 'JavaScript' };
+}
+
 export default function App() {
   const [puzzle, setPuzzle] = useState(null);
   const [loadError, setLoadError] = useState(null);
@@ -421,6 +430,7 @@ export default function App() {
           onChange={setCode}
           onFirstEdit={handleFirstEdit}
           disabled={running}
+          {...editorLang(puzzle.kind)}
         />
 
         <SolutionPanel

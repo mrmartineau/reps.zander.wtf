@@ -1,0 +1,38 @@
+day: 901
+kind: react-hook
+title: "useFilteredList Hook"
+difficulty: medium
+prompt: |
+  Write a hook `useFilteredList(items, query)` that returns only the items
+  containing `query`, matched case-insensitively. An empty query returns every
+  item.
+
+  Reach for `useMemo` so the filtering only re-runs when `items` or `query`
+  change.
+functionName: useFilteredList
+starterCode: |
+  function useFilteredList(items, query) {
+    // Return the filtered array.
+  }
+tests:
+  - name: "Filters by substring"
+    args: [["apple", "banana", "grape"], "ap"]
+    expected: ["apple", "grape"]
+  - name: "Is case-insensitive"
+    args: [["Apple", "BANANA"], "ban"]
+    expected: ["BANANA"]
+  - name: "An empty query returns everything"
+    args: [["a", "b"], ""]
+    expected: ["a", "b"]
+solution: |
+  function useFilteredList(items, query) {
+    return useMemo(() => {
+      const q = query.toLowerCase();
+      return items.filter((item) => item.toLowerCase().includes(q));
+    }, [items, query]);
+  }
+solutionExplanation: |
+  `useMemo` memoises the filtered array so it's recomputed only when `items` or
+  `query` change. The filter lowercases both sides for a case-insensitive
+  substring match; an empty query is a substring of everything, so all items
+  pass through.
