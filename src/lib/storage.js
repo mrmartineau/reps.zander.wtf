@@ -20,13 +20,21 @@ function write(state) {
   }
 }
 
+// Entries written before the `day` → `id` rename stored their puzzle id under
+// `day`. Normalise on read so callers only ever see `id`; old data keeps working
+// without a migration.
+function withId(entry) {
+  if (!entry) return entry;
+  return entry.id != null ? entry : { ...entry, id: entry.day };
+}
+
 export function getDayState(dateISO) {
-  return read()[dateISO] || null;
+  return withId(read()[dateISO]) || null;
 }
 
 // In-progress editor drafts, kept separate from completed-run state so typing
 // can be saved on every keystroke without touching results/streak data. Keyed
-// by date: { day, code }.
+// by date: { id, code }.
 const DRAFT_KEY = 'reps:draft:v1';
 
 function readDrafts() {
@@ -38,7 +46,7 @@ function readDrafts() {
 }
 
 export function getDraft(dateISO) {
-  return readDrafts()[dateISO] || null;
+  return withId(readDrafts()[dateISO]) || null;
 }
 
 export function saveDraft(dateISO, payload) {
@@ -77,7 +85,7 @@ export function computeStreak(dateISO) {
 }
 
 // Every recorded day, newest first:
-// [{ dateISO, day, solved, elapsedMs, chars, passed, total }].
+// [{ dateISO, id, solved, elapsedMs, chars, passed, total }].
 export function getHistory() {
   const state = read();
   return Object.entries(state)
@@ -88,7 +96,8 @@ export function getHistory() {
         typeof s.chars === 'number' ? s.chars : s.code ? s.code.trim().length : null;
       return {
         dateISO,
-        day: s.day,
+        // Pre-rename entries stored the puzzle id under `day`.
+        id: s.id ?? s.day,
         title: s.title || null,
         solved: Boolean(s.solved),
         elapsedMs: s.elapsedMs ?? null,

@@ -1,0 +1,41 @@
+id: 12
+title: Fibonacci
+difficulty: medium
+prompt: |
+  Implement `fib(n)` so it returns the `n`-th Fibonacci number (0-indexed):
+  `fib(0)` is `0`, `fib(1)` is `1`, and each number after is the sum of the
+  previous two.
+
+  For example, `fib(10)` returns `55`.
+functionName: fib
+starterCode: |
+  function fib(n) {
+    // your code here
+  }
+tests:
+  - name: Case 1
+    args:
+      - 0
+    expected: 0
+  - name: Case 2
+    args:
+      - 1
+    expected: 1
+  - name: Case 3
+    args:
+      - 10
+    expected: 55
+solution: |
+  function fib(n) {
+    let prev = 0;
+    let curr = 1;
+    // Step the pair forward n times; prev ends up holding fib(n).
+    for (let i = 0; i < n; i++) {
+      const next = prev + curr;
+      prev = curr;
+      curr = next;
+    }
+    return prev;
+  }
+solutionExplanation: |
+  Iterative, O(n) time, constant memory. Hold just the last two numbers and step the pair forward `n` times — no exponential blow-up like naive recursion. After the loop, `prev` holds `fib(n)`.

@@ -3,10 +3,10 @@
 Drop a **proposed** puzzle here as a `.yaml` file and open a pull request. This
 folder is **not** shipped to the site — it's a holding area. A maintainer
 reviews each submission and, if accepted, promotes it into the live rotation
-(`public/puzzles/`), assigns its real `day` number, and slots it into the
-difficulty-mixed order in `public/puzzles/index.json`.
+(`public/puzzles/` as `puzzle-NNN.yaml`), assigns its real `id`, and adds a
+`{ id, title }` entry to `public/puzzles/index.json`.
 
-That keeps day numbers collision-free and lets maintainers curate the
+That keeps ids collision-free and lets maintainers curate the
 difficulty spread — see [CONTRIBUTORS.md](../CONTRIBUTORS.md) for the full
 guidelines on what makes a good puzzle.
 
@@ -24,7 +24,7 @@ three tests. Name the file after your function, e.g. `chunk-array.yaml`.
 ## Template
 
 ```yaml
-day: 0 # leave as 0 — a maintainer assigns the real day on acceptance
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
 title: "Your Puzzle Title"
 difficulty: medium # easy | medium | hard
 prompt: |

@@ -1,0 +1,42 @@
+id: 28
+title: Digital Root
+difficulty: medium
+prompt: |
+  Implement `digitalRoot(n)` so it repeatedly sums the digits of `n` until a
+  single digit remains, and returns it.
+
+  For example, `digitalRoot(942)` returns `6` (9+4+2=15, then 1+5=6).
+functionName: digitalRoot
+starterCode: |
+  function digitalRoot(n) {
+    // your code here
+  }
+tests:
+  - name: Case 1
+    args:
+      - 942
+    expected: 6
+  - name: Case 2
+    args:
+      - 0
+    expected: 0
+  - name: Case 3
+    args:
+      - 12345
+    expected: 6
+solution: |
+  function digitalRoot(n) {
+    // Keep summing the digits until a single digit is left.
+    while (n >= 10) {
+      let sum = 0;
+      for (const digit of String(n)) {
+        sum += Number(digit);
+      }
+      n = sum;
+    }
+    return n;
+  }
+solutionExplanation: |
+  Keep summing digits until a single digit is left — the outer `while (n >= 10)` repeats the digit-sum each round.
+
+  Math shortcut: for `n > 0` the digital root equals `1 + (n - 1) % 9`.

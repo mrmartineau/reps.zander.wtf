@@ -1,0 +1,61 @@
+id: 25
+title: Rotate an Array
+difficulty: medium
+prompt: |
+  Implement `rotate(arr, k)` so it rotates the array `k` places to the right,
+  wrapping elements around. `k` can be larger than the array length.
+
+  For example, `rotate([1, 2, 3, 4, 5], 2)` returns `[4, 5, 1, 2, 3]`.
+functionName: rotate
+starterCode: |
+  function rotate(arr, k) {
+    // your code here
+  }
+tests:
+  - name: Case 1
+    args:
+      - - 1
+        - 2
+        - 3
+        - 4
+        - 5
+      - 2
+    expected:
+      - 4
+      - 5
+      - 1
+      - 2
+      - 3
+  - name: Case 2
+    args:
+      - - 1
+        - 2
+        - 3
+      - 0
+    expected:
+      - 1
+      - 2
+      - 3
+  - name: Case 3
+    args:
+      - - 1
+        - 2
+        - 3
+      - 4
+    expected:
+      - 3
+      - 1
+      - 2
+solution: |
+  function rotate(arr, k) {
+    const len = arr.length;
+    if (len === 0) return [];
+    // How far to rotate, normalised into 0..len-1.
+    const offset = ((k % len) + len) % len;
+    // Move the last `offset` items to the front.
+    const tail = arr.slice(len - offset);
+    const head = arr.slice(0, len - offset);
+    return [...tail, ...head];
+  }
+solutionExplanation: |
+  Rotating right by `k` moves the last `k` items to the front. Normalise `k` with `((k % len) + len) % len` so it handles `k` larger than the array (and negatives). Then it's just `tail` followed by `head`.
