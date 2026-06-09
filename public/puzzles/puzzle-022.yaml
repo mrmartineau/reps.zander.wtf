@@ -1,0 +1,35 @@
+id: 22
+title: To camelCase
+difficulty: medium
+prompt: |
+  Implement `toCamelCase(str)` so it converts a hyphen- or underscore-separated
+  string to camelCase.
+
+  For example, `toCamelCase("foo-bar-baz")` returns `"fooBarBaz"`.
+functionName: toCamelCase
+starterCode: |
+  function toCamelCase(str) {
+    // your code here
+  }
+tests:
+  - name: Case 1
+    args:
+      - foo-bar-baz
+    expected: fooBarBaz
+  - name: Case 2
+    args:
+      - hello_world
+    expected: helloWorld
+  - name: Case 3
+    args:
+      - single
+    expected: single
+solution: |
+  function toCamelCase(str) {
+    return str
+      .split(/[-_]/)
+      .map((w, i) => (i === 0 ? w : w[0].toUpperCase() + w.slice(1)))
+      .join('');
+  }
+solutionExplanation: |
+  Split on `-` or `_`. Leave the first word lowercase, capitalise the first letter of every *later* word, then join with nothing. The `i === 0` check is exactly what keeps it camelCase rather than PascalCase.

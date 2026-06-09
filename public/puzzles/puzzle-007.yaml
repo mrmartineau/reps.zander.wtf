@@ -1,0 +1,42 @@
+id: 7
+title: "Deep Flatten"
+difficulty: medium
+prompt: |
+  Implement `flatten(arr)` so it returns a single-level array containing every
+  value from a nested array, at any depth, left to right.
+
+  For example, `flatten([1, [2, 3], 4])` returns `[1, 2, 3, 4]`, and
+  `flatten([1, [2, [3, [4]]]])` returns `[1, 2, 3, 4]` — no matter how deep the
+  nesting goes.
+functionName: flatten
+starterCode: |
+  function flatten(arr) {
+    // your code here
+  }
+tests:
+  - name: "One level"
+    args: [[1, [2, 3], 4]]
+    expected: [1, 2, 3, 4]
+  - name: "Deeply nested"
+    args: [[1, [2, [3, [4, [5]]]]]]
+    expected: [1, 2, 3, 4, 5]
+  - name: "Already flat"
+    args: [[1, 2, 3]]
+    expected: [1, 2, 3]
+solution: |
+  function flatten(arr) {
+    const result = [];
+    for (const item of arr) {
+      // Arrays get flattened recursively; everything else is kept as-is.
+      if (Array.isArray(item)) {
+        result.push(...flatten(item));
+      } else {
+        result.push(item);
+      }
+    }
+    return result;
+  }
+solutionExplanation: |
+  Recursion. Walk the array; if an item is itself an array, flatten it and spread the results in, otherwise push the value as-is. Each nested array recurses one level deeper, so it flattens any depth.
+
+  Built-in shortcut: `arr.flat(Infinity)`.

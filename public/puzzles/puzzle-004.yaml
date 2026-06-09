@@ -1,0 +1,35 @@
+id: 4
+title: "Palindrome Check"
+difficulty: medium
+prompt: |
+  Implement `isPalindrome(str)` so it returns `true` when `str` reads the same
+  forwards and backwards, ignoring case, spaces and punctuation. Otherwise
+  return `false`.
+
+  For example, `isPalindrome("racecar")` is `true`, and so is
+  `isPalindrome("A man, a plan, a canal: Panama")` once you strip the spaces,
+  punctuation and casing. `isPalindrome("hello")` is `false`.
+functionName: isPalindrome
+starterCode: |
+  function isPalindrome(str) {
+    // your code here
+  }
+tests:
+  - name: "Simple palindrome"
+    args: ["racecar"]
+    expected: true
+  - name: "Not a palindrome"
+    args: ["hello"]
+    expected: false
+  - name: "Mixed case and punctuation"
+    args: ["A man, a plan, a canal: Panama"]
+    expected: true
+solution: |
+  function isPalindrome(str) {
+    // Drop anything that isn't a letter or number, and lowercase the rest.
+    const cleaned = str.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const reversed = cleaned.split('').reverse().join('');
+    return cleaned === reversed;
+  }
+solutionExplanation: |
+  Two steps: normalise, then compare. The regex `/[^a-z0-9]/g` strips everything that isn't a letter or digit (after lowercasing), so case, spaces and punctuation stop mattering. Then reverse the cleaned string and check it equals itself.

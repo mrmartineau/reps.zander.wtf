@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button, Badge } from '@mrmartineau/zui/react';
 import {
   loadTodaysPuzzle,
-  loadPuzzleByDay,
+  loadPuzzleById,
   getPreviewParams,
   listPastPuzzles,
   todayISO,
@@ -67,9 +67,9 @@ export default function App() {
   const today = useMemo(() => todayISO(), []);
   const preview = useMemo(() => getPreviewParams(), []);
 
-  // Highest available puzzle-day file, so `?day=N` preview nav knows where to
-  // stop. Only fetched when stepping through days in preview.
-  const [maxDay, setMaxDay] = useState(null);
+  // Highest available puzzle id, so `?id=N` preview nav knows where to stop.
+  // Only fetched when stepping through puzzles in preview.
+  const [maxId, setMaxId] = useState(null);
 
   // The day currently being played. Defaults to today; the archive can point it
   // at any past date. Ignored in preview mode (the querystring drives that).
@@ -112,8 +112,8 @@ export default function App() {
 
   useEffect(() => {
     const load = preview
-      ? preview.kind === 'day'
-        ? loadPuzzleByDay(preview.day)
+      ? preview.kind === 'id'
+        ? loadPuzzleById(preview.id)
         : loadTodaysPuzzle(preview.date, { preview: true })
       : loadTodaysPuzzle(activeDate);
 
@@ -128,7 +128,7 @@ export default function App() {
 
         // Restore a completed run for this day (results + time).
         const saved = getDayState(activeDate);
-        if (saved && saved.day === p.day) {
+        if (saved && saved.id === p.id) {
           setResults(saved.results);
           setElapsedMs(saved.elapsedMs);
         }
@@ -137,8 +137,8 @@ export default function App() {
         // draft over the last submitted code, so a refresh never loses edits.
         const draft = getDraft(activeDate);
         const restoredCode =
-          (draft && draft.day === p.day && draft.code) ||
-          (saved && saved.day === p.day && saved.code) ||
+          (draft && draft.id === p.id && draft.code) ||
+          (saved && saved.id === p.id && saved.code) ||
           p.starterCode ||
           '';
         setCode(restoredCode);
@@ -146,21 +146,22 @@ export default function App() {
       .catch((e) => setLoadError(e.message || String(e)));
   }, [activeDate, preview]);
 
-  // In `?day=N` preview, learn the highest day file so the Next button can
-  // disable at the end. The manifest lists every available day number.
+  // In `?id=N` preview, learn the highest puzzle id so the Next button can
+  // disable at the end. Manifest entries are `{ id, title }` (older ones held a
+  // bare number or `day`), so normalise before taking the max.
   useEffect(() => {
-    if (preview?.kind !== 'day') return;
+    if (preview?.kind !== 'id') return;
     fetch('/puzzles/index.json')
       .then((r) => r.json())
-      .then((m) => setMaxDay(Math.max(...m.days)))
+      .then((m) => setMaxId(Math.max(...m.days.map((e) => e.id ?? e.day ?? e))))
       .catch(() => {});
   }, [preview]);
 
-  // Jump to another preview day by reloading with a new querystring. A full
+  // Jump to another preview puzzle by reloading with a new querystring. A full
   // reload (rather than SPA state) keeps the preview params, read once on
   // mount, the single source of truth.
-  function gotoPreviewDay(day) {
-    window.location.search = `?day=${day}`;
+  function gotoPreviewId(id) {
+    window.location.search = `?id=${id}`;
   }
 
   // Persist the editor draft as the user types, so a refresh or back-button
@@ -169,7 +170,7 @@ export default function App() {
   useEffect(() => {
     if (!puzzle || puzzle.preview) return;
     const id = setTimeout(() => {
-      saveDraft(activeDate, { day: puzzle.day, code });
+      saveDraft(activeDate, { id: puzzle.id, code });
     }, 400);
     return () => clearTimeout(id);
   }, [code, puzzle, activeDate]);
@@ -221,7 +222,7 @@ export default function App() {
 
     const solved = res.every((r) => r.pass);
     saveDayState(activeDate, {
-      day: puzzle.day,
+      id: puzzle.id,
       title: puzzle.title,
       results: res,
       elapsedMs: took,
@@ -370,28 +371,28 @@ export default function App() {
             Preview
           </span>
           <span>
-            Testing day {puzzle.day}
+            Testing #{puzzle.id}
             {preview?.kind === 'date' ? ` (as of ${puzzle.dateISO})` : ''} —
             results aren't saved and your streak is untouched.
           </span>
           <div className="flex-center gap-xs">
-            {preview?.kind === 'day' && (
+            {preview?.kind === 'id' && (
               <>
                 <Button
                   variant="ghost"
                   size="xs"
-                  disabled={preview.day <= 1}
-                  onClick={() => gotoPreviewDay(preview.day - 1)}
-                  aria-label="Previous day"
+                  disabled={preview.id <= 1}
+                  onClick={() => gotoPreviewId(preview.id - 1)}
+                  aria-label="Previous puzzle"
                 >
                   ← Prev
                 </Button>
                 <Button
                   variant="ghost"
                   size="xs"
-                  disabled={maxDay != null && preview.day >= maxDay}
-                  onClick={() => gotoPreviewDay(preview.day + 1)}
-                  aria-label="Next day"
+                  disabled={maxId != null && preview.id >= maxId}
+                  onClick={() => gotoPreviewId(preview.id + 1)}
+                  aria-label="Next puzzle"
                 >
                   Next →
                 </Button></>

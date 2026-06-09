@@ -1,7 +1,7 @@
-// Full puzzle validator: structure + correctness. Unlike verify-puzzles (shape
-// only), this also compiles each puzzle's `solution` and runs it against every
-// test, asserting the result deep-equals `expected` — the same comparison the
-// in-browser runner uses. Used by contributors and CI.
+// Puzzle validator: structure + correctness. Compiles each puzzle's `solution`
+// and runs it against every test, asserting the result deep-equals `expected` —
+// the same comparison the in-browser runner uses. Also cross-checks index.json.
+// This is the project's test suite. Used by contributors and CI.
 //
 // Usage:
 //   node scripts/validate-puzzles.mjs                 # validates public/puzzles
@@ -31,7 +31,7 @@ function deepEqual(a, b) {
 
 // Fields every puzzle needs, regardless of kind. The entry-point field
 // (functionName vs componentName) and per-test shape vary by kind below.
-const REQUIRED_COMMON = ['day', 'title', 'difficulty', 'prompt', 'starterCode', 'tests', 'solution'];
+const REQUIRED_COMMON = ['id', 'title', 'difficulty', 'prompt', 'starterCode', 'tests', 'solution'];
 const DIFFICULTIES = ['easy', 'medium', 'hard'];
 const KINDS = ['function', 'react-component', 'react-hook'];
 
@@ -57,7 +57,8 @@ if (files.length === 0) {
 }
 
 let ok = true;
-const seenDays = new Map();
+const seenIds = new Map();
+const metaById = new Map(); // id → { title } for the index.json cross-check
 const fail = (file, msg) => {
   ok = false;
   console.log(`❌ ${path.basename(file)}: ${msg}`);
@@ -90,14 +91,15 @@ for (const file of files) {
   if (!DIFFICULTIES.includes(p.difficulty)) {
     fail(file, `"difficulty" must be one of ${DIFFICULTIES.join(' | ')} (got ${JSON.stringify(p.difficulty)})`);
   }
-  // day 0 = unassigned placeholder (used in submissions/ before promotion).
-  if (!Number.isInteger(p.day) || p.day < 0) {
-    fail(file, `"day" must be a non-negative integer — 0 for an unassigned draft (got ${JSON.stringify(p.day)})`);
-  } else if (p.day > 0 && seenDays.has(p.day)) {
-    fail(file, `duplicate day ${p.day} (also in ${seenDays.get(p.day)})`);
-  } else if (p.day > 0) {
-    seenDays.set(p.day, path.basename(file));
+  // id 0 = unassigned placeholder (used in submissions/ before promotion).
+  if (!Number.isInteger(p.id) || p.id < 0) {
+    fail(file, `"id" must be a non-negative integer — 0 for an unassigned draft (got ${JSON.stringify(p.id)})`);
+  } else if (p.id > 0 && seenIds.has(p.id)) {
+    fail(file, `duplicate id ${p.id} (also in ${seenIds.get(p.id)})`);
+  } else if (p.id > 0) {
+    seenIds.set(p.id, path.basename(file));
   }
+  if (p.id > 0 && p.title != null) metaById.set(p.id, { title: p.title });
   if (entryName && p.starterCode && !p.starterCode.includes(entryName)) {
     fail(file, `starterCode doesn't define "${entryName}"`);
   }
@@ -173,6 +175,50 @@ for (const file of files) {
   }
 
   if (ok) console.log(`✅ ${path.basename(file)} — ${p.title} (${p.difficulty})`);
+}
+
+// ---- index.json consistency ----
+// Only when validating a directory that ships an index.json (the live set, not
+// a submissions draft dir or an explicit file list). Each entry must resolve to
+// a real puzzle file, and its inline title must match that file — title
+// duplicates the yaml for legibility, so guard against drift.
+for (const target of targets) {
+  const abs = path.resolve(target);
+  if (!fs.existsSync(abs) || !fs.statSync(abs).isDirectory()) continue;
+  const indexPath = path.join(abs, 'index.json');
+  if (!fs.existsSync(indexPath)) continue;
+
+  let manifest;
+  try {
+    manifest = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+  } catch (e) {
+    fail(indexPath, `JSON parse error: ${e.message}`);
+    continue;
+  }
+  if (!Array.isArray(manifest.days)) {
+    fail(indexPath, '"days" must be an array');
+    continue;
+  }
+
+  const seenIndexIds = new Set();
+  manifest.days.forEach((entry, i) => {
+    if (typeof entry !== 'object' || entry === null) {
+      fail(indexPath, `days[${i}] must be a { id, title } object (got ${JSON.stringify(entry)})`);
+      return;
+    }
+    const { id, title } = entry;
+    const meta = metaById.get(id);
+    if (!meta) {
+      fail(indexPath, `days[${i}] references id ${id}, which has no puzzle file`);
+      return;
+    }
+    if (seenIndexIds.has(id)) fail(indexPath, `days[${i}] duplicate id ${id}`);
+    seenIndexIds.add(id);
+    if (title !== meta.title) {
+      fail(indexPath, `days[${i}] (id ${id}) title "${title}" ≠ file title "${meta.title}"`);
+    }
+  });
+  if (ok) console.log(`✅ index.json — ${manifest.days.length} days, titles match`);
 }
 
 if (!ok) {

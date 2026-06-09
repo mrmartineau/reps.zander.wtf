@@ -15,13 +15,13 @@ difficulty spread would drift.
 So instead:
 
 1. **Draft it** — add your puzzle as a `.yaml` file in [`submissions/`](./submissions/),
-   with `day: 0` (a placeholder). This folder is a holding area; it isn't shipped
+   with `id: 0` (a placeholder). This folder is a holding area; it isn't shipped
    to the live site.
 2. **Validate it** — run `npm run validate-submissions`. CI runs the same check
    on your PR automatically.
 3. **Open a PR.** A maintainer reviews it for quality and difficulty fit.
 4. **Promotion** — if accepted, a maintainer moves the file into
-   `public/puzzles/`, assigns the real `day` number, and slots it into the
+   `public/puzzles/` (as `puzzle-NNN.yaml`), assigns the real `id`, and slots it into the
    difficulty-interleaved order in `public/puzzles/index.json`. You keep the
    authorship in the git history.
 
@@ -116,7 +116,7 @@ a fresh value is nicer style).
 ## File format
 
 ```yaml
-day: 0 # placeholder in submissions/; a maintainer assigns the real number
+id: 0 # placeholder in submissions/; a maintainer assigns the real id
 title: "Chunk an Array"
 difficulty: medium # easy | medium | hard
 prompt: |
@@ -177,4 +177,4 @@ against all three tests — a green run means it'll pass CI.
 - [ ] Exactly three tests: happy path, second case, edge case
 - [ ] Returns arrays/objects (not `Map`/`Set`)
 - [ ] `npm run validate-submissions` passes
-- [ ] File is in `submissions/` with `day: 0`
+- [ ] File is in `submissions/` with `id: 0`

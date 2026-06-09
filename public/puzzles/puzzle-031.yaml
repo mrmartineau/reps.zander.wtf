@@ -1,0 +1,105 @@
+id: 31
+title: Reshape Records for a List
+difficulty: easy
+prompt: |
+  You're given an array of `orders` from an API. Implement `listRows(orders)`
+  to return one `{ id, label }` per order, where `label` is the string
+  `"<product> — <customer>"` (an em-dash with a space either side).
+
+  This is a `map` — same length out, each item reshaped to just what a list row needs.
+functionName: listRows
+starterCode: |
+  function listRows(orders) {
+    // your code here
+  }
+tests:
+  - name: Case 1
+    args:
+      - - id: 1
+          customer: Ada
+          product: Keyboard
+          category: tech
+          price: 80
+          status: shipped
+        - id: 2
+          customer: Bram
+          product: Mug
+          category: home
+          price: 12
+          status: pending
+        - id: 3
+          customer: Ada
+          product: Monitor
+          category: tech
+          price: 240
+          status: shipped
+        - id: 4
+          customer: Cleo
+          product: Notebook
+          category: office
+          price: 6
+          status: cancelled
+    expected:
+      - id: 1
+        label: Keyboard — Ada
+      - id: 2
+        label: Mug — Bram
+      - id: 3
+        label: Monitor — Ada
+      - id: 4
+        label: Notebook — Cleo
+  - name: Case 2
+    args:
+      - - id: 10
+          customer: Dee
+          product: Lamp
+          category: home
+          price: 45
+          status: shipped
+        - id: 11
+          customer: Eve
+          product: Pen
+          category: office
+          price: 3
+          status: pending
+        - id: 12
+          customer: Dee
+          product: Chair
+          category: home
+          price: 90
+          status: cancelled
+    expected:
+      - id: 10
+        label: Lamp — Dee
+      - id: 11
+        label: Pen — Eve
+      - id: 12
+        label: Chair — Dee
+  - name: Case 3
+    args:
+      - - id: 20
+          customer: Fin
+          product: Cable
+          category: tech
+          price: 9
+          status: shipped
+        - id: 21
+          customer: Fin
+          product: Desk
+          category: home
+          price: 150
+          status: shipped
+    expected:
+      - id: 20
+        label: Cable — Fin
+      - id: 21
+        label: Desk — Fin
+solution: |
+  function listRows(orders) {
+    return orders.map((order) => ({
+      id: order.id,
+      label: `${order.product} — ${order.customer}`,
+    }));
+  }
+solutionExplanation: |
+  A textbook `map` — same number of items out, each reshaped to just `{ id, label }`. The label is built with a template literal and an em-dash.

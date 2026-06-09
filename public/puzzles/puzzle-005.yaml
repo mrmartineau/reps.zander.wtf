@@ -1,0 +1,43 @@
+id: 5
+title: "Two Sum"
+difficulty: medium
+prompt: |
+  You're given an array of numbers, `nums`, and a `target`. Find the **two**
+  numbers in the array that add up to `target`, and return their positions
+  (indices) as an array `[i, j]`, lowest index first.
+
+  For example, `twoSum([2, 7, 11, 15], 9)` returns `[0, 1]`, because the
+  numbers at positions 0 and 1 are `2` and `7` — and `2 + 7 = 9`.
+
+  There's always exactly one pair that works.
+functionName: twoSum
+starterCode: |
+  function twoSum(nums, target) {
+    // your code here
+  }
+tests:
+  - name: "Basic case"
+    args: [[2, 7, 11, 15], 9]
+    expected: [0, 1]
+  - name: "Later in array"
+    args: [[3, 2, 4], 6]
+    expected: [1, 2]
+  - name: "Duplicates"
+    args: [[3, 3], 6]
+    expected: [0, 1]
+solution: |
+  function twoSum(nums, target) {
+    // Remember each number we've seen, mapped to its index.
+    const seenIndexByValue = new Map();
+    for (let i = 0; i < nums.length; i++) {
+      const complement = target - nums[i];
+      // If the number that completes the pair is already seen, we're done.
+      if (seenIndexByValue.has(complement)) {
+        return [seenIndexByValue.get(complement), i];
+      }
+      seenIndexByValue.set(nums[i], i);
+    }
+    return [];
+  }
+solutionExplanation: |
+  The brute-force way is two nested loops — O(n²). The `Map` trick does it in a single pass: for each number, the value that completes the pair is `target - num`. Remember every value→index you've already seen, and the moment a number's complement is in the map, you've found the answer. O(n).

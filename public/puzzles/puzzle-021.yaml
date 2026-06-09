@@ -1,0 +1,45 @@
+id: 21
+title: Array Nesting Depth
+difficulty: hard
+prompt: |
+  Implement `maxDepth(arr)` so it returns how deeply arrays are nested. A flat
+  array is depth `1`; an array containing an array is depth `2`, and so on.
+
+  For example, `maxDepth([1, [2, [3]]])` returns `3`.
+functionName: maxDepth
+starterCode: |
+  function maxDepth(arr) {
+    // your code here
+  }
+tests:
+  - name: Case 1
+    args:
+      - - 1
+        - 2
+        - 3
+    expected: 1
+  - name: Case 2
+    args:
+      - - 1
+        - - 2
+          - - 3
+    expected: 3
+  - name: Case 3
+    args:
+      - []
+    expected: 1
+solution: |
+  function maxDepth(arr) {
+    // A non-array has depth 0; an array is 1 + the deepest of its items.
+    function depthOf(value) {
+      if (!Array.isArray(value)) return 0;
+      let deepest = 0;
+      for (const item of value) {
+        deepest = Math.max(deepest, depthOf(item));
+      }
+      return 1 + deepest;
+    }
+    return depthOf(arr);
+  }
+solutionExplanation: |
+  Recursion that returns a number. A non-array has depth 0; an array is `1 + the deepest of its children`. `Math.max` over the items finds the deepest branch at each level.
