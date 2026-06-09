@@ -13,6 +13,7 @@ import 'monaco-editor/esm/vs/language/typescript/monaco.contribution';
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
 import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
 import { loader } from '@monaco-editor/react';
+import { registerJsx } from './jsxLanguage.js';
 
 self.MonacoEnvironment = {
   getWorker(_workerId, label) {
@@ -66,6 +67,9 @@ function tuneDiagnostics() {
   });
   // Let the JS language service parse JSX so React puzzles don't light up with
   // bogus syntax errors. Harmless for the plain-JS puzzles, which contain none.
+  // The `.js` model parses JSX correctly here (unlike a `.ts` model, which would
+  // read `<Tag>` as a type assertion); the TS worker then emits semantic tokens
+  // that colour the JSX — see semanticHighlighting in CodeEditor.
   defaults.setCompilerOptions({
     ...defaults.getCompilerOptions(),
     jsx: monaco.languages.typescript.JsxEmit.React,
@@ -77,5 +81,8 @@ if (!tuneDiagnostics()) {
   // Namespace not attached yet — retry once on the next tick.
   setTimeout(tuneDiagnostics, 0);
 }
+
+// Custom JSX language (Monarch) for React puzzles — Monaco has no built-in one.
+registerJsx(monaco);
 
 loader.config({ monaco });
