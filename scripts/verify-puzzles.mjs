@@ -44,7 +44,7 @@ for (const file of files) {
     p.tests.forEach((t, i) => {
       if (!t.name) fail(file, `test ${i} missing "name"`);
       if (isComponent) {
-        if (!t.assert || typeof t.assert !== 'object') fail(file, `test ${i} missing "assert" object`);
+        if (!t.assert || typeof t.assert !== 'object' || Array.isArray(t.assert)) fail(file, `test ${i} missing "assert" object`);
       } else {
         if (!Array.isArray(t.args)) fail(file, `test ${i} "args" must be an array`);
         if (!('expected' in t)) fail(file, `test ${i} missing "expected"`);

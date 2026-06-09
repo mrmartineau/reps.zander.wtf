@@ -116,7 +116,7 @@ for (const file of files) {
     if (!t.name) fail(file, `test ${i} missing "name"`);
     if (isComponent) {
       // Component tests assert against rendered DOM via a declarative block.
-      if (!t.assert || typeof t.assert !== 'object') fail(file, `test ${i} missing "assert" object`);
+      if (!t.assert || typeof t.assert !== 'object' || Array.isArray(t.assert)) fail(file, `test ${i} missing "assert" object`);
       if ('props' in t && (typeof t.props !== 'object' || Array.isArray(t.props))) {
         fail(file, `test ${i} "props" must be an object`);
       }

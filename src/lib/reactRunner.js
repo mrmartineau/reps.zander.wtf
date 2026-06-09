@@ -121,8 +121,10 @@ function runComponentTest(Component, test) {
   let outcome;
   const logs = withCapturedConsole(() => {
     try {
+      // Defensive copy of props so a component that mutates them can't poison
+      // a later test (mirrors the worker path's structuredClone of args).
       outcome = renderAndInspect(
-        React.createElement(Component, test.props || {}),
+        React.createElement(Component, structuredClone(test.props || {})),
         (container) => checkAssertions(container, test.assert),
       );
     } catch (err) {
@@ -137,9 +139,12 @@ function runHookTest(hook, test) {
   const logs = withCapturedConsole(() => {
     let captured;
     let captureError;
+    // Defensive copy of args so a hook that mutates them can't poison a later
+    // test (mirrors the worker path's structuredClone of args).
+    const args = structuredClone(test.args || []);
     function Probe() {
       try {
-        captured = hook(...(test.args || []));
+        captured = hook(...args);
       } catch (e) {
         captureError = e;
       }
