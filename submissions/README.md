@@ -21,6 +21,10 @@ npm run validate-submissions
 This checks the shape **and** compiles your `solution` and runs it against all
 three tests. Name the file after your function, e.g. `chunk-array.yaml`.
 
+See `example-count-vowels.yaml` and `example-sum-array.yaml` here for worked
+templates. The `example-` prefix is reserved — those files stay as permanent
+examples and are never promoted, so don't name your draft `example-*`.
+
 ## Template
 
 ```yaml

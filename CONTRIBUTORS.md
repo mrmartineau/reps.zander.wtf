@@ -16,7 +16,11 @@ So instead:
 
 1. **Draft it** — add your puzzle as a `.yaml` file in [`submissions/`](./submissions/),
    with `id: 0` (a placeholder). This folder is a holding area; it isn't shipped
-   to the live site.
+   to the live site. Two worked examples live there as a template —
+   [`example-count-vowels.yaml`](./submissions/example-count-vowels.yaml) and
+   [`example-sum-array.yaml`](./submissions/example-sum-array.yaml). The
+   `example-` prefix is reserved: those stay put and are never promoted, so don't
+   name your draft `example-*`.
 2. **Validate it** — run `npm run validate-submissions`. CI runs the same check
    on your PR automatically.
 3. **Open a PR.** A maintainer reviews it for quality and difficulty fit.
@@ -37,8 +41,8 @@ reviewers) can actually play your puzzle in the browser before it's accepted:
 > 🧩 **Submission preview**
 >
 > Preview the submission(s) in this PR on the deployed site:
-> - [`count-vowels.yaml`](#)
-> - [`sum-array.yaml`](#)
+> - [`reverse-words.yaml`](#)
+> - [`chunk-array.yaml`](#)
 >
 > All submissions: `pr-<number>-reps.zanderwtf.workers.dev/submissions.html`
 

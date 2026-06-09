@@ -5,6 +5,9 @@
 //   - removes the draft from `submissions/`
 //   - appends a `{ id, title }` entry to `public/puzzles/index.json` `days[]`
 //
+// Files named `example-*.yaml` are permanent reference examples — they stay in
+// `submissions/` and are never promoted (see EXAMPLE_PREFIX below).
+//
 // New entries are appended to the END of `days[]` so no already-served calendar
 // position shifts — past dates keep mapping to the same puzzle (see CLAUDE.md
 // "Date → puzzle mapping"). Run `validate-puzzles` afterwards to confirm the
@@ -20,13 +23,17 @@ const subsDir = path.join(root, 'submissions');
 const liveDir = path.join(root, 'public', 'puzzles');
 const indexPath = path.join(liveDir, 'index.json');
 
+// `example-*.yaml` are kept in submissions/ as reference examples for
+// contributors — never promote them.
+const EXAMPLE_PREFIX = 'example-';
+
 const drafts = fs
   .readdirSync(subsDir)
-  .filter((f) => f.endsWith('.yaml'))
+  .filter((f) => f.endsWith('.yaml') && !f.startsWith(EXAMPLE_PREFIX))
   .sort();
 
 if (drafts.length === 0) {
-  console.log('No submissions to promote.');
+  console.log('No submissions to promote (example-*.yaml are kept as examples).');
   process.exit(0);
 }
 
