@@ -1,0 +1,43 @@
+id: 20
+title: Unique Values
+difficulty: easy
+prompt: |
+  Implement `unique(arr)` so it returns a new array with duplicates removed,
+  keeping the first occurrence of each value in order.
+
+  For example, `unique([1, 2, 2, 3, 1])` returns `[1, 2, 3]`.
+functionName: unique
+starterCode: |
+  function unique(arr) {
+    // your code here
+  }
+tests:
+  - name: Case 1
+    args:
+      - - 1
+        - 2
+        - 2
+        - 3
+        - 1
+    expected:
+      - 1
+      - 2
+      - 3
+  - name: Case 2
+    args:
+      - - a
+        - a
+        - b
+    expected:
+      - a
+      - b
+  - name: Case 3
+    args:
+      - []
+    expected: []
+solution: |
+  function unique(arr) {
+    return [...new Set(arr)];
+  }
+solutionExplanation: |
+  A `Set` keeps only distinct values *and* preserves insertion order, so building one from the array and spreading it back drops duplicates while keeping first-seen order — in a single line.

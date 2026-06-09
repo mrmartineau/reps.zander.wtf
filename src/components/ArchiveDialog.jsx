@@ -60,7 +60,7 @@ export function ArchiveDialog({
                     </span>
                     <span className="archive-main">
                       <span className="archive-title">
-                        #{e.puzzleNumber} {e.title || `Day ${e.day}`}
+                        #{e.puzzleNumber} {e.title || `Puzzle ${e.id}`}
                       </span>
                       <span className="archive-date">
                         {e.dateISO}

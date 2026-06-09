@@ -1,0 +1,35 @@
+id: 11
+title: Capitalize Words
+difficulty: easy
+prompt: |
+  Implement `capitalizeWords(str)` so it upper-cases the first letter of every
+  space-separated word, leaving the rest of each word unchanged.
+
+  For example, `capitalizeWords("hello world")` returns `"Hello World"`.
+functionName: capitalizeWords
+starterCode: |
+  function capitalizeWords(str) {
+    // your code here
+  }
+tests:
+  - name: Case 1
+    args:
+      - hello world
+    expected: Hello World
+  - name: Case 2
+    args:
+      - the quick brown fox
+    expected: The Quick Brown Fox
+  - name: Case 3
+    args:
+      - ''
+    expected: ''
+solution: |
+  function capitalizeWords(str) {
+    return str
+      .split(' ')
+      .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w))
+      .join(' ');
+  }
+solutionExplanation: |
+  Split on spaces, upper-case the first character of each word and keep the rest with `slice(1)`, then re-join. The `w ? … : w` guard returns empty words unchanged so double-spaces (which split to `''`) don't crash on `w[0]`.

@@ -1,0 +1,149 @@
+id: 36
+title: Group by Category
+difficulty: medium
+prompt: |
+  Implement `groupByCategory(orders)` to return an object whose keys are
+  categories and whose values are arrays of the orders in that category.
+
+  Walk the list, dropping each order into a bucket keyed by `order.category`.
+functionName: groupByCategory
+starterCode: |
+  function groupByCategory(orders) {
+    // your code here
+  }
+tests:
+  - name: Case 1
+    args:
+      - - id: 1
+          customer: Ada
+          product: Keyboard
+          category: tech
+          price: 80
+          status: shipped
+        - id: 2
+          customer: Bram
+          product: Mug
+          category: home
+          price: 12
+          status: pending
+        - id: 3
+          customer: Ada
+          product: Monitor
+          category: tech
+          price: 240
+          status: shipped
+        - id: 4
+          customer: Cleo
+          product: Notebook
+          category: office
+          price: 6
+          status: cancelled
+    expected:
+      tech:
+        - id: 1
+          customer: Ada
+          product: Keyboard
+          category: tech
+          price: 80
+          status: shipped
+        - id: 3
+          customer: Ada
+          product: Monitor
+          category: tech
+          price: 240
+          status: shipped
+      home:
+        - id: 2
+          customer: Bram
+          product: Mug
+          category: home
+          price: 12
+          status: pending
+      office:
+        - id: 4
+          customer: Cleo
+          product: Notebook
+          category: office
+          price: 6
+          status: cancelled
+  - name: Case 2
+    args:
+      - - id: 10
+          customer: Dee
+          product: Lamp
+          category: home
+          price: 45
+          status: shipped
+        - id: 11
+          customer: Eve
+          product: Pen
+          category: office
+          price: 3
+          status: pending
+        - id: 12
+          customer: Dee
+          product: Chair
+          category: home
+          price: 90
+          status: cancelled
+    expected:
+      home:
+        - id: 10
+          customer: Dee
+          product: Lamp
+          category: home
+          price: 45
+          status: shipped
+        - id: 12
+          customer: Dee
+          product: Chair
+          category: home
+          price: 90
+          status: cancelled
+      office:
+        - id: 11
+          customer: Eve
+          product: Pen
+          category: office
+          price: 3
+          status: pending
+  - name: Case 3
+    args:
+      - - id: 20
+          customer: Fin
+          product: Cable
+          category: tech
+          price: 9
+          status: shipped
+        - id: 21
+          customer: Fin
+          product: Desk
+          category: home
+          price: 150
+          status: shipped
+    expected:
+      tech:
+        - id: 20
+          customer: Fin
+          product: Cable
+          category: tech
+          price: 9
+          status: shipped
+      home:
+        - id: 21
+          customer: Fin
+          product: Desk
+          category: home
+          price: 150
+          status: shipped
+solution: |
+  function groupByCategory(orders) {
+    const groups = {};
+    for (const order of orders) {
+      groups[order.category] ??= [];
+      groups[order.category].push(order);
+    }
+    return groups;
+  }
+solutionExplanation: |
+  Walk the list and drop each order into a bucket keyed by its category. `groups[key] ??= []` creates the array the first time a category appears, then you push the order into it.

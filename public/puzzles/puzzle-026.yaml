@@ -1,0 +1,55 @@
+id: 26
+title: Most Frequent
+difficulty: medium
+prompt: |
+  Implement `mostFrequent(arr)` so it returns the value that appears most often.
+  If several tie, return the one that appears first.
+
+  For example, `mostFrequent([1, 2, 2, 3, 2])` returns `2`.
+functionName: mostFrequent
+starterCode: |
+  function mostFrequent(arr) {
+    // your code here
+  }
+tests:
+  - name: Case 1
+    args:
+      - - 1
+        - 2
+        - 2
+        - 3
+        - 2
+    expected: 2
+  - name: Case 2
+    args:
+      - - a
+        - b
+        - a
+        - b
+        - a
+    expected: a
+  - name: Case 3
+    args:
+      - - 5
+    expected: 5
+solution: |
+  function mostFrequent(arr) {
+    // Count how many times each value appears.
+    const counts = new Map();
+    for (const value of arr) {
+      counts.set(value, (counts.get(value) ?? 0) + 1);
+    }
+    // Scan in order so ties resolve to the first-seen value.
+    let best = arr[0];
+    let bestCount = 0;
+    for (const value of arr) {
+      const count = counts.get(value);
+      if (count > bestCount) {
+        bestCount = count;
+        best = value;
+      }
+    }
+    return best;
+  }
+solutionExplanation: |
+  Two passes. First tally every value into a `Map`. Then scan the array **in order**, keeping the value with the highest count — because you walk in order and only replace on a *strictly* higher count, ties resolve to the first-seen value.

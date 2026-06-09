@@ -1,0 +1,43 @@
+id: 29
+title: Balanced Brackets
+difficulty: hard
+prompt: |
+  Implement `isBalanced(str)` so it returns `true` when every bracket
+  `()`, `[]` and `{}` is correctly opened and closed in the right order.
+
+  For example, `isBalanced("([{}])")` is `true` and `isBalanced("(]")` is `false`.
+functionName: isBalanced
+starterCode: |
+  function isBalanced(str) {
+    // your code here
+  }
+tests:
+  - name: Case 1
+    args:
+      - ()[]{}
+    expected: true
+  - name: Case 2
+    args:
+      - (]
+    expected: false
+  - name: Case 3
+    args:
+      - ([{}])
+    expected: true
+solution: |
+  function isBalanced(str) {
+    const closerToOpener = { ')': '(', ']': '[', '}': '{' };
+    const openers = [];
+    for (const char of str) {
+      if (char === '(' || char === '[' || char === '{') {
+        openers.push(char);
+      } else if (char in closerToOpener) {
+        // The most recent opener must match this closer.
+        if (openers.pop() !== closerToOpener[char]) return false;
+      }
+    }
+    // Anything still open was never closed.
+    return openers.length === 0;
+  }
+solutionExplanation: |
+  Classic stack problem. Push every opening bracket; on a closing bracket, the most recent opener (top of the stack) must be its match — if not, it's unbalanced. At the end the stack must be empty, otherwise some bracket was opened and never closed.

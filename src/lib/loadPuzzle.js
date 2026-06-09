@@ -1,5 +1,12 @@
 import yaml from 'js-yaml';
 
+// `index.json` entries are `{ id, title }` objects. Older/cached manifests held
+// bare numbers or a `day` key — accept all three so a stale fetch still loads.
+function entryId(entry) {
+  if (typeof entry !== 'object' || entry === null) return entry;
+  return entry.id ?? entry.day;
+}
+
 // Days elapsed (UTC) between two YYYY-MM-DD dates.
 function daysBetween(epochISO, todayISO) {
   const a = Date.parse(epochISO + 'T00:00:00Z');
@@ -25,12 +32,13 @@ export function todayISO(date = new Date()) {
 // Returns null when no preview params are present (normal "today" mode).
 export function getPreviewParams(search = window.location.search) {
   const params = new URLSearchParams(search);
-  const dayRaw = params.get('preview') ?? params.get('day');
+  // `?id=` is canonical; `?preview=` / `?day=` are accepted aliases (older links).
+  const idRaw = params.get('id') ?? params.get('preview') ?? params.get('day');
   const dateRaw = params.get('date');
 
-  if (dayRaw != null) {
-    const day = Number.parseInt(dayRaw, 10);
-    if (Number.isInteger(day) && day > 0) return { kind: 'day', day };
+  if (idRaw != null) {
+    const id = Number.parseInt(idRaw, 10);
+    if (Number.isInteger(id) && id > 0) return { kind: 'id', id };
   }
   if (dateRaw != null && /^\d{4}-\d{2}-\d{2}$/.test(dateRaw)) {
     return { kind: 'date', date: dateRaw };
@@ -38,15 +46,15 @@ export function getPreviewParams(search = window.location.search) {
   return null;
 }
 
-// Loads a specific puzzle file by its day number, bypassing date logic.
+// Loads a specific puzzle file by its id, bypassing date logic.
 // Used by preview mode. Throws a readable error when the file is missing.
-export async function loadPuzzleByDay(dayNumber) {
-  const padded = String(dayNumber).padStart(3, '0');
-  const res = await fetch(`/puzzles/day-${padded}.yaml`);
+export async function loadPuzzleById(id) {
+  const padded = String(id).padStart(3, '0');
+  const res = await fetch(`/puzzles/puzzle-${padded}.yaml`);
   // A real static host 404s a missing file; dev servers and SPA-fallback hosts
   // answer 200 with index.html instead, so we also validate the parsed shape.
   const missing = () => {
-    throw new Error(`No puzzle file for day ${dayNumber} (day-${padded}.yaml)`);
+    throw new Error(`No puzzle file for id ${id} (puzzle-${padded}.yaml)`);
   };
   if (!res.ok) missing();
 
@@ -81,7 +89,7 @@ export async function loadTodaysPuzzle(dateISO = todayISO(), { preview = false }
   // `elapsed` wrapped back into [0, total) so day `total` shows the first
   // puzzle again, day `total + 1` the second, and so on — forever.
   const index = ((elapsed % total) + total) % total; // safe modulo (handles negatives)
-  const dayNumber = manifest.days[index];
+  const id = entryId(manifest.days[index]);
 
   // --- Strict 1:1 mode (swap in when you have a full calendar) ------------
   // Each calendar day maps to exactly one puzzle, in `days` order, with no
@@ -91,13 +99,13 @@ export async function loadTodaysPuzzle(dateISO = todayISO(), { preview = false }
   //   if (elapsed < 0 || elapsed >= total) {
   //     throw new Error('No puzzle scheduled for this date');
   //   }
-  //   const dayNumber = manifest.days[elapsed];
+  //   const id = entryId(manifest.days[elapsed]);
   //
   // `puzzleNumber` below (elapsed + 1) already matches a 1:1 calendar, so it
   // needs no change when you switch.
 
-  const padded = String(dayNumber).padStart(3, '0');
-  const text = await fetch(`/puzzles/day-${padded}.yaml`).then((r) => r.text());
+  const padded = String(id).padStart(3, '0');
+  const text = await fetch(`/puzzles/puzzle-${padded}.yaml`).then((r) => r.text());
   const puzzle = yaml.load(text);
 
   // `puzzleNumber` is the running daily count since launch (Wordle-style),
@@ -117,24 +125,25 @@ function addDays(dateISO, n) {
 
 // Lists every playable date from launch up to `today` (inclusive), newest
 // first, for the "play a past puzzle" archive. Each entry carries the date, the
-// running puzzle number, which day file it maps to, and that file's title +
-// difficulty. Titles/difficulties are fetched once per unique day file.
+// running puzzle number, which puzzle id it maps to, and that file's title +
+// difficulty. Titles/difficulties are fetched once per unique puzzle file.
 export async function listPastPuzzles(today = todayISO()) {
   const manifest = await fetch('/puzzles/index.json').then((r) => r.json());
   const total = manifest.days.length;
   const todayElapsed = daysBetween(manifest.epoch, today);
   if (todayElapsed < 0) return [];
 
-  // Fetch metadata once per distinct day file in the manifest.
-  const metaByDay = new Map();
+  // Fetch metadata once per distinct puzzle file in the manifest.
+  const metaById = new Map();
+  const distinctIds = [...new Set(manifest.days.map(entryId))];
   await Promise.all(
-    [...new Set(manifest.days)].map(async (day) => {
-      const padded = String(day).padStart(3, '0');
+    distinctIds.map(async (id) => {
+      const padded = String(id).padStart(3, '0');
       try {
-        const p = yaml.load(await fetch(`/puzzles/day-${padded}.yaml`).then((r) => r.text()));
-        metaByDay.set(day, { title: p.title, difficulty: p.difficulty });
+        const p = yaml.load(await fetch(`/puzzles/puzzle-${padded}.yaml`).then((r) => r.text()));
+        metaById.set(id, { title: p.title, difficulty: p.difficulty });
       } catch {
-        metaByDay.set(day, { title: `Day ${day}`, difficulty: null });
+        metaById.set(id, { title: `Puzzle ${id}`, difficulty: null });
       }
     }),
   );
@@ -142,12 +151,12 @@ export async function listPastPuzzles(today = todayISO()) {
   const list = [];
   for (let elapsed = 0; elapsed <= todayElapsed; elapsed++) {
     const index = ((elapsed % total) + total) % total;
-    const day = manifest.days[index];
-    const meta = metaByDay.get(day) || {};
+    const id = entryId(manifest.days[index]);
+    const meta = metaById.get(id) || {};
     list.push({
       dateISO: addDays(manifest.epoch, elapsed),
       puzzleNumber: elapsed + 1,
-      day,
+      id,
       title: meta.title,
       difficulty: meta.difficulty,
     });

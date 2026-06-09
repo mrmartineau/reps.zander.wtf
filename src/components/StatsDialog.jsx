@@ -59,7 +59,7 @@ export function StatsDialog({ open, onClose, stats }) {
                     {h.solved ? '✓' : '✗'}
                   </span>
                   <span className="stats-main">
-                    <span className="stats-puzzle">{h.title || `Day ${h.day}`}</span>
+                    <span className="stats-puzzle">{h.title || `Puzzle ${h.id}`}</span>
                     <span className="stats-date">{h.dateISO}</span>
                   </span>
                   <span className="stats-detail">

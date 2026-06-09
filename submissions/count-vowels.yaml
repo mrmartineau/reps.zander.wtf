@@ -1,4 +1,4 @@
-day: 0 # leave as 0 — a maintainer assigns the real day on acceptance
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
 title: "Count the Vowels"
 difficulty: easy
 prompt: |
