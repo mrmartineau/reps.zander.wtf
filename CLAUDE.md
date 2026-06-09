@@ -26,11 +26,12 @@ Package manager is **pnpm** (`pnpm@11.5.0`). There is no unit-test runner; "test
 
 **Persistence (`src/lib/storage.js`).** `localStorage` only. Three namespaces: completed-run state (`reps:v1`, keyed by date), in-progress editor drafts (`reps:draft:v1`, saved on a debounce so results/streak aren't touched per keystroke), plus derived history/streak/stats. **Preview mode never reads or writes storage** — testing an upcoming puzzle can't clobber real progress.
 
-**Preview/query params (`getPreviewParams`).** `?preview=N` / `?day=N` load a day file directly; `?date=YYYY-MM-DD` simulates date-cycling for a future day. These are convenience, not secrecy — puzzle YAML is public.
+**Preview/query params (`getPreviewParams`).** `?id=N` (aliases `?preview=N` / `?day=N`) loads a puzzle file directly by its id; `?date=YYYY-MM-DD` simulates date-cycling for a future day. These are convenience, not secrecy — puzzle YAML is public.
 
-**Submissions flow.** Drafts go in `submissions/*.yaml` with `day: 0`. `scripts/prepare-submissions.mjs` (run automatically by `dev`/`build`) copies them into `public/submissions/` (gitignored, regenerated each run) plus a manifest, which `submissions.html` fetches. PRs touching `submissions/` get a Cloudflare preview deploy (see `.github/workflows/`); fork PRs can't deploy (no credentials). See `CONTRIBUTORS.md` for the curation/promotion process.
+**Submissions flow.** Drafts go in `submissions/*.yaml` with `id: 0`. `scripts/prepare-submissions.mjs` (run automatically by `dev`/`build`) copies them into `public/submissions/` (gitignored, regenerated each run) plus a manifest, which `submissions.html` fetches. PRs touching `submissions/` get a Cloudflare preview deploy (see `.github/workflows/`); fork PRs can't deploy (no credentials). See `CONTRIBUTORS.md` for the curation/promotion process.
 
 ## Conventions
 
 - UI is built with **ZUI** (`@mrmartineau/zui`) — prefer its components/tokens/`zui-*` classes over hand-rolled markup.
 - `scripts/generate-puzzles.mjs`, `improve-solutions.mjs`, `add-explanations.mjs` are **one-off authoring tools** that bulk-edit puzzle YAML, not part of the build. Idempotent where it matters; safe to re-read before reusing.
+- **Commits follow [Conventional Commits](https://www.conventionalcommits.org/)** — `type(scope): subject`, e.g. `feat(puzzles):`, `fix:`, `refactor:`, `chore:`, `docs:`. Imperative subject, ≤~50 chars; use the body to explain the *why* when it isn't obvious. Common scopes: `puzzles`, `runner`, `storage`, `ui`.
