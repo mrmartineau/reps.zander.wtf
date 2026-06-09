@@ -11,7 +11,8 @@
     "deploy": "pnpm build && wrangler deploy",
     "verify-puzzles": "node scripts/verify-puzzles.mjs",
     "validate-puzzles": "node scripts/validate-puzzles.mjs public/puzzles",
-    "validate-submissions": "node scripts/validate-puzzles.mjs submissions"
+    "validate-submissions": "node scripts/validate-puzzles.mjs submissions",
+    "promote-submissions": "node scripts/promote-submissions.mjs"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",

@@ -1,0 +1,56 @@
+name: Promote submissions
+
+# Manually-triggered promotion: takes every draft in submissions/, assigns it the
+# next free id, moves it to public/puzzles/puzzle-NNN.yaml, appends it to
+# index.json, validates the result, and commits back to main.
+#
+# Run it from the Actions tab ("Run workflow"). Only meaningful against main.
+on:
+  workflow_dispatch:
+
+# Needs write access to push the promotion commit.
+permissions:
+  contents: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    # Guard: this mutates the live puzzle set, so only allow it on main.
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 'latest'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Drafts must pass structure + reference-solution tests before promotion.
+      - name: Validate submitted puzzles
+        run: pnpm validate-submissions
+
+      # Move + rename + assign ids + append to index.json.
+      - name: Promote submissions
+        run: pnpm promote-submissions
+
+      # Confirm the promoted live set still validates (solutions run, index
+      # consistent). Fails the run — and skips the commit — if anything is off.
+      - name: Validate live puzzles
+        run: pnpm validate-puzzles
+
+      - name: Commit promoted puzzles
+        run: |
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "Nothing to promote — no changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/puzzles submissions
+          count=$(git diff --cached --name-only --diff-filter=A -- 'public/puzzles/puzzle-*.yaml' | wc -l | tr -d ' ')
+          git commit -m "chore(puzzles): promote ${count} submission(s) to live"
+          git push
