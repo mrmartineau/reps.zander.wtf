@@ -105,6 +105,47 @@ plain objects work (but not `Map`/`Set` — convert those first). Unlike a pure
 structural check, `validate-puzzles` also **compiles the `solution` and runs it
 against every test**, so a stored `expected` can't drift from a working answer.
 
+## Experimental: React puzzles
+
+Beyond the default pure-function puzzles, a puzzle can set a `kind` to ask for a
+small React exercise. Two kinds exist so far:
+
+- **`react-component`** — write a component; tests assert against the rendered
+  DOM with a small declarative DSL.
+- **`react-hook`** — write a custom hook; tests pass `args` to it and deep-equal
+  its return value, exactly like a function puzzle.
+
+JSX is transformed in the browser with [Sucrase](https://github.com/alangpierce/sucrase)
+and rendered on the main thread (the worker sandbox has no DOM). `React` and the
+common hooks (`useState`, `useMemo`, …) are in scope by bare name.
+
+```yaml
+kind: react-component
+componentName: TaskList
+starterCode: |
+  function TaskList({ tasks }) {
+    // return a <ul> with one <li> per task
+  }
+tests:
+  - name: "Renders one <li> per task"
+    props: { tasks: ["a", "b", "c"] } # spread as the component's props
+    assert: { selector: "ul li", count: 3 }
+  - name: "Shows each task's text"
+    props: { tasks: ["a", "b"] }
+    assert: { selector: "ul li", textIncludes: ["a", "b"] }
+```
+
+Assertion keys (combine any; all must hold): `selector` (CSS, scoped to the
+output), `count`, `exists`, `text` (exact, trimmed), `textIncludes`
+(string or array of substrings).
+
+Two playable samples ship out of the daily rotation — open
+`?preview=900` (component) and `?preview=901` (hook) to try them. Because React
+needs the DOM, these render on the main thread and so **don't** get the
+worker's infinite-loop timeout yet — a sandboxed `<iframe>` is the next step.
+`validate-puzzles` checks their structure and that the JSX compiles, but can't
+execute them in Node (no DOM).
+
 ## How "today's puzzle" is chosen
 
 `public/puzzles/index.json` has a launch `epoch` date and an ordered list of

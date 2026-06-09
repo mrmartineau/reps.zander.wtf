@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Button } from '@mrmartineau/zui/react';
+import { Button, Badge } from '@mrmartineau/zui/react';
 import {
   loadTodaysPuzzle,
   loadPuzzleByDay,
@@ -37,6 +37,15 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Difficulty → ZUI badge colour.
 const DIFFICULTY_COLOR = { easy: 'emerald', medium: 'amber', hard: 'rose' };
+
+// React puzzle kinds author JSX; everything else is plain JavaScript. Drives the
+// editor's language mode and the little label in its corner.
+const REACT_KINDS = new Set(['react-component', 'react-hook']);
+function editorLang(kind) {
+  return REACT_KINDS.has(kind)
+    ? { language: 'jsx', label: 'JSX' }
+    : { language: 'javascript', label: 'JavaScript' };
+}
 
 export default function App() {
   const [puzzle, setPuzzle] = useState(null);
@@ -402,11 +411,18 @@ export default function App() {
           <span className="puzzle-number">#{puzzle.puzzleNumber}</span>
           <span className="puzzle-title">{puzzle.title}</span>
           {puzzle.difficulty && (
-            <span
-              className={`zui-badge zui-badge-variant-subtle zui-badge-color-${DIFFICULTY_COLOR[puzzle.difficulty]} difficulty-badge`}
+            <Badge
+              variant="subtle"
+              color={DIFFICULTY_COLOR[puzzle.difficulty]}
+              className="difficulty-badge"
             >
               {puzzle.difficulty}
-            </span>
+            </Badge>
+          )}
+          {REACT_KINDS.has(puzzle.kind) && (
+            <Badge variant="subtle" color="cyan">
+              React {puzzle.kind === 'react-hook' ? 'hook' : 'component'}
+            </Badge>
           )}
           <Timer
             startedAt={startedAt}
@@ -421,6 +437,7 @@ export default function App() {
           onChange={setCode}
           onFirstEdit={handleFirstEdit}
           disabled={running}
+          {...editorLang(puzzle.kind)}
         />
 
         <SolutionPanel

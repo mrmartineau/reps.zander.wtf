@@ -56,7 +56,9 @@ export async function loadPuzzleByDay(dayNumber) {
   } catch {
     missing();
   }
-  if (!puzzle || typeof puzzle !== 'object' || puzzle.functionName == null) {
+  // React-component puzzles name a `componentName` instead of `functionName`.
+  const name = puzzle && (puzzle.functionName ?? puzzle.componentName);
+  if (!puzzle || typeof puzzle !== 'object' || name == null) {
     missing();
   }
 

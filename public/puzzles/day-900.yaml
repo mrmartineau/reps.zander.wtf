@@ -1,0 +1,39 @@
+day: 900
+kind: react-component
+title: "Render a Task List"
+difficulty: easy
+prompt: |
+  Build a `TaskList` component that takes a `tasks` prop (an array of strings)
+  and renders each one as an `<li>` inside a single `<ul>`.
+
+  For example, given `tasks={['Write tests', 'Ship it']}` it should render a
+  list with two items showing that text.
+componentName: TaskList
+starterCode: |
+  function TaskList({ tasks }) {
+    // Return a <ul> with one <li> per task.
+  }
+tests:
+  - name: "Renders one <li> per task"
+    props: { tasks: ["Write tests", "Refactor", "Ship it"] }
+    assert: { selector: "ul li", count: 3 }
+  - name: "Shows each task's text"
+    props: { tasks: ["Write tests", "Ship it"] }
+    assert: { selector: "ul li", textIncludes: ["Write tests", "Ship it"] }
+  - name: "An empty list renders no items"
+    props: { tasks: [] }
+    assert: { selector: "li", count: 0 }
+solution: |
+  function TaskList({ tasks }) {
+    return (
+      <ul>
+        {tasks.map((task, i) => (
+          <li key={i}>{task}</li>
+        ))}
+      </ul>
+    );
+  }
+solutionExplanation: |
+  `tasks.map(...)` turns each string into an `<li>`. React wants a stable
+  `key` on siblings in a list; the array index is fine here because the list
+  isn't reordered. An empty array maps to nothing, so no items render.

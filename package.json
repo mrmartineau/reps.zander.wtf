@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "prepare-submissions": "node scripts/prepare-submissions.mjs",
-    "dev": "node scripts/prepare-submissions.mjs && vite",
+    "dev": "node scripts/prepare-submissions.mjs && portless run vite",
     "build": "node scripts/prepare-submissions.mjs && vite build",
     "preview": "vite preview",
     "deploy": "pnpm build && wrangler deploy",
@@ -21,7 +21,8 @@
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-markdown": "^10.1.0",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "sucrase": "^3.35.1"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.39.0",
@@ -29,5 +30,6 @@
     "vite": "^8.0.16",
     "wrangler": "4.95.0"
   },
-  "packageManager": "pnpm@11.5.0"
+  "packageManager": "pnpm@11.5.0",
+  "portless": "reps"
 }

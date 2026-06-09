@@ -1,8 +1,15 @@
 // Orchestrates running each test in a fresh worker with a hard timeout.
 // A fresh worker per test means one test's infinite loop never blocks the
 // others, and gives us a clean "Timed out" result for the strict tier.
+//
+// React-flavoured puzzles (`kind: react-component` / `react-hook`) need the
+// DOM, so they're delegated to reactRunner.js, which renders on the main
+// thread. Plain-function puzzles (the default) stay on the worker path below.
+import { runReactTests } from './reactRunner.js';
 
 const TIMEOUT_MS = 2000;
+
+const REACT_KINDS = new Set(['react-component', 'react-hook']);
 
 function runOneTest(code, functionName, test) {
   return new Promise((resolve) => {
@@ -40,6 +47,10 @@ function runOneTest(code, functionName, test) {
 }
 
 export async function runTests(code, puzzle) {
+  if (REACT_KINDS.has(puzzle.kind)) {
+    return runReactTests(code, puzzle);
+  }
+
   // Run sequentially so results stream in order; tests are tiny so this is
   // plenty fast and keeps the UI predictable.
   const results = [];
