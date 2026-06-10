@@ -27,10 +27,21 @@ const indexPath = path.join(liveDir, 'index.json');
 // contributors — never promote them.
 const EXAMPLE_PREFIX = 'example-';
 
-const drafts = fs
-  .readdirSync(subsDir)
-  .filter((f) => f.endsWith('.yaml') && !f.startsWith(EXAMPLE_PREFIX))
-  .sort();
+// Fisher-Yates in-place shuffle so the order drafts land in `days[]` (and thus
+// their calendar position) isn't tied to filename ordering.
+const shuffle = (arr) => {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+};
+
+const drafts = shuffle(
+  fs
+    .readdirSync(subsDir)
+    .filter((f) => f.endsWith('.yaml') && !f.startsWith(EXAMPLE_PREFIX)),
+);
 
 if (drafts.length === 0) {
   console.log('No submissions to promote (example-*.yaml are kept as examples).');
