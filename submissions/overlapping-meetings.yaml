@@ -12,7 +12,9 @@ prompt: |
   (one ends exactly when the next starts) do **not** overlap.
 
   Return the names of every meeting that overlaps at least one other
-  meeting, in input order, without duplicates.
+  meeting, in input order, without duplicates — each clashing meeting is
+  listed once, no matter how many others it collides with. Meeting names
+  are guaranteed to be unique.
 
   For example:
 
