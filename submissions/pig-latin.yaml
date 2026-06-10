@@ -1,0 +1,69 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Pig Latin"
+difficulty: medium
+prompt: |
+  Implement `pigLatin(word)` so it translates a single lowercase word into
+  Pig Latin:
+
+  - If the word **starts with a vowel** (`a`, `e`, `i`, `o`, `u`), just
+    append `"way"`.
+  - Otherwise, move the **leading consonant cluster** — all the consonants
+    before the first vowel — to the end of the word, then append `"ay"`.
+
+  For example, `pigLatin("pig")` returns `"igpay"` (move `p`, add `ay`), and
+  `pigLatin("smile")` returns `"ilesmay"` (move the whole `sm` cluster, not
+  just the `s`).
+functionName: pigLatin
+starterCode: |
+  function pigLatin(word) {
+    // your code here
+  }
+tests:
+  - name: "Single leading consonant"
+    args: ["pig"]
+    expected: "igpay"
+  - name: "Consonant cluster"
+    args: ["smile"]
+    expected: "ilesmay"
+  - name: "Starts with a vowel"
+    args: ["eat"]
+    expected: "eatway"
+solution: |
+  function pigLatin(word) {
+    const vowels = "aeiou";
+    if (vowels.includes(word[0])) {
+      return word + "way";
+    }
+    let firstVowel = 0;
+    while (firstVowel < word.length && !vowels.includes(word[firstVowel])) {
+      firstVowel += 1;
+    }
+    return word.slice(firstVowel) + word.slice(0, firstVowel) + "ay";
+  }
+solutionExplanation: |
+  The core insight: the whole consonant-cluster rule boils down to **finding
+  the index of the first vowel**. Once you know that index, the word splits
+  cleanly into two slices — cluster and rest — and Pig Latin is just those
+  slices swapped, plus `"ay"`.
+
+  Step by step:
+
+  1. **Handle the vowel-start case first.** If `word[0]` is a vowel, the rule
+     is trivial: `word + "way"`. Getting this out of the way keeps the main
+     path simple.
+  2. **Scan for the first vowel.** Walk an index forward while the current
+     character is a consonant. A small `while` loop reads naturally here;
+     `word.search(/[aeiou]/)` is the regex spelling of the same scan.
+  3. **Slice and swap.** With the first vowel at index `i`:
+     `word.slice(i)` is everything from the vowel on, and `word.slice(0, i)`
+     is the consonant cluster. Concatenate them in that order and append
+     `"ay"`.
+
+  Trace `"smile"`: the scan stops at index 2 (the `i`), so the slices are
+  `"ile"` and `"sm"`, giving `"ile" + "sm" + "ay"` → `"ilesmay"`.
+
+  The trap the second test guards: moving only the **first letter** instead
+  of the whole cluster. `"smile"` would wrongly become `"milesay"`. The rule
+  is "all consonants before the first vowel", which is precisely why you scan
+  for the vowel rather than always slicing at index 1 — `"pig"` happens to
+  work either way, so it can lull a one-letter solution into looking correct.

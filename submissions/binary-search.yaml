@@ -1,0 +1,67 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Binary Search"
+difficulty: medium
+prompt: |
+  Implement `binarySearch(sorted, target)` so it returns the index of `target`
+  in an **ascending** array of distinct numbers, or `-1` if it isn't there.
+
+  Don't reach for `indexOf` — implement the real algorithm: keep `low` and
+  `high` pointers, probe the middle, and discard half the array each step.
+
+  For example, `binarySearch([1, 3, 5, 7, 9], 5)` returns `2`, and
+  `binarySearch([1, 3, 5, 7, 9], 6)` returns `-1`.
+functionName: binarySearch
+starterCode: |
+  function binarySearch(sorted, target) {
+    // your code here
+  }
+tests:
+  - name: "Target in the middle"
+    args: [[1, 3, 5, 7, 9], 5]
+    expected: 2
+  - name: "Target at the far end"
+    args: [[2, 4, 6, 8, 10, 12], 12]
+    expected: 5
+  - name: "Target absent"
+    args: [[1, 3, 5, 7, 9], 6]
+    expected: -1
+solution: |
+  function binarySearch(sorted, target) {
+    let low = 0;
+    let high = sorted.length - 1;
+    while (low <= high) {
+      const mid = Math.floor((low + high) / 2);
+      if (sorted[mid] === target) return mid;
+      if (sorted[mid] < target) {
+        low = mid + 1;
+      } else {
+        high = mid - 1;
+      }
+    }
+    return -1;
+  }
+solutionExplanation: |
+  The core insight: because the array is **sorted**, one comparison with the
+  middle element tells you which *half* the target must be in — so you can
+  throw the other half away. Repeat, and the search space halves every step:
+  a million elements takes about 20 probes instead of a million.
+
+  Keep two pointers bracketing the region that could still contain the target:
+
+  1. Start with `low = 0` and `high = length - 1`.
+  2. Probe the middle: `mid = Math.floor((low + high) / 2)`.
+  3. If `sorted[mid]` is the target, you're done — return `mid`.
+  4. If `sorted[mid] < target`, the target (if present) is to the *right*, so
+     move `low` to `mid + 1`. Otherwise move `high` to `mid - 1`.
+  5. Loop while `low <= high`.
+
+  Trace `[1, 3, 5, 7, 9]` looking for `6`: probe index 2 (`5` — too small, go
+  right), probe index 3 (`7` — too big, go left)… now `low = 3`, `high = 2`,
+  the window has collapsed, and the loop exits. That collapse — `low`
+  overtaking `high` — is exactly what "not found" looks like, so you return
+  `-1` *after* the loop, not inside it.
+
+  Two classic gotchas: the loop condition must be `low <= high` (with `<` you
+  never probe a window of size one, so you'd miss targets at the ends like
+  `12` in the second test), and `mid + 1` / `mid - 1` must actually exclude
+  `mid` — reusing `mid` as the new bound can loop forever.

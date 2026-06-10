@@ -1,0 +1,68 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Cart Total with Discount"
+difficulty: easy
+prompt: |
+  The checkout page needs a grand total. Implement
+  `cartTotal(cart, discountPercent)` where `cart` is an array of line items,
+  each `{ price, qty }`. First sum up `price * qty` across all items, then
+  reduce that subtotal by `discountPercent` percent.
+
+  For example, a cart of `[{ price: 100, qty: 2 }, { price: 50, qty: 1 }]`
+  has a subtotal of `250`; with a `10` percent discount, `cartTotal` returns
+  `225`.
+
+  An empty cart totals `0`, whatever the discount.
+functionName: cartTotal
+starterCode: |
+  function cartTotal(cart, discountPercent) {
+    // your code here
+  }
+tests:
+  - name: "Two line items, 10% off"
+    args:
+      [
+        [
+          { price: 100, qty: 2 },
+          { price: 50, qty: 1 },
+        ],
+        10,
+      ]
+    expected: 225
+  - name: "One line item, 25% off"
+    args: [[{ price: 20, qty: 3 }], 25]
+    expected: 45
+  - name: "Empty cart"
+    args: [[], 50]
+    expected: 0
+solution: |
+  function cartTotal(cart, discountPercent) {
+    const subtotal = cart.reduce(
+      (sum, item) => sum + item.price * item.qty,
+      0
+    );
+    const discount = (subtotal * discountPercent) / 100;
+    return subtotal - discount;
+  }
+solutionExplanation: |
+  The core insight: there are two independent stages here — **accumulate**
+  a subtotal, then **scale** it — and keeping them separate keeps each one
+  trivial.
+
+  Stage 1, the subtotal, is a classic fold: many line items collapse into
+  one number. `reduce` does exactly that — it carries a running `sum`,
+  adding each item's `price * qty` (not just `price`: forgetting the
+  quantity is the most common slip in this puzzle).
+
+  Stage 2, the discount: "reduce by `p` percent" means subtract
+  `subtotal * p / 100` from the subtotal. Equivalently you can multiply by
+  `(100 - p) / 100` in one go — both are correct; the two-step form mirrors
+  how a receipt reads.
+
+  The gotcha the edge case guards: an empty cart. This is why `reduce`
+  takes a second argument, the **initial value** `0`. Without it,
+  `[].reduce(...)` throws a `TypeError` ("Reduce of empty array with no
+  initial value"). With it, the subtotal is `0`, the discount is `0`, and
+  the answer falls out as `0` with no `if` statement needed.
+
+  A plain `for...of` loop with `let sum = 0` is an equally good answer —
+  `reduce` is just the named pattern for "boil an array down to one value".

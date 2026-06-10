@@ -1,0 +1,57 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Extract the Initials"
+difficulty: easy
+prompt: |
+  Implement `initials(fullName)` so it returns the first letter of each
+  whitespace-separated word, uppercased and joined together with nothing in
+  between.
+
+  For example, `initials("ada lovelace")` returns `"AL"`.
+functionName: initials
+starterCode: |
+  function initials(fullName) {
+    // your code here
+  }
+tests:
+  - name: "First and last name"
+    args: ["ada lovelace"]
+    expected: "AL"
+  - name: "Several names"
+    args: ["grace brewster murray hopper"]
+    expected: "GBMH"
+  - name: "Single word"
+    args: ["plato"]
+    expected: "P"
+solution: |
+  function initials(fullName) {
+    const words = fullName.split(/\s+/);
+    let result = "";
+    for (const word of words) {
+      result += word[0].toUpperCase();
+    }
+    return result;
+  }
+solutionExplanation: |
+  The core insight: this is a *split → pick → join* pipeline. Break the name
+  into words, take character `[0]` of each, uppercase it, and glue the picks
+  back together.
+
+  Step by step:
+
+  1. **Split on whitespace.** `fullName.split(/\s+/)` turns
+     `"ada lovelace"` into `["ada", "lovelace"]`. The regex `\s+` matches a
+     *run* of whitespace, so even a stray double space wouldn't produce empty
+     words the way `split(" ")` would.
+  2. **Take the first letter of each word.** Strings are indexable, so
+     `word[0]` is the initial.
+  3. **Uppercase and accumulate.** Append `word[0].toUpperCase()` to a result
+     string as you go (or use `.map(...).join("")` — same shape, different
+     spelling).
+
+  The single-word edge case (`"plato"` → `"P"`) is there to check you didn't
+  hardcode "first word + last word". Splitting a one-word string just gives a
+  one-element array, so the pipeline handles it with no extra code — which is
+  the sign you solved the general problem, not the example.
+
+  A compact equivalent worth recognising in other people's code:
+  `fullName.split(/\s+/).map(w => w[0].toUpperCase()).join("")`.

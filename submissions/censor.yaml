@@ -1,0 +1,67 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Censor the Words"
+difficulty: medium
+prompt: |
+  Implement `censor(text, words)` so it replaces every word of `text` that
+  appears in the `words` array with asterisks — **one `*` per character of
+  the censored word**. Matching is exact and case-sensitive, and only whole
+  words are censored. Words in `text` are separated by single spaces, and
+  there is no punctuation to worry about.
+
+  For example, `censor("the cake is a lie", ["cake", "lie"])` returns
+  `"the **** is a ***"` — `cake` (4 letters) becomes `****` and `lie`
+  (3 letters) becomes `***`.
+functionName: censor
+starterCode: |
+  function censor(text, words) {
+    // your code here
+  }
+tests:
+  - name: "Two banned words"
+    args: ["the cake is a lie", ["cake", "lie"]]
+    expected: "the **** is a ***"
+  - name: "Repeated banned word"
+    args: ["never say never again", ["never"]]
+    expected: "***** say ***** again"
+  - name: "Nothing to censor"
+    args: ["hello world", ["foo", "bar"]]
+    expected: "hello world"
+solution: |
+  function censor(text, words) {
+    const result = [];
+    for (const word of text.split(" ")) {
+      if (words.includes(word)) {
+        result.push("*".repeat(word.length));
+      } else {
+        result.push(word);
+      }
+    }
+    return result.join(" ");
+  }
+solutionExplanation: |
+  The core insight: work at the **word level, not the character level**.
+  Split the sentence into words, transform each word independently (censored
+  or not), and join them back with spaces. Once a word is its own unit, the
+  rule is a one-line decision per word.
+
+  Step by step:
+
+  1. **`text.split(" ")`** turns the sentence into an array of words — the
+     prompt guarantees single spaces, so a plain space split is safe.
+  2. **For each word**, ask `words.includes(word)`. That's the whole "is it
+     banned?" check, and because `includes` uses exact equality, the
+     case-sensitive whole-word matching comes free.
+  3. **Censor by length.** `"*".repeat(word.length)` builds the replacement —
+     the asterisk count must match the original word's length, which is why
+     `cake` → `****` but `lie` → `***`. This is the detail that rules out a
+     fixed `"***"` replacement.
+  4. **`join(" ")`** reassembles the sentence with the original spacing.
+
+  Why not `text.replace(...)` per banned word? Substring replacement censors
+  *inside* other words — banning `"cake"` would mangle `"pancakes"` — and
+  plain `replace` only hits the first occurrence anyway (see the repeated
+  `"never"` test). Splitting into words sidesteps both problems at once.
+
+  The edge case (`"hello world"` with banned words `["foo", "bar"]`) checks
+  the pass-through path: when nothing matches, every word takes the `else`
+  branch and the output equals the input, spacing intact.

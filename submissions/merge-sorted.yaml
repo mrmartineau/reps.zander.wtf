@@ -1,0 +1,72 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Merge Sorted Arrays"
+difficulty: medium
+prompt: |
+  Implement `mergeSorted(a, b)` so it merges two **ascending** arrays of
+  numbers into one ascending array containing all the elements of both.
+
+  For example, `mergeSorted([1, 3, 5], [2, 4, 6])` returns
+  `[1, 2, 3, 4, 5, 6]`.
+
+  You could concat and re-sort — but try the classic *two-pointer merge*
+  instead: repeatedly take the smaller of the two front elements. It's the
+  heart of merge sort.
+functionName: mergeSorted
+starterCode: |
+  function mergeSorted(a, b) {
+    // your code here
+  }
+tests:
+  - name: "Interleaved values"
+    args: [[1, 3, 5], [2, 4, 6]]
+    expected: [1, 2, 3, 4, 5, 6]
+  - name: "Uneven lengths"
+    args: [[1, 2, 9], [3, 4]]
+    expected: [1, 2, 3, 4, 9]
+  - name: "One array empty"
+    args: [[], [1, 2, 3]]
+    expected: [1, 2, 3]
+solution: |
+  function mergeSorted(a, b) {
+    const merged = [];
+    let i = 0;
+    let j = 0;
+    while (i < a.length && j < b.length) {
+      if (a[i] <= b[j]) {
+        merged.push(a[i]);
+        i += 1;
+      } else {
+        merged.push(b[j]);
+        j += 1;
+      }
+    }
+    while (i < a.length) merged.push(a[i++]);
+    while (j < b.length) merged.push(b[j++]);
+    return merged;
+  }
+solutionExplanation: |
+  The core insight: since both arrays are already sorted, the smallest
+  remaining element overall is always sitting at the **front of one of the two
+  arrays**. So you never need to search — just compare the two front elements
+  and take the smaller one.
+
+  Keep one pointer per array (`i` into `a`, `j` into `b`):
+
+  1. Compare `a[i]` with `b[j]`.
+  2. Push the smaller one onto the result and advance *that* pointer only.
+  3. Repeat while both arrays still have elements.
+  4. When one array runs out, the other's remaining elements are already
+     sorted and all larger than what you've taken — append them as-is.
+
+  Trace `[1, 3, 5]` vs `[2, 4, 6]`: take `1` (a), `2` (b), `3` (a), `4` (b),
+  `5` (a) — now `a` is exhausted, so append the leftover `6`.
+
+  The edge case is exactly step 4: if one input is empty, the main loop never
+  runs and the "drain the leftovers" loops do all the work. Forgetting those
+  drain loops is the classic bug — the merge silently drops everything left in
+  the longer array.
+
+  Why bother when `[...a, ...b].sort((x, y) => x - y)` works? Sorting is
+  O(n log n) and ignores the order you were *given*. The two-pointer merge is
+  a single O(n) pass — and it's the building block of merge sort, where this
+  exact routine gets applied recursively.

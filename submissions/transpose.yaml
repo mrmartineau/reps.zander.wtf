@@ -1,0 +1,78 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Transpose a Matrix"
+difficulty: medium
+prompt: |
+  Implement `transpose(matrix)` so it flips a rectangular matrix (an array of
+  equal-length rows) over its main diagonal: rows become columns and columns
+  become rows.
+
+  For example:
+
+  ```js
+  transpose([
+    [1, 2, 3],
+    [4, 5, 6],
+  ]);
+  // → [
+  //     [1, 4],
+  //     [2, 5],
+  //     [3, 6],
+  //   ]
+  ```
+
+  A 2×3 matrix becomes 3×2: the element at row `r`, column `c` moves to row
+  `c`, column `r`.
+functionName: transpose
+starterCode: |
+  function transpose(matrix) {
+    // your code here
+  }
+tests:
+  - name: "2x3 becomes 3x2"
+    args: [[[1, 2, 3], [4, 5, 6]]]
+    expected: [[1, 4], [2, 5], [3, 6]]
+  - name: "Square matrix"
+    args: [[[1, 2], [3, 4]]]
+    expected: [[1, 3], [2, 4]]
+  - name: "Single row becomes a column"
+    args: [[[1, 2, 3]]]
+    expected: [[1], [2], [3]]
+solution: |
+  function transpose(matrix) {
+    const rows = matrix.length;
+    const cols = matrix[0].length;
+    const result = [];
+    for (let c = 0; c < cols; c++) {
+      const newRow = [];
+      for (let r = 0; r < rows; r++) {
+        newRow.push(matrix[r][c]);
+      }
+      result.push(newRow);
+    }
+    return result;
+  }
+solutionExplanation: |
+  The one-line insight: **row `c` of the output is column `c` of the input.**
+  Once you say it that way, the code writes itself — for each column index of
+  the original, collect that column top-to-bottom and push it as a row.
+
+  Build it step by step:
+
+  1. The output has one row per *column* of the input, so the outer loop runs
+     over `matrix[0].length` (the width), not `matrix.length` (the height).
+     Swapping these two is the most common mistake — on a square matrix it
+     happens to work, which is why the 2×3 test exists: a non-square input
+     exposes the mix-up immediately as a wrong shape.
+  2. For column `c`, walk every row `r` and grab `matrix[r][c]`. Note the
+     flipped subscripts: you read `[r][c]` but you're assembling output
+     position `[c][r]` — that index swap *is* the transpose.
+  3. Push each assembled column as a row of the result.
+
+  The single-row edge case is a good sanity check of the shape rule: `[[1, 2,
+  3]]` is 1×3, so the transpose must be 3×1 — `[[1], [2], [3]]`, three rows of
+  one element each, *not* `[1, 2, 3]`. Every output row is still an array,
+  even when its length is 1.
+
+  Idiomatic alternative once the loops make sense:
+  `matrix[0].map((_, c) => matrix.map((row) => row[c]))` — the outer `map`
+  runs once per column, the inner one plucks that column from every row.

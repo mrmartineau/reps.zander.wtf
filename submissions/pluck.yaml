@@ -1,0 +1,62 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Pluck a Field"
+difficulty: easy
+prompt: |
+  Your analytics dashboard receives full user records, but a chart only needs
+  one column. Implement `pluck(records, key)` so it takes an array of objects
+  and returns an array containing just that key's value from each record, in
+  the same order. The key is guaranteed to exist on every record.
+
+  For example, `pluck([{ name: "Ada", age: 36 }, { name: "Grace", age: 45 }], "name")`
+  returns `["Ada", "Grace"]`. An empty array of records returns `[]`.
+functionName: pluck
+starterCode: |
+  function pluck(records, key) {
+    // your code here
+  }
+tests:
+  - name: "Pluck names from users"
+    args:
+      [
+        [{ name: "Ada", age: 36 }, { name: "Grace", age: 45 }],
+        "name",
+      ]
+    expected: ["Ada", "Grace"]
+  - name: "Pluck prices from products"
+    args:
+      [
+        [
+          { sku: "A1", price: 300 },
+          { sku: "B2", price: 150 },
+          { sku: "C3", price: 999 },
+        ],
+        "price",
+      ]
+    expected: [300, 150, 999]
+  - name: "No records"
+    args: [[], "name"]
+    expected: []
+solution: |
+  function pluck(records, key) {
+    return records.map((record) => record[key]);
+  }
+solutionExplanation: |
+  The core insight: this is a **one-to-one transformation** — every record in
+  goes to exactly one value out, in the same position. Whenever you see
+  "array of X → array of Y, same length, same order", reach for `map`.
+
+  Two pieces combine here:
+
+  1. `records.map(fn)` calls `fn` once per record and collects the return
+     values into a new array.
+  2. **Bracket notation** `record[key]` looks up a property whose *name is
+     stored in a variable*. `record.key` would literally look for a property
+     called `"key"` — that's the classic mistake. When the property name is
+     dynamic, you must use brackets.
+
+  The empty-array edge case comes free: `[].map(...)` never calls the
+  callback and simply returns `[]`, so there's nothing extra to guard.
+
+  You could write this with a `for...of` loop and `push`, which works fine —
+  but `map` states the intent ("same shape, transformed values") in a single
+  expression, which is why it's the idiomatic choice.

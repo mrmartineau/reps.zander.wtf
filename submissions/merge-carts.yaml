@@ -1,0 +1,110 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Merge Two Carts"
+difficulty: medium
+prompt: |
+  A shopper had a cart on their phone and another on their laptop, and now
+  they've logged in on both. Implement `mergeCarts(a, b)` where each cart is
+  an array of line items `{ id, qty }`. Return a single merged cart:
+
+  - If an `id` appears in both carts, its quantities are **summed** into one
+    line item.
+  - Order: all of `a`'s items in their original order first, then any ids
+    that only appear in `b`, in `b`'s order.
+
+  For example:
+
+  ```js
+  mergeCarts(
+    [{ id: "apple", qty: 2 }, { id: "bread", qty: 1 }],
+    [{ id: "apple", qty: 3 }, { id: "milk", qty: 2 }]
+  )
+  // → [{ id: "apple", qty: 5 }, { id: "bread", qty: 1 }, { id: "milk", qty: 2 }]
+  ```
+
+  If the carts share no ids, the result is simply `a`'s items followed by
+  `b`'s.
+functionName: mergeCarts
+starterCode: |
+  function mergeCarts(a, b) {
+    // your code here
+  }
+tests:
+  - name: "Shared item is summed"
+    args:
+      [
+        [{ id: "apple", qty: 2 }, { id: "bread", qty: 1 }],
+        [{ id: "apple", qty: 3 }, { id: "milk", qty: 2 }],
+      ]
+    expected:
+      [
+        { id: "apple", qty: 5 },
+        { id: "bread", qty: 1 },
+        { id: "milk", qty: 2 },
+      ]
+  - name: "Several overlaps"
+    args:
+      [
+        [{ id: "pen", qty: 1 }, { id: "ink", qty: 4 }, { id: "pad", qty: 2 }],
+        [{ id: "pad", qty: 1 }, { id: "pen", qty: 2 }],
+      ]
+    expected:
+      [
+        { id: "pen", qty: 3 },
+        { id: "ink", qty: 4 },
+        { id: "pad", qty: 3 },
+      ]
+  - name: "No shared ids"
+    args:
+      [
+        [{ id: "soap", qty: 1 }],
+        [{ id: "towel", qty: 2 }],
+      ]
+    expected:
+      [
+        { id: "soap", qty: 1 },
+        { id: "towel", qty: 2 },
+      ]
+solution: |
+  function mergeCarts(a, b) {
+    const merged = [];
+    const byId = {};
+
+    for (const item of [...a, ...b]) {
+      if (byId[item.id]) {
+        byId[item.id].qty += item.qty;
+      } else {
+        const copy = { id: item.id, qty: item.qty };
+        byId[item.id] = copy;
+        merged.push(copy);
+      }
+    }
+
+    return merged;
+  }
+solutionExplanation: |
+  The core insight: keep **two views of the same data** — an array for order,
+  and an id-keyed lookup for fast "have I seen this before?" checks. The
+  trick that ties them together is storing the *same object* in both, so
+  updating it through the lookup also updates it inside the array.
+
+  Step by step:
+
+  1. Walk every item from `a` then `b` in one pass (`[...a, ...b]`). Because
+     `a` comes first, any id present in both is *first seen* at its position
+     in `a` — which is exactly the ordering rule the prompt asks for.
+  2. First time an id appears: make a fresh `{ id, qty }` copy, push it onto
+     `merged`, and remember it in `byId` under its id.
+  3. Every later time the id appears: don't push anything — just find the
+     existing line item via `byId` and add to its `qty`. The object in the
+     array is the same object, so the array updates too.
+
+  Why copy instead of pushing `item` directly? Mutating the caller's input
+  objects is rude — the copy keeps the function pure.
+
+  The "no shared ids" edge case falls out naturally: every item takes the
+  first-time branch, so you get `a` then `b` unchanged — no special casing.
+
+  You might have tried, for each item of `b`, calling `a.find(...)` to look
+  for a match. That works, but it's a nested scan and it spreads the
+  ordering logic across two loops; the single pass with a lookup table is
+  the pattern worth remembering for any "merge by key" problem.

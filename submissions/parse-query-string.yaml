@@ -1,0 +1,68 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Parse a Query String"
+difficulty: medium
+prompt: |
+  Implement `parseQueryString(qs)` so it turns a URL query string into a plain
+  object of key/value pairs. The input has no leading `?`, every pair contains
+  an `=`, and values are plain strings with no URL-encoding to worry about.
+
+  An empty string returns an empty object `{}`.
+
+  For example, `parseQueryString("name=ada&role=admin")` returns
+  `{ name: "ada", role: "admin" }`.
+functionName: parseQueryString
+starterCode: |
+  function parseQueryString(qs) {
+    // your code here
+  }
+tests:
+  - name: "Two pairs"
+    args: ["name=ada&role=admin"]
+    expected: { name: "ada", role: "admin" }
+  - name: "Single pair with a numeric-looking value"
+    args: ["page=2"]
+    expected: { page: "2" }
+  - name: "Empty query string"
+    args: [""]
+    expected: {}
+solution: |
+  function parseQueryString(qs) {
+    if (qs === "") return {};
+
+    const params = {};
+    for (const pair of qs.split("&")) {
+      const [key, value] = pair.split("=");
+      params[key] = value;
+    }
+    return params;
+  }
+solutionExplanation: |
+  Like most "parse this little format" puzzles, the trick is a **two-level
+  split**: the string is pairs joined by `&`, and each pair is a key and a
+  value joined by `=`. Split on the outer separator first, then on the inner
+  one.
+
+  Step by step:
+
+  1. `qs.split("&")` turns `"name=ada&role=admin"` into
+     `["name=ada", "role=admin"]`.
+  2. For each pair, `pair.split("=")` gives `["name", "ada"]` — destructure it
+     straight into `const [key, value]`.
+  3. Assign onto an accumulator object: `params[key] = value`. Note the
+     bracket syntax — `params.key` would literally create a property named
+     `"key"`, not use the variable.
+
+  The gotcha the edge case guards: `"".split("&")` returns `[""]`, **not**
+  `[]`. Without the early return for the empty string, the loop runs once on
+  `""`, splits it into `[""]`, and you end up with the bogus entry
+  `{ "": undefined }`. Checking `qs === ""` up front sidesteps the whole
+  mess.
+
+  Also notice the second test: `"page=2"` maps to the **string** `"2"`, not
+  the number `2`. Query string values are always text — resist the urge to
+  call `Number()` here; the spec says values are plain strings.
+
+  (In real code you'd reach for the built-in `URLSearchParams`, which also
+  handles URL-encoding — but it returns an iterable you'd still have to
+  convert to a plain object, and writing the split version once teaches you
+  what it's doing under the hood.)
