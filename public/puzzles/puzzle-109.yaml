@@ -1,0 +1,72 @@
+id: 109
+title: "Collatz Steps"
+difficulty: medium
+prompt: |
+  The Collatz sequence starts from any positive integer `n` and repeats one
+  rule until it reaches `1`:
+
+  - if `n` is even, the next number is `n / 2`
+  - if `n` is odd, the next number is `3 * n + 1`
+
+  Implement `collatzSteps(n)` so it returns how many steps it takes to reach
+  `1`.
+
+  For example, starting from `6` the sequence is
+  `6 → 3 → 10 → 5 → 16 → 8 → 4 → 2 → 1`, which is **8** steps, so
+  `collatzSteps(6)` returns `8`.
+
+  Starting *at* `1` takes no steps at all: `collatzSteps(1)` returns `0`.
+functionName: collatzSteps
+starterCode: |
+  function collatzSteps(n) {
+    // your code here
+  }
+tests:
+  - name: "Starting from 6"
+    args: [6]
+    expected: 8
+  - name: "Starting from 7"
+    args: [7]
+    expected: 16
+  - name: "Already at 1"
+    args: [1]
+    expected: 0
+solution: |
+  function collatzSteps(n) {
+    let steps = 0;
+    while (n !== 1) {
+      if (n % 2 === 0) {
+        n = n / 2;
+      } else {
+        n = 3 * n + 1;
+      }
+      steps += 1;
+    }
+    return steps;
+  }
+solutionExplanation: |
+  The core insight: you don't know in advance how many steps there will be,
+  and that's the signal to reach for a **`while` loop** — "keep going until
+  a condition holds" — rather than a `for` loop that needs a known count.
+
+  Build it up:
+
+  1. The stopping condition comes straight from the prompt: stop when `n`
+     reaches `1`. So the loop is `while (n !== 1)`.
+  2. Inside, apply the rule: `n % 2 === 0` tests evenness; halve if even,
+     `3 * n + 1` if odd. Overwrite `n` with the new value — the sequence
+     "moves" by reassignment.
+  3. Count `steps += 1` once per rule application. A step is *applying the
+     rule*, not *visiting a number* — the sequence from `6` visits nine
+     numbers but takes eight steps. Off-by-one bugs here usually come from
+     counting visits instead of moves.
+
+  The edge case `collatzSteps(1)` is where loop choice pays off: the
+  `while` condition is false immediately, the body never runs, and you
+  return `0`. A `do...while` loop — which always runs its body at least
+  once — would incorrectly take a step away from `1` and give a wrong
+  answer. Checking *before* acting is the right shape here.
+
+  (Fun aside: nobody has proved every starting number reaches `1` — that's
+  the famous Collatz conjecture — but it's been verified far beyond
+  anything this puzzle will throw at you.)

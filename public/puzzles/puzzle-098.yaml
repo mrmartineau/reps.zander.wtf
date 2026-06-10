@@ -1,0 +1,60 @@
+id: 98
+title: "Moving Average"
+difficulty: medium
+prompt: |
+  Implement `movingAverage(nums, size)` so it returns the average of each
+  contiguous window of length `size`, sliding left to right one step at a time.
+
+  For example, `movingAverage([1, 2, 3, 4], 2)` looks at the windows `[1, 2]`,
+  `[2, 3]` and `[3, 4]`, returning `[1.5, 2.5, 3.5]`.
+
+  If `size` is larger than the array, there are no complete windows — return
+  `[]`.
+functionName: movingAverage
+starterCode: |
+  function movingAverage(nums, size) {
+    // your code here
+  }
+tests:
+  - name: "Windows of two"
+    args: [[1, 2, 3, 4], 2]
+    expected: [1.5, 2.5, 3.5]
+  - name: "Windows of three"
+    args: [[2, 4, 6, 8, 10], 3]
+    expected: [4, 6, 8]
+  - name: "Window larger than the array"
+    args: [[1, 2], 5]
+    expected: []
+solution: |
+  function movingAverage(nums, size) {
+    const result = [];
+    for (let start = 0; start + size <= nums.length; start++) {
+      let sum = 0;
+      for (let i = start; i < start + size; i++) {
+        sum += nums[i];
+      }
+      result.push(sum / size);
+    }
+    return result;
+  }
+solutionExplanation: |
+  This is the classic **sliding window** pattern: instead of thinking "average
+  some numbers", think "where can a window of length `size` *start*?"
+
+  A window starting at index `start` covers `start` through `start + size - 1`,
+  so it fits only while `start + size <= nums.length`. That single inequality
+  is the whole skeleton: loop `start` from `0` while it holds, sum the `size`
+  elements in that window, divide by `size`, push.
+
+  The edge case falls out automatically — and that's the gotcha. When `size`
+  is bigger than the array, the condition `start + size <= nums.length` is
+  false even for `start = 0`, so the loop body never runs and you return `[]`
+  without writing a special `if`. A naive version that slices first and checks
+  later often returns the average of a *partial* window instead — make sure
+  only full windows count.
+
+  Two refinements worth knowing: `nums.slice(start, start + size)` plus
+  `reduce` expresses the inner sum more declaratively, and for huge inputs you
+  can keep a *running* sum — add the element entering the window, subtract the
+  one leaving — turning the O(n × size) loop into O(n). For puzzle-sized
+  inputs, the straightforward double loop is perfectly fine and easier to read.

@@ -1,0 +1,58 @@
+id: 93
+title: "Remove the Vowels"
+difficulty: easy
+prompt: |
+  Implement `removeVowels(str)` so it returns the string with every vowel
+  (`a`, `e`, `i`, `o`, `u`) removed, in both lowercase and uppercase. All
+  other characters keep their positions relative to each other.
+
+  For example, `removeVowels("programming")` returns `"prgrmmng"`.
+functionName: removeVowels
+starterCode: |
+  function removeVowels(str) {
+    // your code here
+  }
+tests:
+  - name: "Single word"
+    args: ["programming"]
+    expected: "prgrmmng"
+  - name: "Mixed case sentence"
+    args: ["Hello World"]
+    expected: "Hll Wrld"
+  - name: "Only vowels"
+    args: ["aeiouAEIOU"]
+    expected: ""
+solution: |
+  function removeVowels(str) {
+    let result = "";
+    for (const ch of str) {
+      if (!"aeiou".includes(ch.toLowerCase())) {
+        result += ch;
+      }
+    }
+    return result;
+  }
+solutionExplanation: |
+  The core insight: "remove the vowels" is really "**keep** the non-vowels".
+  Instead of trying to delete characters out of a string (strings are
+  immutable in JavaScript — you can't), build a *new* string containing only
+  the characters that pass the filter.
+
+  Step by step:
+
+  1. Define what counts as a vowel: the string `"aeiou"` works as a tiny
+     lookup table via `.includes()`.
+  2. Handle both cases with one list by lowercasing the *character under
+     test* — `ch.toLowerCase()` — rather than listing `"aeiouAEIOU"`. Note
+     you test the lowercased copy but append the **original** `ch`, so the
+     output keeps its casing (`"Hello World"` → `"Hll Wrld"`, capital `H` and
+     `W` intact).
+  3. Walk the string, appending each character that is *not* a vowel.
+
+  The only-vowels edge case (`"aeiouAEIOU"` → `""`) checks that filtering
+  everything out leaves a genuinely empty string — which it does, because the
+  result starts as `""` and nothing ever passes the test.
+
+  A regex one-liner does the same job: `str.replace(/[aeiou]/gi, "")` — the
+  `g` flag means "all matches" and `i` means "ignore case". Both versions are
+  idiomatic; the loop shows the mechanics, the regex names the intent.

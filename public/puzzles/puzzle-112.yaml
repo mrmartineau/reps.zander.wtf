@@ -1,0 +1,68 @@
+id: 112
+title: "Count Positives, Sum Negatives"
+difficulty: easy
+prompt: |
+  Implement `countPositivesSumNegatives(nums)` so it returns a two-element
+  array: the **count** of positive numbers, followed by the **sum** of
+  negative numbers. Zero counts as neither positive nor negative.
+
+  For example, `countPositivesSumNegatives([1, -2, 3, -4])` returns
+  `[2, -6]` — two positives (`1`, `3`) and the negatives sum to
+  `-2 + -4 = -6`.
+
+  An empty array returns `[0, 0]`.
+functionName: countPositivesSumNegatives
+starterCode: |
+  function countPositivesSumNegatives(nums) {
+    // your code here
+  }
+tests:
+  - name: "Mixed positives and negatives"
+    args: [[1, -2, 3, -4]]
+    expected: [2, -6]
+  - name: "Zeroes count as neither"
+    args: [[0, 2, 3, 0, -5, -6, 7]]
+    expected: [3, -11]
+  - name: "Empty array"
+    args: [[]]
+    expected: [0, 0]
+solution: |
+  function countPositivesSumNegatives(nums) {
+    let positiveCount = 0;
+    let negativeSum = 0;
+    for (const n of nums) {
+      if (n > 0) {
+        positiveCount += 1;
+      } else if (n < 0) {
+        negativeSum += n;
+      }
+    }
+    return [positiveCount, negativeSum];
+  }
+solutionExplanation: |
+  The core insight: you're computing **two different aggregates in one pass**
+  — a *count* for one group and a *sum* for the other. Keep one accumulator
+  for each and let a single loop feed them both.
+
+  For each number there are three possibilities, and each gets its own
+  treatment:
+
+  - `n > 0` — bump the positive **count** by `1` (not by `n`!).
+  - `n < 0` — add `n` itself to the negative **sum**.
+  - `n === 0` — do nothing. Zero is neither positive nor negative, so it
+    falls through both checks. That's why the conditions are the strict
+    `> 0` / `< 0`, not `>= 0` — the second test plants zeroes specifically to
+    catch a `>=`.
+
+  The classic slip here is symmetry blindness: adding `1` to both, or adding
+  `n` to both. Read the two accumulators' names out loud — one counts, one
+  sums — and match the operation to the name.
+
+  The empty-array case costs nothing: both accumulators start at `0`, the
+  loop body never runs, and `[0, 0]` is returned as-is. Starting from the
+  right initial values (`0` for a count, `0` for a sum) is what makes edge
+  cases like this free.
+
+  A `filter`-based version reads nicely too —
+  `nums.filter((n) => n > 0).length` and a `reduce` over the negatives — but
+  it walks the array twice; the single loop does both jobs in one sweep.

@@ -1,0 +1,59 @@
+id: 58
+title: "Collapse Adjacent Duplicates"
+difficulty: medium
+prompt: |
+  Implement `dedupeAdjacent(arr)` so it collapses every run of equal
+  **consecutive** elements down to a single element. Non-adjacent repeats are
+  kept — this is not a full dedupe.
+
+  For example, `dedupeAdjacent([1, 1, 2, 1])` returns `[1, 2, 1]`: the two
+  leading `1`s collapse into one, but the final `1` survives because a `2`
+  separates it from the others.
+
+  An empty array returns `[]`.
+functionName: dedupeAdjacent
+starterCode: |
+  function dedupeAdjacent(arr) {
+    // your code here
+  }
+tests:
+  - name: "Non-adjacent repeat survives"
+    args: [[1, 1, 2, 1]]
+    expected: [1, 2, 1]
+  - name: "Longer runs of strings"
+    args: [["a", "a", "a", "b", "b", "c"]]
+    expected: ["a", "b", "c"]
+  - name: "Empty array"
+    args: [[]]
+    expected: []
+solution: |
+  function dedupeAdjacent(arr) {
+    const result = [];
+    for (const value of arr) {
+      if (result.length === 0 || result[result.length - 1] !== value) {
+        result.push(value);
+      }
+    }
+    return result;
+  }
+solutionExplanation: |
+  The core insight: you don't need to detect *runs* at all — you only need to
+  compare each element with **the last thing you kept**. A run of equal values
+  collapses by itself, because after you keep the first one, every following
+  copy matches the tail of the output and gets skipped.
+
+  Build the result incrementally. For each element, look at
+  `result[result.length - 1]` — the most recently kept value. If the current
+  element is different (or the result is still empty), push it; otherwise drop
+  it. One pass, no lookahead, no run-counting.
+
+  The reason this puzzle isn't just "use a `Set`" is the `[1, 1, 2, 1]` case:
+  a `Set` removes *all* duplicates and would give `[1, 2]`, losing the final
+  `1`. Adjacency matters — the comparison has to be against the *previous kept
+  element*, not against "everything seen so far".
+
+  The edge case is the empty array, and it's also where naive versions break:
+  comparing `arr[i]` to `arr[i - 1]` works, but only if you guard `i === 0`
+  (otherwise you compare against `undefined`). Seeding the check with
+  `result.length === 0` handles both the first element and the empty input in
+  one condition — the loop simply never runs on `[]` and you return `[]`.

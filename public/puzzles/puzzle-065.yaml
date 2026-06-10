@@ -1,0 +1,52 @@
+id: 65
+title: "Reverse the Words"
+difficulty: easy
+prompt: |
+  Implement `reverseWords(sentence)` so it reverses the **order of the
+  words** in a sentence, keeping each word itself intact. Words are separated
+  by single spaces.
+
+  For example, `reverseWords("one two three")` returns `"three two one"`.
+functionName: reverseWords
+starterCode: |
+  function reverseWords(sentence) {
+    // your code here
+  }
+tests:
+  - name: "Three words"
+    args: ["one two three"]
+    expected: "three two one"
+  - name: "Two words"
+    args: ["hello world"]
+    expected: "world hello"
+  - name: "Single word"
+    args: ["solo"]
+    expected: "solo"
+solution: |
+  function reverseWords(sentence) {
+    return sentence.split(" ").reverse().join(" ");
+  }
+solutionExplanation: |
+  The core insight: strings don't have a `.reverse()`, but **arrays do** — so
+  hop into array-land, do the work there, and hop back. This
+  split → transform → join round-trip is one of the most reusable patterns in
+  string manipulation.
+
+  Step by step:
+
+  1. **`split(" ")`** turns `"one two three"` into the array
+     `["one", "two", "three"]`. Now each word is a unit you can move around
+     without touching its letters.
+  2. **`reverse()`** flips the array in place: `["three", "two", "one"]`.
+  3. **`join(" ")`** stitches it back into a string with single spaces:
+     `"three two one"`.
+
+  The trap this puzzle is really about: reversing the *string* instead of the
+  *word array*. `"one two three".split("").reverse().join("")` gives
+  `"eerht owt eno"` — every letter flipped, which is a different (and here,
+  wrong) transform. The unit you split on decides the unit you reverse.
+
+  The single-word edge case works for free: `"solo".split(" ")` is
+  `["solo"]`, reversing a one-element array changes nothing, and joining
+  returns `"solo"`. No special case needed — a good sanity check that the
+  pipeline is sound.

@@ -1,0 +1,74 @@
+id: 106
+kind: react-hook
+title: "usePasswordStrength Hook"
+difficulty: medium
+prompt: |
+  Write a hook `usePasswordStrength(password)` that scores a password for a
+  strength meter. Award one point for each rule the password satisfies:
+
+  1. at least 8 characters long,
+  2. contains an uppercase letter,
+  3. contains a digit,
+  4. contains a character that isn't a letter or digit.
+
+  Return `{ score, label }`, where `score` is 0–4 and `label` is `"weak"`
+  for scores 0–1, `"fair"` for 2–3, and `"strong"` for 4.
+
+  Reach for `useMemo` so the score is only recomputed when `password`
+  changes.
+
+  For example, `usePasswordStrength('Passw0rd')` satisfies rules 1–3 but has
+  no symbol, so it returns `{ score: 3, label: 'fair' }`.
+functionName: usePasswordStrength
+starterCode: |
+  function usePasswordStrength(password) {
+    // Return { score, label }.
+  }
+tests:
+  - name: "Length, uppercase and digit score three"
+    args: ["Passw0rd"]
+    expected: { score: 3, label: "fair" }
+  - name: "All four rules score strong"
+    args: ["C0rrect-horse!"]
+    expected: { score: 4, label: "strong" }
+  - name: "An empty password is weak"
+    args: [""]
+    expected: { score: 0, label: "weak" }
+solution: |
+  function usePasswordStrength(password) {
+    return useMemo(() => {
+      const rules = [
+        password.length >= 8,
+        /[A-Z]/.test(password),
+        /[0-9]/.test(password),
+        /[^A-Za-z0-9]/.test(password),
+      ];
+      const score = rules.filter(Boolean).length;
+      const label = score <= 1 ? "weak" : score <= 3 ? "fair" : "strong";
+      return { score, label };
+    }, [password]);
+  }
+solutionExplanation: |
+  The shape worth stealing: when a value is "one point per rule passed",
+  represent the rules as *data* — an array of booleans — instead of a chain
+  of `if (...) score++` statements. Each rule is one expression, the score
+  is `rules.filter(Boolean).length` (count the `true`s), and adding a fifth
+  rule later is a one-line change that can't forget to increment.
+
+  The rules themselves are one regex `test` each. `/[A-Z]/` and `/[0-9]/`
+  ask "does at least one such character exist anywhere?" — no `g` flag or
+  anchors needed. The symbol rule reuses the negated-class trick: `[^A-Za-z0-9]`
+  matches anything that *isn't* a letter or digit, which covers `-`, `!`,
+  spaces, and emoji without enumerating them.
+
+  Mapping score → label is a banding problem, and the ternary chain works
+  because the checks run in order: `score <= 1` catches 0–1, *then*
+  `score <= 3` catches 2–3, and everything left is 4. Reversing the order
+  (checking `<= 3` first) silently swallows the weak band — worth tracing
+  once with `score = 0` to convince yourself.
+
+  The empty password sails through with no special-casing: every rule is
+  simply false, scoring 0 — a sign the rules are well-formed. `useMemo`
+  keyed on `[password]` recomputes only when the input changes, which is the
+  right reflex for a hook that derives a value on every keystroke of a
+  controlled input.

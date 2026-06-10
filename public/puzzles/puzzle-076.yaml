@@ -1,0 +1,75 @@
+id: 76
+kind: react-component
+title: "Breadcrumbs"
+difficulty: medium
+prompt: |
+  Build a `Breadcrumbs` component that takes an `items` prop — an array of
+  `{ label, href }` objects ordered from the root to the current page — and
+  renders them inside a `<nav>`.
+
+  Every item except the last is a link: `<a href={href}>{label}</a>`. The
+  *last* item is the page you're already on, so render it as
+  `<strong>{label}</strong>` with no link.
+
+  For example, with items Home → Library → Data, it renders two anchors
+  (`Home`, `Library`) followed by `<strong>Data</strong>`.
+componentName: Breadcrumbs
+starterCode: |
+  function Breadcrumbs({ items }) {
+    // Return a <nav>: links for every item except the last, which is <strong>.
+  }
+tests:
+  - name: "All but the last item are links"
+    props:
+      items:
+        - { label: "Home", href: "/" }
+        - { label: "Library", href: "/library" }
+        - { label: "Data", href: "/library/data" }
+    assert: { selector: "nav a", count: 2 }
+  - name: "The current page is bold, not a link"
+    props:
+      items:
+        - { label: "Home", href: "/" }
+        - { label: "Library", href: "/library" }
+        - { label: "Data", href: "/library/data" }
+    assert: { selector: "nav strong", text: "Data" }
+  - name: "A single item renders no links at all"
+    props:
+      items:
+        - { label: "Home", href: "/" }
+    assert: { selector: "a", count: 0 }
+solution: |
+  function Breadcrumbs({ items }) {
+    const last = items.length - 1;
+    return (
+      <nav>
+        {items.map((item, i) =>
+          i === last ? (
+            <strong key={item.href}>{item.label}</strong>
+          ) : (
+            <a key={item.href} href={item.href}>
+              {item.label}
+            </a>
+          ),
+        )}
+      </nav>
+    );
+  }
+solutionExplanation: |
+  This is the list-rendering pattern with one twist: the element *type*
+  depends on the item's position. `map` hands you the index as its second
+  argument, so "is this the last item?" is just `i === items.length - 1` —
+  and a ternary inside the `map` picks `<strong>` or `<a>` per item.
+
+  The insight to carry forward: conditional rendering isn't only about
+  *whether* something renders, it's also about *which tag* renders. A ternary
+  that returns two different JSX elements is perfectly normal React.
+
+  The single-item edge case is where position-based logic earns its keep:
+  with one item, "the last item" is also the first, so the whole trail is
+  just `<strong>` and zero links. If you'd special-cased "first item is
+  always Home, render it as a link", that test catches it. You might also
+  have tried slicing — `items.slice(0, -1)` mapped to links plus a separate
+  `<strong>` for `items[items.length - 1]` — which works and reads nicely
+  too, but watch it on an empty array, where `items[items.length - 1]` is
+  `undefined`.

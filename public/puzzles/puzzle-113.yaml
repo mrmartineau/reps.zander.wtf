@@ -1,0 +1,67 @@
+id: 113
+title: "Character Frequency"
+difficulty: medium
+prompt: |
+  Implement `charFrequency(str)` so it returns a plain object mapping each
+  character in the string to the number of times it appears. Characters are
+  counted exactly as they appear — counting is **case-sensitive**, and spaces
+  or punctuation count too.
+
+  An empty string returns an empty object `{}`.
+
+  For example, `charFrequency("hello")` returns
+  `{ h: 1, e: 1, l: 2, o: 1 }`.
+functionName: charFrequency
+starterCode: |
+  function charFrequency(str) {
+    // your code here
+  }
+tests:
+  - name: "A simple word"
+    args: ["hello"]
+    expected: { h: 1, e: 1, l: 2, o: 1 }
+  - name: "Case-sensitive with a space"
+    args: ["Aa bA"]
+    expected: { "A": 2, "a": 1, " ": 1, "b": 1 }
+  - name: "Empty string"
+    args: [""]
+    expected: {}
+solution: |
+  function charFrequency(str) {
+    const counts = {};
+    for (const ch of str) {
+      if (ch in counts) {
+        counts[ch] += 1;
+      } else {
+        counts[ch] = 1;
+      }
+    }
+    return counts;
+  }
+solutionExplanation: |
+  This is the classic **counting with an object** pattern — an object used as
+  a tally sheet, where each key is a thing you've seen and each value is how
+  many times you've seen it. It comes up constantly (word counts, votes,
+  inventory), so it's worth making second nature.
+
+  Step by step:
+
+  1. Start with an empty object: `const counts = {}`.
+  2. Walk the string one character at a time with `for...of`.
+  3. For each character, ask: have I seen this key before? If yes, bump its
+     count. If no, set it to `1`.
+
+  The "first time seen" check is the part people fumble. Writing
+  `counts[ch] += 1` unconditionally turns into `undefined + 1`, which is
+  `NaN`. Either branch on `ch in counts` like the solution does, or use the
+  compact idiom `counts[ch] = (counts[ch] || 0) + 1` — both ensure a missing
+  key starts from `0`.
+
+  The edge case is friendly here: an empty string means the loop body never
+  runs, so the untouched `{}` is returned — exactly what's asked. That's a
+  sign of a well-shaped solution: the empty case falls out for free instead
+  of needing a special `if`.
+
+  Note the case-sensitivity requirement: don't call `toLowerCase()` anywhere.
+  `"A"` and `"a"` are different keys, as the second test checks — and so is
+  `" "` (a space), which is just another character to the loop.

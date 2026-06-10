@@ -1,0 +1,63 @@
+id: 55
+title: "Index of the Maximum"
+difficulty: easy
+prompt: |
+  Implement `indexOfMax(nums)` so it returns the **index** of the largest
+  number in the array — not the number itself. If the largest value appears
+  more than once, return the index of its **first** occurrence. An empty
+  array returns `-1`.
+
+  For example, `indexOfMax([3, 7, 2, 7])` returns `1` — the largest value is
+  `7`, and it first appears at index `1`.
+functionName: indexOfMax
+starterCode: |
+  function indexOfMax(nums) {
+    // your code here
+  }
+tests:
+  - name: "Largest in the middle"
+    args: [[5, 12, 9]]
+    expected: 1
+  - name: "Tie goes to the first occurrence"
+    args: [[3, 7, 2, 7]]
+    expected: 1
+  - name: "Empty array"
+    args: [[]]
+    expected: -1
+solution: |
+  function indexOfMax(nums) {
+    if (nums.length === 0) return -1;
+
+    let bestIndex = 0;
+    for (let i = 1; i < nums.length; i += 1) {
+      if (nums[i] > nums[bestIndex]) {
+        bestIndex = i;
+      }
+    }
+    return bestIndex;
+  }
+solutionExplanation: |
+  The core insight: when the answer is a *position*, track the **index** of
+  the best candidate so far, not the value. The value is always reachable as
+  `nums[bestIndex]`, but an index can't be recovered from a value alone.
+
+  Step by step:
+
+  1. Handle the empty array first — there's no "best" element, so return
+     `-1` before the loop even starts.
+  2. Assume index `0` is the best so far (`bestIndex = 0`).
+  3. Walk the rest of the array. Whenever `nums[i] > nums[bestIndex]`, the
+     current element beats the champion, so record `i` as the new best.
+
+  The tie rule comes down to one character: the comparison is `>` (strictly
+  greater), not `>=`. A later element that merely *equals* the champion
+  doesn't replace it, so the first occurrence keeps the title — exactly what
+  the tie test checks. With `>=` you'd return the *last* occurrence instead.
+
+  You might have tried `nums.indexOf(Math.max(...nums))` — two passes, but
+  it works and even gets the tie rule right (`indexOf` finds the first
+  match). Its trap is the edge case: `Math.max()` of no arguments is
+  `-Infinity`, and `indexOf` then returns `-1` — accidentally correct here,
+  but fragile to rely on. The single-pass loop with an explicit empty check
+  states its intent, and the "track the best index" pattern is the one
+  you'll reuse for min, argmax-by-property, and friends.

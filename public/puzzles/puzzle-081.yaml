@@ -1,0 +1,48 @@
+id: 81
+kind: react-component
+title: "Notification Badge"
+difficulty: easy
+prompt: |
+  Build a `NotificationBadge` component that takes a `count` prop and renders
+  a `<span className="badge">` showing the number — with two twists:
+
+  - When `count` is `0`, render nothing at all.
+  - When `count` is greater than `99`, show `99+` instead of the real number.
+
+  For example, `count={5}` renders `<span class="badge">5</span>`, while
+  `count={120}` renders `<span class="badge">99+</span>` and `count={0}`
+  renders no badge.
+componentName: NotificationBadge
+starterCode: |
+  function NotificationBadge({ count }) {
+    // Render a <span className="badge">, or nothing when count is 0.
+  }
+tests:
+  - name: "Shows the count"
+    props: { count: 5 }
+    assert: { selector: "span.badge", text: "5" }
+  - name: "Caps large counts at 99+"
+    props: { count: 120 }
+    assert: { selector: "span.badge", text: "99+" }
+  - name: "Renders nothing when count is 0"
+    props: { count: 0 }
+    assert: { selector: "span.badge", count: 0 }
+solution: |
+  function NotificationBadge({ count }) {
+    if (count === 0) return null;
+    return <span className="badge">{count > 99 ? "99+" : count}</span>;
+  }
+solutionExplanation: |
+  The core insight is that a component can decide *whether* to render before it
+  decides *what* to render. Returning `null` from a component is the idiomatic
+  React way to render nothing — so the `count === 0` case becomes an early
+  `return null`, keeping the main return path free of clutter.
+
+  With the empty case out of the way, the only remaining decision is the label:
+  `count > 99 ? "99+" : count`. A ternary inside the JSX braces is perfect for
+  a two-way choice like this.
+
+  A common stumble is rendering an empty `<span className="badge">` for zero —
+  the badge element still exists in the DOM (and would still show as a styled
+  dot on a real page), so the "renders nothing" test fails. The fix is to bail
+  out before producing any element at all, not to render an empty one.

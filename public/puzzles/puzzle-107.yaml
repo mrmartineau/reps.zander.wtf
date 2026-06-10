@@ -1,0 +1,59 @@
+id: 107
+title: "Sum of the Two Smallest"
+difficulty: easy
+prompt: |
+  Implement `sumOfTwoSmallest(nums)` so it returns the sum of the **two
+  smallest values** in an array of positive numbers. The array always has at
+  least two elements. Duplicates are allowed — if the smallest value appears
+  twice, both copies count.
+
+  For example, `sumOfTwoSmallest([19, 5, 42, 2, 77])` returns `7` — the two
+  smallest values are `2` and `5`.
+functionName: sumOfTwoSmallest
+starterCode: |
+  function sumOfTwoSmallest(nums) {
+    // your code here
+  }
+tests:
+  - name: "Distinct values"
+    args: [[19, 5, 42, 2, 77]]
+    expected: 7
+  - name: "Smallest values not at the front"
+    args: [[10, 343, 5, 1000, 8]]
+    expected: 13
+  - name: "The two smallest are equal"
+    args: [[3, 9, 3, 7]]
+    expected: 6
+solution: |
+  function sumOfTwoSmallest(nums) {
+    const sorted = [...nums].sort((a, b) => a - b);
+    return sorted[0] + sorted[1];
+  }
+solutionExplanation: |
+  The core insight: **sorting puts the two smallest values exactly where you
+  can name them** — positions `0` and `1`. Sort ascending, add the first two
+  elements, done.
+
+  Step by step:
+
+  1. Copy the array first: `[...nums]`. `sort` mutates the array it's called
+     on, and rearranging the caller's input is rude even when (as here) the
+     runner would forgive it. Copy-then-sort is the habit worth building.
+  2. Sort **numerically**: `.sort((a, b) => a - b)`. This is the classic
+     JavaScript trap — `sort()` with no comparator sorts numbers as
+     *strings*, so `[10, 343, 5, 1000, 8]` would order as
+     `[10, 1000, 343, 5, 8]` and the second test would fail loudly. Always
+     pass the comparator for numbers.
+  3. `sorted[0] + sorted[1]` is the answer.
+
+  The duplicate edge case is why you take *positions*, not *distinct
+  values*: in `[3, 9, 3, 7]` the sorted array starts `[3, 3, ...]`, and both
+  `3`s count, giving `6`. An approach built on `Math.min` plus "remove the
+  minimum, find the next minimum" works too — but if you remove *all*
+  occurrences of the minimum (say with `filter`), you'd skip the second `3`
+  and wrongly answer `10`. Indexing into the sorted copy sidesteps that
+  entirely.
+
+  For huge inputs a single pass tracking the two smallest seen so far is
+  faster than sorting, but at puzzle scale the sorted version says what it
+  means in two lines.

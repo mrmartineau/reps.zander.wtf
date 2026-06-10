@@ -1,0 +1,84 @@
+id: 63
+title: "Affordable Items"
+difficulty: easy
+prompt: |
+  You're building the "within your budget" filter for a gift shop. Implement
+  `affordableItems(items, budget)` where each item is `{ name, price }`.
+  Return an array of the **names** of every item whose price is less than or
+  equal to `budget`, keeping the original order.
+
+  For example, with items
+  `[{ name: "Mug", price: 12 }, { name: "Lamp", price: 40 }, { name: "Pen", price: 3 }]`
+  and a budget of `15`, the function returns `["Mug", "Pen"]`.
+
+  If nothing fits the budget, return `[]`.
+functionName: affordableItems
+starterCode: |
+  function affordableItems(items, budget) {
+    // your code here
+  }
+tests:
+  - name: "Some items fit the budget"
+    args:
+      [
+        [
+          { name: "Mug", price: 12 },
+          { name: "Lamp", price: 40 },
+          { name: "Pen", price: 3 },
+        ],
+        15,
+      ]
+    expected: ["Mug", "Pen"]
+  - name: "Exact price counts as affordable"
+    args:
+      [
+        [
+          { name: "Poster", price: 25 },
+          { name: "Frame", price: 30 },
+          { name: "Sticker", price: 2 },
+        ],
+        25,
+      ]
+    expected: ["Poster", "Sticker"]
+  - name: "Nothing affordable"
+    args:
+      [
+        [
+          { name: "Watch", price: 250 },
+          { name: "Headphones", price: 180 },
+        ],
+        50,
+      ]
+    expected: []
+solution: |
+  function affordableItems(items, budget) {
+    return items
+      .filter((item) => item.price <= budget)
+      .map((item) => item.name);
+  }
+solutionExplanation: |
+  The core insight: this is two separate jobs chained together — first decide
+  **which** items survive, then decide **what shape** each survivor takes.
+  That maps directly onto `filter` (keep or drop) followed by `map`
+  (transform).
+
+  Step by step:
+
+  1. `items.filter((item) => item.price <= budget)` keeps only the items you
+     can afford. `filter` never reorders, so the original order is preserved
+     automatically.
+  2. `.map((item) => item.name)` turns each surviving `{ name, price }`
+     object into just its name string.
+
+  Two gotchas worth noticing:
+
+  - The comparison is `<=`, not `<` — an item that costs *exactly* your
+    budget is still affordable. The second test guards exactly this
+    off-by-one.
+  - When nothing passes the filter, you get an empty array, and mapping an
+    empty array is still an empty array — so the "nothing affordable" case
+    needs no special handling.
+
+  You might have tried a single loop with an `if` and a `push` — that works
+  too, and is a fine answer. The `filter`/`map` chain just makes the two
+  jobs (select, then reshape) visible at a glance.

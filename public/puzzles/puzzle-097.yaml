@@ -1,0 +1,57 @@
+id: 97
+title: "Normalize the Whitespace"
+difficulty: easy
+prompt: |
+  Implement `normalizeWhitespace(str)` so it cleans up messy spacing: remove
+  any leading and trailing whitespace, and collapse every internal run of
+  spaces down to a single space.
+
+  For example, `normalizeWhitespace("  hello   world  ")` returns
+  `"hello world"`. A string that is nothing but spaces normalizes to the
+  empty string `""`.
+functionName: normalizeWhitespace
+starterCode: |
+  function normalizeWhitespace(str) {
+    // your code here
+  }
+tests:
+  - name: "Messy padding and gaps"
+    args: ["  hello   world  "]
+    expected: "hello world"
+  - name: "Internal runs only"
+    args: ["one  two   three"]
+    expected: "one two three"
+  - name: "All spaces"
+    args: ["     "]
+    expected: ""
+solution: |
+  function normalizeWhitespace(str) {
+    return str.trim().replace(/ +/g, " ");
+  }
+solutionExplanation: |
+  The core insight: this is **two independent clean-ups**, and each has a
+  purpose-built tool. `trim()` handles the edges; a global regex replace
+  handles the middle. Trying to do both with one loop is where hand-rolled
+  attempts get tangled.
+
+  Step by step:
+
+  1. **`str.trim()`** strips all leading and trailing whitespace. Edges done.
+  2. **`.replace(/ +/g, " ")`** finds every *run* of one or more spaces
+     (` +`) and replaces it with a single space. The `g` flag is essential —
+     without it, `replace` fixes only the **first** run and leaves
+     `"one two   three"` half-cleaned. That's exactly what the second test
+     would catch.
+
+  Order matters less than you'd think (collapse-then-trim works too), but
+  trim-first means the replace has less to chew on.
+
+  The all-spaces edge case is the one that breaks naive solutions: after
+  `trim()`, `"     "` becomes `""`, and replacing inside an empty string
+  leaves it empty — correct. But if you only collapsed runs without
+  trimming, you'd be left with a single stray `" "` instead of `""`.
+
+  An alternative shape worth knowing: `str.split(/\s+/).filter(Boolean).join(" ")`
+  — split on whitespace runs, drop the empty pieces the edges produce, and
+  rejoin. Same result; the trim-and-replace version states the two rules more
+  directly.

@@ -1,0 +1,61 @@
+id: 45
+title: "Invert an Object"
+difficulty: easy
+prompt: |
+  You have a lookup table of country codes to country names, and now you need
+  to look things up the other way. Implement `invertObject(obj)` so it
+  returns a new object with the keys and values swapped. The values are
+  guaranteed to be unique strings, so no information is lost.
+
+  For example, `invertObject({ a: "x", b: "y" })` returns
+  `{ x: "a", y: "b" }`.
+
+  An empty object inverts to an empty object: `invertObject({})` returns `{}`.
+functionName: invertObject
+starterCode: |
+  function invertObject(obj) {
+    // your code here
+  }
+tests:
+  - name: "Swap two pairs"
+    args: [{ a: "x", b: "y" }]
+    expected: { x: "a", y: "b" }
+  - name: "Country codes to names"
+    args: [{ fr: "France", de: "Germany", jp: "Japan" }]
+    expected: { France: "fr", Germany: "de", Japan: "jp" }
+  - name: "Empty object"
+    args: [{}]
+    expected: {}
+solution: |
+  function invertObject(obj) {
+    const inverted = {};
+    for (const [key, value] of Object.entries(obj)) {
+      inverted[value] = key;
+    }
+    return inverted;
+  }
+solutionExplanation: |
+  The core insight: an object is just a list of `[key, value]` pairs, and
+  `Object.entries` hands you exactly that list. Once each pair is in your
+  hands, inverting is nothing more than writing it back **the other way
+  round**.
+
+  Step by step:
+
+  1. `Object.entries({ a: "x", b: "y" })` gives `[["a", "x"], ["b", "y"]]`.
+  2. Destructure each pair as `[key, value]` in the loop head — this names
+     both halves so the swap reads clearly.
+  3. Assign `inverted[value] = key`: the old value becomes the new property
+     name, the old key becomes the new value.
+
+  Note the bracket notation: `inverted[value]` uses the *contents* of the
+  `value` variable as the property name. `inverted.value` would create a
+  literal property called `"value"` — a classic slip.
+
+  The empty-object edge case needs no special code: `Object.entries({})` is
+  an empty list, the loop body never runs, and you return the still-empty
+  `inverted` object.
+
+  Why does the prompt promise unique values? Because object keys must be
+  unique — if two keys shared a value, the second assignment would silently
+  overwrite the first. That guarantee is what makes a simple loop safe here.

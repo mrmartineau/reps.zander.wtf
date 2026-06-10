@@ -1,0 +1,60 @@
+id: 79
+title: "Array Difference"
+difficulty: easy
+prompt: |
+  Implement `arrayDiff(a, b)` so it returns the elements of `a` that are
+  **not** present in `b`, keeping their original order. Duplicates in `a`
+  survive — if a value appears twice in `a` and isn't in `b`, it appears
+  twice in the result.
+
+  If `b` is empty, the result is simply a copy of `a`.
+
+  For example, `arrayDiff([1, 2, 2, 3], [2])` returns `[1, 3]`.
+functionName: arrayDiff
+starterCode: |
+  function arrayDiff(a, b) {
+    // your code here
+  }
+tests:
+  - name: "Remove one value (all its copies)"
+    args: [[1, 2, 2, 3], [2]]
+    expected: [1, 3]
+  - name: "Duplicates that survive stay duplicated"
+    args: [["a", "b", "a", "c"], ["c", "z"]]
+    expected: ["a", "b", "a"]
+  - name: "Empty b returns a copy of a"
+    args: [[1, 2, 3], []]
+    expected: [1, 2, 3]
+solution: |
+  function arrayDiff(a, b) {
+    return a.filter((value) => !b.includes(value));
+  }
+solutionExplanation: |
+  The core insight: "elements of `a` not in `b`" is a **filter** over `a`,
+  where the keep/drop decision for each element is a membership test against
+  `b`. Once you see it that way, the solution is one line:
+  `a.filter(value => !b.includes(value))`.
+
+  Step by step:
+
+  1. `filter` walks `a` in order, so the output order is `a`'s order — free.
+  2. For each value, `b.includes(value)` asks "is this in the removal list?"
+  3. Negate it: we keep the value when it's *not* in `b`.
+
+  Note which array drives the loop: you iterate `a` and test against `b`,
+  never the other way round. Elements of `b` that aren't in `a` are simply
+  irrelevant (like `"z"` in the second test).
+
+  Duplicates behave correctly without any extra code: `filter` judges each
+  occurrence independently, so the two `"a"`s in `["a", "b", "a", "c"]` are
+  each kept on their own merits. A solution that deduplicates first (say, by
+  round-tripping through a `Set`) would wrongly collapse them — that's what
+  the second test guards.
+
+  The edge case falls out naturally too: when `b` is `[]`, `includes` is
+  always `false`, every element passes, and `filter` hands back a fresh copy
+  of `a` — a copy, not the same array, which is the polite thing to return.
+
+  For large arrays you'd put `b` into a `Set` first so each lookup is fast —
+  but only *internally*, still returning a plain array. At puzzle scale,
+  `includes` is the clearer choice.

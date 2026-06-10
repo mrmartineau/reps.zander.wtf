@@ -1,47 +1,477 @@
 {
   "epoch": "2026-06-04",
   "days": [
-    { "id": 1, "title": "Reverse a String" },
-    { "id": 4, "title": "Palindrome Check" },
-    { "id": 2, "title": "FizzBuzz Array" },
-    { "id": 8, "title": "Roman to Integer" },
-    { "id": 5, "title": "Two Sum" },
-    { "id": 3, "title": "Sum of Digits" },
-    { "id": 42, "title": "Render a Task List" },
-    { "id": 6, "title": "Count Vowels" },
-    { "id": 7, "title": "Deep Flatten" },
-    { "id": 9, "title": "Longest Word" },
-    { "id": 41, "title": "useFilteredList Hook" },
-    { "id": 10, "title": "Caesar Cipher" },
-    { "id": 12, "title": "Fibonacci" },
-    { "id": 11, "title": "Capitalize Words" },
-    { "id": 15, "title": "Number Range" },
-    { "id": 13, "title": "Anagram Check" },
-    { "id": 16, "title": "Average" },
-    { "id": 21, "title": "Array Nesting Depth" },
-    { "id": 14, "title": "Chunk an Array" },
-    { "id": 17, "title": "Factorial" },
-    { "id": 19, "title": "Count Words" },
-    { "id": 18, "title": "Greatest Common Divisor" },
-    { "id": 20, "title": "Unique Values" },
-    { "id": 29, "title": "Balanced Brackets" },
-    { "id": 22, "title": "To camelCase" },
-    { "id": 24, "title": "Sum of Evens" },
-    { "id": 27, "title": "Clamp" },
-    { "id": 23, "title": "Prime Check" },
-    { "id": 31, "title": "Reshape Records for a List" },
-    { "id": 38, "title": "Join Orders to Customers" },
-    { "id": 25, "title": "Rotate an Array" },
-    { "id": 32, "title": "Filter Shipped Orders" },
-    { "id": 33, "title": "Total the Revenue" },
-    { "id": 26, "title": "Most Frequent" },
-    { "id": 37, "title": "Distinct Categories" },
-    { "id": 40, "title": "Summarise by Category" },
-    { "id": 28, "title": "Digital Root" },
-    { "id": 30, "title": "Run-Length Encode" },
-    { "id": 34, "title": "Count Orders by Status" },
-    { "id": 35, "title": "Find the Priciest Order" },
-    { "id": 36, "title": "Group by Category" },
-    { "id": 39, "title": "Flatten Paginated Results" }
+    {
+      "id": 1,
+      "title": "Reverse a String"
+    },
+    {
+      "id": 4,
+      "title": "Palindrome Check"
+    },
+    {
+      "id": 2,
+      "title": "FizzBuzz Array"
+    },
+    {
+      "id": 8,
+      "title": "Roman to Integer"
+    },
+    {
+      "id": 5,
+      "title": "Two Sum"
+    },
+    {
+      "id": 3,
+      "title": "Sum of Digits"
+    },
+    {
+      "id": 42,
+      "title": "Render a Task List"
+    },
+    {
+      "id": 6,
+      "title": "Count Vowels"
+    },
+    {
+      "id": 7,
+      "title": "Deep Flatten"
+    },
+    {
+      "id": 9,
+      "title": "Longest Word"
+    },
+    {
+      "id": 41,
+      "title": "useFilteredList Hook"
+    },
+    {
+      "id": 10,
+      "title": "Caesar Cipher"
+    },
+    {
+      "id": 12,
+      "title": "Fibonacci"
+    },
+    {
+      "id": 11,
+      "title": "Capitalize Words"
+    },
+    {
+      "id": 15,
+      "title": "Number Range"
+    },
+    {
+      "id": 13,
+      "title": "Anagram Check"
+    },
+    {
+      "id": 16,
+      "title": "Average"
+    },
+    {
+      "id": 21,
+      "title": "Array Nesting Depth"
+    },
+    {
+      "id": 14,
+      "title": "Chunk an Array"
+    },
+    {
+      "id": 17,
+      "title": "Factorial"
+    },
+    {
+      "id": 19,
+      "title": "Count Words"
+    },
+    {
+      "id": 18,
+      "title": "Greatest Common Divisor"
+    },
+    {
+      "id": 20,
+      "title": "Unique Values"
+    },
+    {
+      "id": 29,
+      "title": "Balanced Brackets"
+    },
+    {
+      "id": 22,
+      "title": "To camelCase"
+    },
+    {
+      "id": 24,
+      "title": "Sum of Evens"
+    },
+    {
+      "id": 27,
+      "title": "Clamp"
+    },
+    {
+      "id": 23,
+      "title": "Prime Check"
+    },
+    {
+      "id": 31,
+      "title": "Reshape Records for a List"
+    },
+    {
+      "id": 38,
+      "title": "Join Orders to Customers"
+    },
+    {
+      "id": 25,
+      "title": "Rotate an Array"
+    },
+    {
+      "id": 32,
+      "title": "Filter Shipped Orders"
+    },
+    {
+      "id": 33,
+      "title": "Total the Revenue"
+    },
+    {
+      "id": 26,
+      "title": "Most Frequent"
+    },
+    {
+      "id": 37,
+      "title": "Distinct Categories"
+    },
+    {
+      "id": 40,
+      "title": "Summarise by Category"
+    },
+    {
+      "id": 28,
+      "title": "Digital Root"
+    },
+    {
+      "id": 30,
+      "title": "Run-Length Encode"
+    },
+    {
+      "id": 34,
+      "title": "Count Orders by Status"
+    },
+    {
+      "id": 35,
+      "title": "Find the Priciest Order"
+    },
+    {
+      "id": 36,
+      "title": "Group by Category"
+    },
+    {
+      "id": 39,
+      "title": "Flatten Paginated Results"
+    },
+    {
+      "id": 43,
+      "title": "Hamming Distance"
+    },
+    {
+      "id": 44,
+      "title": "Truncate a String"
+    },
+    {
+      "id": 45,
+      "title": "Invert an Object"
+    },
+    {
+      "id": 46,
+      "title": "Binary Search"
+    },
+    {
+      "id": 47,
+      "title": "useChecklist Hook"
+    },
+    {
+      "id": 48,
+      "title": "Group the Anagrams"
+    },
+    {
+      "id": 49,
+      "title": "Move the Zeroes"
+    },
+    {
+      "id": 50,
+      "title": "Diagonal Sum"
+    },
+    {
+      "id": 51,
+      "title": "Second Largest"
+    },
+    {
+      "id": 52,
+      "title": "Zip Two Arrays"
+    },
+    {
+      "id": 53,
+      "title": "Count Values in Range"
+    },
+    {
+      "id": 54,
+      "title": "Is It Sorted?"
+    },
+    {
+      "id": 55,
+      "title": "Index of the Maximum"
+    },
+    {
+      "id": 56,
+      "title": "Cart Summary"
+    },
+    {
+      "id": 57,
+      "title": "Pick Object Keys"
+    },
+    {
+      "id": 58,
+      "title": "Collapse Adjacent Duplicates"
+    },
+    {
+      "id": 59,
+      "title": "Perfect Numbers"
+    },
+    {
+      "id": 60,
+      "title": "Merge Sorted Arrays"
+    },
+    {
+      "id": 61,
+      "title": "Repeat Each Element"
+    },
+    {
+      "id": 62,
+      "title": "Overlapping Meetings"
+    },
+    {
+      "id": 63,
+      "title": "Affordable Items"
+    },
+    {
+      "id": 64,
+      "title": "Expand Number Ranges"
+    },
+    {
+      "id": 65,
+      "title": "Reverse the Words"
+    },
+    {
+      "id": 66,
+      "title": "useSlug Hook"
+    },
+    {
+      "id": 67,
+      "title": "Merge Two Carts"
+    },
+    {
+      "id": 68,
+      "title": "Cumulative Sum"
+    },
+    {
+      "id": 69,
+      "title": "Censor the Words"
+    },
+    {
+      "id": 70,
+      "title": "Longest Streak"
+    },
+    {
+      "id": 71,
+      "title": "Build the Leaderboard"
+    },
+    {
+      "id": 72,
+      "title": "Spiral Order"
+    },
+    {
+      "id": 73,
+      "title": "Parse a Query String"
+    },
+    {
+      "id": 74,
+      "title": "Longest Common Prefix"
+    },
+    {
+      "id": 75,
+      "title": "Transpose a Matrix"
+    },
+    {
+      "id": 76,
+      "title": "Breadcrumbs"
+    },
+    {
+      "id": 77,
+      "title": "Pig Latin"
+    },
+    {
+      "id": 78,
+      "title": "Avatar with Initials Fallback"
+    },
+    {
+      "id": 79,
+      "title": "Array Difference"
+    },
+    {
+      "id": 80,
+      "title": "Item Count Label"
+    },
+    {
+      "id": 81,
+      "title": "Notification Badge"
+    },
+    {
+      "id": 82,
+      "title": "Detect a Pangram"
+    },
+    {
+      "id": 83,
+      "title": "Segmented Progress Bar"
+    },
+    {
+      "id": 84,
+      "title": "Leaderboard"
+    },
+    {
+      "id": 85,
+      "title": "Cart Total with Discount"
+    },
+    {
+      "id": 86,
+      "title": "Deduplicated Tag List"
+    },
+    {
+      "id": 87,
+      "title": "Navigation Links"
+    },
+    {
+      "id": 88,
+      "title": "Swap the Case"
+    },
+    {
+      "id": 89,
+      "title": "Spot the Isogram"
+    },
+    {
+      "id": 90,
+      "title": "File Tree"
+    },
+    {
+      "id": 91,
+      "title": "Tab Bar"
+    },
+    {
+      "id": 92,
+      "title": "Camel to Kebab"
+    },
+    {
+      "id": 93,
+      "title": "Remove the Vowels"
+    },
+    {
+      "id": 94,
+      "title": "Find the Median"
+    },
+    {
+      "id": 95,
+      "title": "Partition by Parity"
+    },
+    {
+      "id": 96,
+      "title": "Grouped Contact List"
+    },
+    {
+      "id": 97,
+      "title": "Normalize the Whitespace"
+    },
+    {
+      "id": 98,
+      "title": "Moving Average"
+    },
+    {
+      "id": 99,
+      "title": "Integer to Roman Numerals"
+    },
+    {
+      "id": 100,
+      "title": "Format a Duration"
+    },
+    {
+      "id": 101,
+      "title": "Count a Character"
+    },
+    {
+      "id": 102,
+      "title": "Pluck a Field"
+    },
+    {
+      "id": 103,
+      "title": "Deep Get"
+    },
+    {
+      "id": 104,
+      "title": "Array Intersection"
+    },
+    {
+      "id": 105,
+      "title": "Equilibrium Index"
+    },
+    {
+      "id": 106,
+      "title": "usePasswordStrength Hook"
+    },
+    {
+      "id": 107,
+      "title": "Sum of the Two Smallest"
+    },
+    {
+      "id": 108,
+      "title": "Find the Missing Number"
+    },
+    {
+      "id": 109,
+      "title": "Collatz Steps"
+    },
+    {
+      "id": 110,
+      "title": "Mask a Card Number"
+    },
+    {
+      "id": 111,
+      "title": "Password Checklist"
+    },
+    {
+      "id": 112,
+      "title": "Count Positives, Sum Negatives"
+    },
+    {
+      "id": 113,
+      "title": "Character Frequency"
+    },
+    {
+      "id": 114,
+      "title": "Decimal to Binary"
+    },
+    {
+      "id": 115,
+      "title": "Extract the Initials"
+    },
+    {
+      "id": 116,
+      "title": "usePagination Hook"
+    },
+    {
+      "id": 117,
+      "title": "Slugify a Title"
+    },
+    {
+      "id": 118,
+      "title": "Compact an Array"
+    }
   ]
 }

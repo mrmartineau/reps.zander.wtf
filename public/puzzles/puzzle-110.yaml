@@ -1,0 +1,57 @@
+id: 110
+title: "Mask a Card Number"
+difficulty: easy
+prompt: |
+  Implement `maskCardNumber(str)` so it hides all but the last 4 characters of
+  a string, replacing every earlier character with `"#"`. Strings of 4 or
+  fewer characters have nothing to hide — return them unchanged.
+
+  For example, `maskCardNumber("1234567890123456")` returns
+  `"############3456"`.
+functionName: maskCardNumber
+starterCode: |
+  function maskCardNumber(str) {
+    // your code here
+  }
+tests:
+  - name: "Full card number"
+    args: ["1234567890123456"]
+    expected: "############3456"
+  - name: "Shorter number"
+    args: ["55554444"]
+    expected: "####4444"
+  - name: "Too short to mask"
+    args: ["1234"]
+    expected: "1234"
+solution: |
+  function maskCardNumber(str) {
+    if (str.length <= 4) {
+      return str;
+    }
+    const visible = str.slice(-4);
+    const masked = "#".repeat(str.length - 4);
+    return masked + visible;
+  }
+solutionExplanation: |
+  The core insight: you don't need to loop over characters and decide one by
+  one — split the string into two zones. Everything except the last 4
+  characters becomes `#`, and the last 4 stay visible.
+
+  Two string tools make this a three-liner:
+
+  1. **`str.slice(-4)`** — a negative index counts from the end, so this grabs
+     exactly the last 4 characters, no length arithmetic needed.
+  2. **`"#".repeat(n)`** — builds a run of `n` hash marks in one call. The
+     number to hide is `str.length - 4`.
+
+  Concatenate the two and you're done: `"#".repeat(str.length - 4) +
+  str.slice(-4)`.
+
+  The edge case is the guard at the top: for a string of 4 or fewer
+  characters, `str.length - 4` is zero or *negative* — and
+  `"#".repeat(-1)` throws a `RangeError`. Checking `str.length <= 4`
+  first and returning the string unchanged sidesteps that entirely.
+
+  You might have tried a loop with `i < str.length - 4 ? "#" : ch` — that
+  works too, but the slice/repeat version reads as the rule itself: hide the
+  front, show the last four.

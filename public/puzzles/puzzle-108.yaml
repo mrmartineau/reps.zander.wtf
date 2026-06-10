@@ -1,0 +1,62 @@
+id: 108
+title: "Find the Missing Number"
+difficulty: medium
+prompt: |
+  Implement `findMissingNumber(nums)`. The array contains every integer from
+  `1` to `n` exactly once **except one**, in any order. Return the missing
+  integer.
+
+  For example, `findMissingNumber([3, 1, 4, 5])` returns `2` — the array has
+  four elements, so `n` is `5`, and `2` is the only value from `1..5` that's
+  absent.
+functionName: findMissingNumber
+starterCode: |
+  function findMissingNumber(nums) {
+    // your code here
+  }
+tests:
+  - name: "Missing from the middle"
+    args: [[3, 1, 4, 5]]
+    expected: 2
+  - name: "Larger shuffled array"
+    args: [[7, 2, 5, 1, 8, 4, 6]]
+    expected: 3
+  - name: "The first number is missing"
+    args: [[2, 3, 4, 5]]
+    expected: 1
+solution: |
+  function findMissingNumber(nums) {
+    const n = nums.length + 1;
+    const expectedSum = (n * (n + 1)) / 2;
+    let actualSum = 0;
+    for (const num of nums) {
+      actualSum += num;
+    }
+    return expectedSum - actualSum;
+  }
+solutionExplanation: |
+  The trick is arithmetic, not searching: if you know what the numbers `1..n`
+  **should** add up to, the missing one is simply the difference between that
+  total and what the array *actually* adds up to.
+
+  Step by step:
+
+  1. Work out `n`. The array holds all of `1..n` minus one value, so its
+     length is `n - 1`, which means `n = nums.length + 1`. Getting this right
+     is half the puzzle.
+  2. The sum of `1..n` has a closed form: `n * (n + 1) / 2` (Gauss's famous
+     formula — pair `1 + n`, `2 + (n - 1)`, and so on).
+  3. Sum the actual array and subtract. Whatever is missing is exactly the
+     shortfall.
+
+  Why this beats the obvious approach: you might have tried sorting and
+  scanning for the first gap, or checking `includes(i)` for each `i` from `1`
+  to `n`. Both work, but the sort costs O(n log n) and the `includes` loop is
+  O(n²). The sum trick is one O(n) pass with no extra memory — and crucially,
+  it doesn't care about order at all, so "in any order" stops being scary.
+
+  The edge cases — missing `1` or missing `n` — are where gap-scanning code
+  tends to break (there's no "gap" to find at the ends, just a shifted start
+  or an early finish). The sum approach doesn't distinguish ends from middles:
+  `[2, 3, 4, 5]` should sum to `15` but sums to `14`, so the answer is `1`,
+  no special cases needed.

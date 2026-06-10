@@ -1,0 +1,57 @@
+id: 101
+title: "Count a Character"
+difficulty: easy
+prompt: |
+  Implement `countChar(str, ch)` so it returns how many times the single
+  character `ch` appears in `str`, ignoring case. So searching for `"a"` also
+  counts `"A"`, and vice versa.
+
+  For example, `countChar("Mississippi", "s")` returns `4`.
+functionName: countChar
+starterCode: |
+  function countChar(str, ch) {
+    // your code here
+  }
+tests:
+  - name: "Lowercase needle"
+    args: ["Mississippi", "s"]
+    expected: 4
+  - name: "Case-insensitive match"
+    args: ["Banana", "A"]
+    expected: 3
+  - name: "No matches"
+    args: ["hello", "z"]
+    expected: 0
+solution: |
+  function countChar(str, ch) {
+    const target = ch.toLowerCase();
+    let count = 0;
+    for (const c of str.toLowerCase()) {
+      if (c === target) {
+        count += 1;
+      }
+    }
+    return count;
+  }
+solutionExplanation: |
+  The core insight: "ignoring case" means *normalise both sides first*. If you
+  lowercase the haystack **and** the needle once up front, the comparison
+  inside the loop becomes a plain `===` — no case logic left to get wrong.
+
+  Step by step:
+
+  1. Lowercase the needle once: `const target = ch.toLowerCase()`. Doing it
+     outside the loop means it happens once, not per character.
+  2. Walk the lowercased string with `for...of`, which visits one character at
+     a time.
+  3. Bump a counter whenever the character equals `target`, and return the
+     counter at the end.
+
+  The common slip is normalising only one side — lowercasing `str` but
+  comparing against the raw `ch`. Then `countChar("Banana", "A")` returns `0`,
+  because the lowercased text never contains an uppercase `"A"`. The
+  second test exists to catch exactly that.
+
+  The edge case (`"z"` in `"hello"`) just confirms the function returns `0`
+  rather than something odd when nothing matches — which falls out naturally
+  if you start the counter at `0` and never touch it.

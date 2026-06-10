@@ -1,0 +1,64 @@
+id: 104
+title: "Array Intersection"
+difficulty: easy
+prompt: |
+  Implement `intersection(a, b)` so it returns the **distinct** values that
+  appear in both arrays. Order the result by each value's first appearance
+  in `a`, and include each shared value only once — even if it appears
+  multiple times in either array.
+
+  If the arrays have nothing in common, return `[]`.
+
+  For example, `intersection([1, 2, 2, 3], [2, 3, 4])` returns `[2, 3]`.
+functionName: intersection
+starterCode: |
+  function intersection(a, b) {
+    // your code here
+  }
+tests:
+  - name: "Shared values, duplicates collapsed"
+    args: [[1, 2, 2, 3], [2, 3, 4]]
+    expected: [2, 3]
+  - name: "Order follows first appearance in a"
+    args: [["c", "a", "b", "a"], ["a", "c"]]
+    expected: ["c", "a"]
+  - name: "No overlap"
+    args: [[1, 2], [3, 4]]
+    expected: []
+solution: |
+  function intersection(a, b) {
+    const result = [];
+    for (const value of a) {
+      if (b.includes(value) && !result.includes(value)) {
+        result.push(value);
+      }
+    }
+    return result;
+  }
+solutionExplanation: |
+  The core insight: there are **two conditions** for a value to make it into
+  the result — it must be in `b`, and it must not already be in the answer.
+  Walk `a` once and check both; the walk order of `a` gives you the required
+  ordering for free.
+
+  Step by step:
+
+  1. Loop over `a` with `for...of`. Because you visit `a` front to back,
+     anything you push lands in first-appearance order automatically.
+  2. `b.includes(value)` answers "is it shared?".
+  3. `!result.includes(value)` answers "have I already added it?" — this is
+     the dedupe. The second `2` in `[1, 2, 2, 3]` passes the first check but
+     fails this one, so it's skipped.
+
+  The mistake the second test guards against: filtering `b` instead of `a`,
+  or sorting the output. The result must follow `a`'s order
+  (`["c", "a"]`, not `["a", "c"]`), so `a` has to drive the loop.
+
+  The no-overlap edge case needs nothing special — both checks just never
+  pass together, and the untouched `[]` is returned.
+
+  You might have tried a one-liner like
+  `a.filter(v => b.includes(v))` — close, but it keeps duplicates from `a`
+  (you'd get `[2, 2, 3]`). Internally a `Set` would make both lookups fast
+  and handle deduping (`[...new Set(a)].filter(v => b.includes(v))` works
+  too) — just remember to convert back to a plain array before returning.

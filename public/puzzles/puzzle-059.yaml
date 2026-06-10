@@ -1,0 +1,67 @@
+id: 59
+title: "Perfect Numbers"
+difficulty: medium
+prompt: |
+  A **perfect number** equals the sum of its proper divisors — every divisor
+  smaller than the number itself. Implement `isPerfect(n)` so it returns
+  `true` when `n` is perfect and `false` otherwise.
+
+  For example, the proper divisors of `28` are `1, 2, 4, 7, 14`, and
+  `1 + 2 + 4 + 7 + 14 = 28`, so `isPerfect(28)` returns `true`.
+
+  By contrast, the proper divisors of `12` are `1, 2, 3, 4, 6`, which sum to
+  `16`, so `isPerfect(12)` returns `false`.
+
+  Note that `1` has no proper divisors at all, so `isPerfect(1)` is `false`.
+functionName: isPerfect
+starterCode: |
+  function isPerfect(n) {
+    // your code here
+  }
+tests:
+  - name: "28 is perfect"
+    args: [28]
+    expected: true
+  - name: "12 is not perfect"
+    args: [12]
+    expected: false
+  - name: "1 is not perfect"
+    args: [1]
+    expected: false
+solution: |
+  function isPerfect(n) {
+    let sum = 0;
+    for (let d = 1; d < n; d++) {
+      if (n % d === 0) {
+        sum += d;
+      }
+    }
+    return sum === n;
+  }
+solutionExplanation: |
+  The core insight: "is `n` perfect?" decomposes into two smaller, familiar
+  jobs — **find the proper divisors**, then **sum them and compare**.
+
+  Step by step:
+
+  1. A divisor of `n` is any `d` where `n % d === 0` — the remainder
+     operator `%` is the divisibility test. Trying every candidate from `1`
+     up is perfectly fine here; the inputs are tiny.
+  2. "Proper" means *strictly less than `n`*, which is why the loop runs
+     `d < n` and never tests `n` itself. If you accidentally include `n`
+     (looping with `d <= n`), every number ≥ 2 looks "more than perfect"
+     and the function is wrong everywhere.
+  3. Accumulate the divisors into `sum` as you find them — no need to build
+     an actual array first.
+  4. Return the comparison `sum === n` directly. A common beginner detour
+     is `if (sum === n) return true; else return false;` — the comparison
+     *is already* the boolean you want.
+
+  The edge case `n = 1`: the loop `for (d = 1; d < 1; ...)` never runs, so
+  `sum` stays `0`, and `0 === 1` is `false` — exactly right, because `1`
+  genuinely has no proper divisors. No special case needed; it falls out of
+  writing the loop bound honestly.
+
+  If you're curious: the next perfect numbers after `28` are `496` and
+  `8128`. They get rare fast, and every known one is even — whether an odd
+  perfect number exists is still an open question.

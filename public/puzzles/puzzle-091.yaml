@@ -1,0 +1,82 @@
+id: 91
+kind: react-component
+title: "Tab Bar"
+difficulty: medium
+prompt: |
+  Build a `Tabs` component that takes a `tabs` prop — an array of
+  `{ label, content }` objects — and an `active` prop naming the selected
+  tab's label. Render:
+
+  - one `<button className="tab">` per tab showing its label; the tab whose
+    label equals `active` also gets the `active` class (`"tab active"`), and
+  - a single `<section className="panel">` containing the active tab's
+    `content`.
+
+  For example, with tabs Profile/Settings and `active="Settings"`, the
+  Settings button has class `tab active` and the panel shows Settings'
+  content.
+componentName: Tabs
+starterCode: |
+  function Tabs({ tabs, active }) {
+    // Return the tab buttons plus a <section className="panel">.
+  }
+tests:
+  - name: "Renders one button per tab"
+    props:
+      tabs:
+        - { label: "Profile", content: "Edit your details" }
+        - { label: "Settings", content: "Manage your preferences" }
+        - { label: "Billing", content: "Update your card" }
+      active: "Profile"
+    assert: { selector: "button.tab", count: 3 }
+  - name: "The panel shows the active tab's content"
+    props:
+      tabs:
+        - { label: "Profile", content: "Edit your details" }
+        - { label: "Settings", content: "Manage your preferences" }
+        - { label: "Billing", content: "Update your card" }
+      active: "Settings"
+    assert: { selector: "section.panel", text: "Manage your preferences" }
+  - name: "Exactly one tab is marked active"
+    props:
+      tabs:
+        - { label: "Profile", content: "Edit your details" }
+        - { label: "Settings", content: "Manage your preferences" }
+        - { label: "Billing", content: "Update your card" }
+      active: "Billing"
+    assert: { selector: "button.tab.active", count: 1, text: "Billing" }
+solution: |
+  function Tabs({ tabs, active }) {
+    const current = tabs.find((tab) => tab.label === active);
+    return (
+      <div>
+        {tabs.map((tab) => (
+          <button key={tab.label} className={tab.label === active ? "tab active" : "tab"}>
+            {tab.label}
+          </button>
+        ))}
+        <section className="panel">{current && current.content}</section>
+      </div>
+    );
+  }
+solutionExplanation: |
+  Two pieces of UI hang off the same prop, and they use it differently — that
+  split is the lesson here.
+
+  The buttons need a *per-item* comparison: while mapping, each tab asks "am
+  I the active one?" (`tab.label === active`) and picks its class with a
+  ternary. Because exactly one label can match, exactly one button ends up
+  with both classes — the third test pins that down, guarding against
+  accidentally marking every button active (say, by comparing the wrong
+  thing or hardcoding the class).
+
+  The panel needs a *lookup*: of all tabs, fetch the one whose label matches.
+  `tabs.find(...)` does it in one line, computed once before the JSX rather
+  than inside it. Rendering `current && current.content` (or
+  `current?.content`) keeps the component from crashing if `active` names a
+  tab that doesn't exist.
+
+  You might have tried driving the panel off an index — find the position of
+  `active`, then `tabs[i].content`. It works, but you're maintaining two
+  representations of the same fact; matching on the label everywhere keeps
+  one source of truth, which is the habit that scales to real tab state.

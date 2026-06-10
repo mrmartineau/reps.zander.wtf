@@ -1,0 +1,69 @@
+id: 74
+title: "Longest Common Prefix"
+difficulty: medium
+prompt: |
+  Implement `longestCommonPrefix(words)` so it returns the longest prefix
+  shared by **every** string in the array.
+
+  If the strings share no common prefix, or the array is empty, return the
+  empty string `""`.
+
+  For example, `longestCommonPrefix(["flower", "flow", "flight"])` returns
+  `"fl"` — all three words start with `"fl"`, but only two start with `"flo"`.
+functionName: longestCommonPrefix
+starterCode: |
+  function longestCommonPrefix(words) {
+    // your code here
+  }
+tests:
+  - name: "Shared two-letter prefix"
+    args: [["flower", "flow", "flight"]]
+    expected: "fl"
+  - name: "One word is the prefix itself"
+    args: [["interstellar", "internet", "inter"]]
+    expected: "inter"
+  - name: "No common prefix"
+    args: [["dog", "racecar", "car"]]
+    expected: ""
+solution: |
+  function longestCommonPrefix(words) {
+    if (words.length === 0) return "";
+
+    let prefix = words[0];
+    for (const word of words.slice(1)) {
+      while (!word.startsWith(prefix)) {
+        prefix = prefix.slice(0, -1);
+        if (prefix === "") return "";
+      }
+    }
+    return prefix;
+  }
+solutionExplanation: |
+  The core insight: the answer can only ever **shrink** as you look at more
+  words. So start with the most optimistic guess — the entire first word —
+  and trim it down as each new word disproves part of it.
+
+  Step by step:
+
+  1. If the array is empty there's nothing to share, so return `""` right away.
+  2. Take `words[0]` as the candidate `prefix`.
+  3. For each remaining word, check `word.startsWith(prefix)`. While it
+     doesn't, chop one character off the end of `prefix` with
+     `prefix.slice(0, -1)` and check again.
+  4. If `prefix` ever shrinks to `""`, you can stop early — nothing shorter
+     exists.
+
+  Why this works: a string that fails `startsWith(prefix)` might still share a
+  *shorter* prefix, and the only shorter candidates worth testing are
+  truncations of the current one. Trimming from the right walks through them
+  in order from longest to shortest, so the first match is the longest match.
+
+  The gotcha the edge case guards: with words like `["dog", "racecar", "car"]`
+  the loop trims all the way down to `""`. A naive solution that compares
+  characters by index can crash or loop forever here if it doesn't handle "no
+  overlap at all" — make sure the empty result is a real exit path, not an
+  accident.
+
+  You might have tried comparing character-by-character across all words at
+  index 0, 1, 2… That works too! Just stop at the length of the *shortest*
+  word, or you'll read past the end of one of them.

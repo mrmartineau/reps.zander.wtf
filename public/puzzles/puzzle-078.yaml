@@ -1,0 +1,61 @@
+id: 78
+kind: react-component
+title: "Avatar with Initials Fallback"
+difficulty: medium
+prompt: |
+  Build an `Avatar` component that takes `name` and an optional `src` prop:
+
+  - When `src` is provided, render `<img className="avatar" src={src} alt={name} />`.
+  - When it isn't, fall back to `<span className="avatar initials">` containing
+    the person's initials: the first letter of each word in `name`, uppercased.
+
+  For example, `name="Ada Lovelace" src="/ada.png"` renders the image, while
+  `name="Grace Hopper"` (no `src`) renders `<span class="avatar initials">GH</span>`.
+componentName: Avatar
+starterCode: |
+  function Avatar({ name, src }) {
+    // Render an <img> when src exists, otherwise a <span> with initials.
+  }
+tests:
+  - name: "Renders the image when src is given"
+    props: { name: "Ada Lovelace", src: "/ada.png" }
+    assert: { selector: 'img.avatar[src="/ada.png"][alt="Ada Lovelace"]', exists: true }
+  - name: "Falls back to initials"
+    props: { name: "Grace Hopper" }
+    assert: { selector: "span.avatar.initials", text: "GH" }
+  - name: "A single lowercase name still gets one uppercase initial"
+    props: { name: "zander" }
+    assert: { selector: "span.initials", text: "Z" }
+solution: |
+  function Avatar({ name, src }) {
+    if (src) {
+      return <img className="avatar" src={src} alt={name} />;
+    }
+    const initials = name
+      .split(" ")
+      .map((word) => word[0])
+      .join("")
+      .toUpperCase();
+    return <span className="avatar initials">{initials}</span>;
+  }
+solutionExplanation: |
+  Two ideas combine here: an early return for the easy branch, and a small
+  string pipeline for the hard one.
+
+  The image case needs no computation, so handle it first and `return` —
+  everything after the `if` can then assume we're in fallback territory,
+  with no `else` indentation.
+
+  Initials are a classic split → map → join pipeline: `split(" ")` breaks the
+  name into words, `word[0]` takes each first letter, `join("")` glues them
+  back together. Uppercasing the *joined result* once is simpler than
+  uppercasing each letter individually — and it's what makes the lowercase
+  `"zander"` edge case produce `Z` rather than `z`. That test exists because
+  it's tempting to assume names arrive pre-capitalised; real data doesn't
+  oblige.
+
+  One subtlety worth noticing: the check is on `src`, not on `name`. A
+  component like this should render *something* for every user, so the
+  fallback is driven by the optional prop being absent — the standard
+  "graceful degradation" shape you'll reuse for broken images, missing
+  thumbnails, and loading states.

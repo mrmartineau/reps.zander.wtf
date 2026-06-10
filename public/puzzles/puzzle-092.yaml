@@ -1,0 +1,67 @@
+id: 92
+title: "Camel to Kebab"
+difficulty: medium
+prompt: |
+  Implement `toKebabCase(str)` so it converts a camelCase identifier into
+  kebab-case: every uppercase letter becomes a hyphen followed by its
+  lowercase form. Input is a plain camelCase identifier — letters only, and
+  it never *starts* with an uppercase letter.
+
+  For example, `toKebabCase("backgroundColor")` returns
+  `"background-color"`, and `toKebabCase("getUserAccountId")` returns
+  `"get-user-account-id"`.
+functionName: toKebabCase
+starterCode: |
+  function toKebabCase(str) {
+    // your code here
+  }
+tests:
+  - name: "CSS property name"
+    args: ["backgroundColor"]
+    expected: "background-color"
+  - name: "Several humps"
+    args: ["getUserAccountId"]
+    expected: "get-user-account-id"
+  - name: "Already lowercase"
+    args: ["color"]
+    expected: "color"
+solution: |
+  function toKebabCase(str) {
+    let result = "";
+    for (const ch of str) {
+      if (ch === ch.toUpperCase()) {
+        result += "-" + ch.toLowerCase();
+      } else {
+        result += ch;
+      }
+    }
+    return result;
+  }
+solutionExplanation: |
+  The core insight: in camelCase, **every uppercase letter marks a word
+  boundary**. So the transform is purely local — you never need to track
+  words or look ahead; each character decides for itself: uppercase becomes
+  `"-"` plus its lowercase twin, everything else passes through.
+
+  Step by step:
+
+  1. Walk the string character by character, building a new result string.
+  2. Detect "is this uppercase?" by comparing the character to its own
+     uppercase form: `ch === ch.toUpperCase()` is true exactly for the
+     capital letters here (the prompt guarantees letters-only input).
+  3. On an uppercase letter, append `"-" + ch.toLowerCase()` — the hyphen
+     *replaces the boundary*, the lowercase letter starts the next word.
+  4. Otherwise append the character unchanged.
+
+  Trace `"getUserAccountId"`: the `U`, `A` and `I` each trigger the hyphen
+  branch, producing `get-user-account-id` — three humps, three hyphens.
+
+  The all-lowercase edge case (`"color"`) confirms the no-op path: with no
+  uppercase letters, the hyphen branch never fires and the string survives
+  untouched. If your output gained a stray hyphen here, you were probably
+  hyphenating on something other than case.
+
+  The regex spelling of the same idea is worth recognising:
+  `str.replace(/[A-Z]/g, (ch) => "-" + ch.toLowerCase())` — "for every
+  capital, swap in a hyphen plus its lowercase form". Same algorithm, one
+  line.

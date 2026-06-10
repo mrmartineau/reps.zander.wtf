@@ -1,0 +1,65 @@
+id: 53
+title: "Count Values in Range"
+difficulty: easy
+prompt: |
+  Implement `countInRange(nums, min, max)` so it returns how many values in
+  the array satisfy `min <= value <= max`. Both bounds are **inclusive** — a
+  value equal to `min` or `max` counts.
+
+  If no values fall in the range, return `0`.
+
+  For example, `countInRange([1, 5, 8, 10, 12], 5, 10)` returns `3` — the
+  values `5`, `8`, and `10` are in range.
+functionName: countInRange
+starterCode: |
+  function countInRange(nums, min, max) {
+    // your code here
+  }
+tests:
+  - name: "Bounds are inclusive"
+    args: [[1, 5, 8, 10, 12], 5, 10]
+    expected: 3
+  - name: "Negative numbers and duplicates"
+    args: [[-4, 0, 2, 2, 7], -1, 2]
+    expected: 3
+  - name: "Nothing in range"
+    args: [[1, 2, 3], 10, 20]
+    expected: 0
+solution: |
+  function countInRange(nums, min, max) {
+    let count = 0;
+    for (const n of nums) {
+      if (n >= min && n <= max) {
+        count += 1;
+      }
+    }
+    return count;
+  }
+solutionExplanation: |
+  The core insight: "is `n` between `min` and `max`?" is **two comparisons
+  joined by `&&`** — `n >= min && n <= max`. JavaScript has no chained
+  `min <= n <= max` syntax (it parses, but it compares a boolean to a number
+  and gives nonsense), so the two-part condition *is* the idiom.
+
+  Step by step:
+
+  1. Start a counter at `0`.
+  2. Walk the array once.
+  3. For each value, test both bounds; when both hold, bump the counter.
+  4. Return the counter — there's nothing to return early for, since every
+     element must be examined.
+
+  The detail that matters most is **inclusivity**: the spec says
+  `min <= value <= max`, so use `>=` and `<=`, not `>` and `<`. The first
+  test is built to catch exactly that — `5` and `10` sit *on* the bounds,
+  and with strict comparisons you'd count only `8` and answer `1` instead
+  of `3`.
+
+  The empty-result edge case needs no special code: if nothing matches, the
+  counter is simply never incremented and you return the initial `0`.
+
+  A tidy one-liner does the same job:
+  `nums.filter(n => n >= min && n <= max).length`. It builds a throwaway
+  array just to measure it, which is fine at this scale — the counter loop
+  is the version that wastes nothing, and "count matches with an
+  accumulator" is a pattern you'll reuse constantly.
