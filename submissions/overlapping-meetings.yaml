@@ -1,0 +1,112 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Overlapping Meetings"
+difficulty: hard
+prompt: |
+  Your calendar app flags meetings that clash. Implement
+  `overlappingMeetings(meetings)` where each meeting is
+  `{ name, start, end }` with integer hours and an **exclusive** end — a
+  meeting from `9` to `10` is over the moment the clock hits 10.
+
+  Two meetings `a` and `b` overlap when
+  `a.start < b.end && b.start < a.end`. Note that back-to-back meetings
+  (one ends exactly when the next starts) do **not** overlap.
+
+  Return the names of every meeting that overlaps at least one other
+  meeting, in input order, without duplicates — each clashing meeting is
+  listed once, no matter how many others it collides with. Meeting names
+  are guaranteed to be unique.
+
+  For example:
+
+  ```js
+  overlappingMeetings([
+    { name: "Standup", start: 9, end: 10 },
+    { name: "Design review", start: 9, end: 11 },
+    { name: "Lunch", start: 12, end: 13 },
+  ])
+  // → ["Standup", "Design review"]
+  ```
+
+  If no meetings clash, return `[]`.
+functionName: overlappingMeetings
+starterCode: |
+  function overlappingMeetings(meetings) {
+    // your code here
+  }
+tests:
+  - name: "One clash, one free meeting"
+    args:
+      [
+        [
+          { name: "Standup", start: 9, end: 10 },
+          { name: "Design review", start: 9, end: 11 },
+          { name: "Lunch", start: 12, end: 13 },
+        ],
+      ]
+    expected: ["Standup", "Design review"]
+  - name: "Two separate clashes"
+    args:
+      [
+        [
+          { name: "Kickoff", start: 9, end: 12 },
+          { name: "1:1", start: 10, end: 11 },
+          { name: "Retro", start: 13, end: 14 },
+          { name: "Demo", start: 13, end: 15 },
+          { name: "Wrap-up", start: 16, end: 17 },
+        ],
+      ]
+    expected: ["Kickoff", "1:1", "Retro", "Demo"]
+  - name: "Back-to-back is not an overlap"
+    args:
+      [
+        [
+          { name: "Morning focus", start: 9, end: 10 },
+          { name: "Planning", start: 10, end: 11 },
+          { name: "Review", start: 11, end: 12 },
+        ],
+      ]
+    expected: []
+solution: |
+  function overlappingMeetings(meetings) {
+    const overlaps = (a, b) => a.start < b.end && b.start < a.end;
+
+    const clashing = [];
+    for (const meeting of meetings) {
+      const hasClash = meetings.some(
+        (other) => other !== meeting && overlaps(meeting, other)
+      );
+      if (hasClash) {
+        clashing.push(meeting.name);
+      }
+    }
+    return clashing;
+  }
+solutionExplanation: |
+  Two insights stack up here.
+
+  **Insight one: the interval-overlap test.** "Do `a` and `b` overlap?"
+  feels like it needs a pile of cases (a starts inside b, b starts inside
+  a, one swallows the other…). The classic trick is to flip it around:
+  intervals *don't* overlap exactly when one ends before the other starts
+  — `a.end <= b.start || b.end <= a.start`. Negate that and you get the
+  one-liner from the prompt: `a.start < b.end && b.start < a.end`. The
+  strict `<` is what makes back-to-back meetings (end `10`, start `10`)
+  count as *not* overlapping — with `<=` the edge-case test fails. This
+  formula is worth memorising; it shows up everywhere from calendars to
+  collision detection.
+
+  **Insight two: ask the question per meeting, not per pair.** The output
+  wants meeting names in input order with no duplicates — so don't collect
+  pairs and then deduplicate. Instead, loop over the meetings *once*, and
+  for each one ask: "does **any** other meeting overlap me?" That's
+  `meetings.some(...)`, with an `other !== meeting` guard so a meeting
+  can't clash with itself (every interval trivially "overlaps" itself —
+  forget the guard and *everything* gets flagged). Each meeting is
+  considered exactly once, so order is preserved and duplicates are
+  impossible *by construction* — no `Set`, no sorting, no cleanup pass.
+
+  A meeting that clashes with three others is still pushed once, because
+  `some` answers a yes/no question, not "how many".
+
+  The pairwise scan is O(n²), and that's fine — a day has a handful of
+  meetings, and the clear version beats a clever sweep-line for this size.

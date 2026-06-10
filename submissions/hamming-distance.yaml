@@ -1,0 +1,63 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Hamming Distance"
+difficulty: easy
+prompt: |
+  Implement `hammingDistance(a, b)` so it returns the number of positions at
+  which two strings of **equal length** have different characters. Comparing
+  is position-by-position: character 0 of `a` against character 0 of `b`, and
+  so on.
+
+  For example, `hammingDistance("karolin", "kathrin")` returns `3` — the
+  strings differ at positions 2, 3 and 4 (`r/t`, `o/h`, `l/r`).
+functionName: hammingDistance
+starterCode: |
+  function hammingDistance(a, b) {
+    // your code here
+  }
+tests:
+  - name: "Two names"
+    args: ["karolin", "kathrin"]
+    expected: 3
+  - name: "Binary strings"
+    args: ["1011101", "1001001"]
+    expected: 2
+  - name: "Identical strings"
+    args: ["abc", "abc"]
+    expected: 0
+solution: |
+  function hammingDistance(a, b) {
+    let distance = 0;
+    for (let i = 0; i < a.length; i += 1) {
+      if (a[i] !== b[i]) {
+        distance += 1;
+      }
+    }
+    return distance;
+  }
+solutionExplanation: |
+  The core insight: because the two strings are the same length, you can walk
+  them **in lockstep with a single index** — compare `a[i]` to `b[i]` at every
+  position and count the mismatches. That's the entire algorithm; the name
+  ("Hamming distance", from coding theory) is fancier than the code.
+
+  Step by step:
+
+  1. Start a counter at `0`.
+  2. Loop `i` from `0` to `a.length - 1`. A classic indexed `for` loop fits
+     better than `for...of` here, because you need the *same position* in two
+     different strings at once.
+  3. Whenever `a[i] !== b[i]`, bump the counter.
+  4. Return the counter.
+
+  Trace the binary case: `"1011101"` vs `"1001001"` — walking the positions,
+  only index 2 (`1` vs `0`) and index 4 (`1` vs `0`) differ, so the answer is
+  `2`.
+
+  The identical-strings edge case (`"abc"` vs `"abc"` → `0`) checks the
+  baseline: if the condition never fires, the counter must still be a valid
+  answer. Initialise it to `0` and that comes for free — a reminder that the
+  "nothing happened" path is part of the spec, not an afterthought.
+
+  You might have tried splitting into arrays and using `filter` — perfectly
+  fine (`[...a].filter((ch, i) => ch !== b[i]).length`), it's the same lockstep
+  comparison wearing functional clothes.

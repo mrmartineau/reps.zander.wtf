@@ -1,0 +1,67 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Slugify a Title"
+difficulty: medium
+prompt: |
+  Implement `slugify(title)` so it turns a page title into a URL-friendly
+  slug:
+
+  1. Lowercase everything.
+  2. Replace each run of spaces with a single hyphen.
+  3. Strip any character that isn't a letter, a digit or a hyphen.
+  4. Trim leading and trailing hyphens.
+
+  For example, `slugify("  Hello, World!  ")` returns `"hello-world"`. A
+  title made entirely of punctuation slugifies to the empty string `""`.
+functionName: slugify
+starterCode: |
+  function slugify(title) {
+    // your code here
+  }
+tests:
+  - name: "Padded and punctuated title"
+    args: ["  Hello, World!  "]
+    expected: "hello-world"
+  - name: "Plain blog title"
+    args: ["10 Tips for Better Code"]
+    expected: "10-tips-for-better-code"
+  - name: "Only punctuation"
+    args: ["!!!"]
+    expected: ""
+solution: |
+  function slugify(title) {
+    return title
+      .toLowerCase()
+      .replace(/ +/g, "-")
+      .replace(/[^a-z0-9-]/g, "")
+      .replace(/^-+|-+$/g, "");
+  }
+solutionExplanation: |
+  The core insight: a slugifier is a **pipeline of small, ordered rewrites**,
+  not one clever pass. Each stage does a single dumb thing, and the order is
+  what makes the whole correct. Chained `.replace()` calls express that
+  pipeline directly.
+
+  Stage by stage:
+
+  1. **`toLowerCase()`** first, so the later character class only has to know
+     about `a-z`, never `A-Z`.
+  2. **`replace(/ +/g, "-")`** — each *run* of spaces (note the `+`) becomes
+     exactly one hyphen, so `"Better  Code"` wouldn't yield a double hyphen.
+  3. **`replace(/[^a-z0-9-]/g, "")`** — the `[^...]` negated class deletes
+     everything that isn't a lowercase letter, digit or hyphen. Commas and
+     exclamation marks vanish here.
+  4. **`replace(/^-+|-+$/g, "")`** — finally trim hyphens stuck to either
+     end. The `^-+` and `-+$` anchors mean "hyphens at the very start" and
+     "at the very end"; the alternation handles both in one pass.
+
+  Order is the gotcha. Trace `"  Hello, World!  "`: lowercasing gives
+  `"  hello, world!  "`; the leading/trailing spaces become hyphens
+  (`"-hello,-world!-"`); stripping punctuation gives `"-hello-world-"`; and
+  only *now* can the trim stage remove the edge hyphens to land on
+  `"hello-world"`. Trim hyphens before stripping punctuation and you'd miss
+  the ones that the earlier stages create.
+
+  The all-punctuation edge case (`"!!!"` → `""`) flows through naturally:
+  nothing survives stage 3, and trimming an empty string is a no-op. If your
+  version returns `"-"` or throws here, check which stage is leaking
+  characters forward.

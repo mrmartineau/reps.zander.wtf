@@ -1,0 +1,56 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Compact an Array"
+difficulty: easy
+prompt: |
+  Implement `compact(arr)` so it returns a new array with all falsy values
+  removed — `false`, `0`, `""` (empty string), and `null` — while keeping the
+  remaining values in their original order.
+
+  If nothing is falsy, return an unchanged copy of the array.
+
+  For example, `compact([0, "hi", false, 42, "", null, "ok"])` returns
+  `["hi", 42, "ok"]`.
+functionName: compact
+starterCode: |
+  function compact(arr) {
+    // your code here
+  }
+tests:
+  - name: "Mixed truthy and falsy"
+    args: [[0, "hi", false, 42, "", null, "ok"]]
+    expected: ["hi", 42, "ok"]
+  - name: "Falsy values only"
+    args: [[false, 0, "", null]]
+    expected: []
+  - name: "Nothing to remove"
+    args: [[1, "a", true]]
+    expected: [1, "a", true]
+solution: |
+  function compact(arr) {
+    return arr.filter((value) => Boolean(value));
+  }
+solutionExplanation: |
+  The core insight: "remove the falsy values" is exactly what
+  **`Array.prototype.filter`** is for, and JavaScript already knows which
+  values are falsy — you don't need to list them.
+
+  `filter` keeps the elements for which your callback returns something
+  truthy. So the whole puzzle collapses to: pass each value through a
+  truthiness check. `Boolean(value)` does that explicitly; you'll also see
+  the shorthand `arr.filter(v => !!v)` or even `arr.filter(Boolean)`, which
+  passes the `Boolean` constructor itself as the callback — all three are
+  the same idea.
+
+  Why you don't need `value !== false && value !== 0 && ...`: JavaScript has
+  a fixed, small set of falsy values (`false`, `0`, `""`, `null`,
+  `undefined`, `NaN`), and every one of them coerces to `false` in a boolean
+  context. The inputs here only use the first four, but the truthiness check
+  handles them all uniformly — and writing the explicit list is where bugs
+  creep in (it's easy to forget one).
+
+  The edge case to notice: when nothing is falsy, you must still return a
+  **copy**, not mutate or splice the original. `filter` always builds a new
+  array, so it gets this right for free. A hand-rolled loop that deletes
+  elements *in place* while iterating is the classic broken alternative —
+  removing an element shifts the indexes and skips the next one. Building a
+  new array (which is what `filter` does) avoids that trap entirely.

@@ -1,0 +1,70 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Equilibrium Index"
+difficulty: medium
+prompt: |
+  Implement `equilibriumIndex(nums)` so it returns the **smallest** index
+  where the sum of the elements strictly before it equals the sum of the
+  elements strictly after it. The element *at* the index belongs to neither
+  side.
+
+  For example, `equilibriumIndex([1, 3, 5, 2, 2])` returns `2`: before index
+  `2` the sum is `1 + 3 = 4`, and after it the sum is `2 + 2 = 4`.
+
+  If no index balances, return `-1`. (Index `0` can qualify too — its left
+  side is empty, summing to `0` — as can the last index.)
+functionName: equilibriumIndex
+starterCode: |
+  function equilibriumIndex(nums) {
+    // your code here
+  }
+tests:
+  - name: "Balanced in the middle"
+    args: [[1, 3, 5, 2, 2]]
+    expected: 2
+  - name: "Negatives in the mix"
+    args: [[-7, 1, 5, 2, -4, 3, 0]]
+    expected: 3
+  - name: "No equilibrium"
+    args: [[1, 2, 3]]
+    expected: -1
+solution: |
+  function equilibriumIndex(nums) {
+    const total = nums.reduce((sum, n) => sum + n, 0);
+    let leftSum = 0;
+    for (let i = 0; i < nums.length; i++) {
+      const rightSum = total - leftSum - nums[i];
+      if (leftSum === rightSum) return i;
+      leftSum += nums[i];
+    }
+    return -1;
+  }
+solutionExplanation: |
+  The brute-force route — for every index, re-sum everything to its left and
+  everything to its right — works, but does a full pass per index. The core
+  insight that collapses it to one pass: **if you know the total, the right
+  sum is just arithmetic**. Everything splits into three pieces:
+
+  ```
+  total = leftSum + nums[i] + rightSum
+  ```
+
+  so `rightSum = total - leftSum - nums[i]` — no second loop needed.
+
+  The approach:
+
+  1. Compute `total` once with `reduce`.
+  2. Walk left to right carrying a running `leftSum` (everything *before* the
+     current index — so it starts at `0`).
+  3. At each index, derive `rightSum` from the formula and compare. Equal?
+     Return `i` immediately — returning on the *first* hit is what makes it
+     the smallest such index.
+  4. Only **after** the check, fold `nums[i]` into `leftSum`. Adding it
+     before comparing is the off-by-one that breaks everything, because the
+     element at `i` belongs to neither side.
+
+  Trace `[-7, 1, 5, 2, -4, 3, 0]` at `i = 3`: `total = 0`, `leftSum` is
+  `-7 + 1 + 5 = -1`, so `rightSum = 0 - (-1) - 2 = -1`. Balanced → return
+  `3`. The negatives are why you can't bail out early with size-based
+  reasoning — sums can dip down and come back.
+
+  If the loop finishes with no hit, no index balances: return `-1`.

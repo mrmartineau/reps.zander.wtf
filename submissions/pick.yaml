@@ -1,0 +1,76 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Pick Object Keys"
+difficulty: easy
+prompt: |
+  Your API returns bulky user objects, but the client only needs a few
+  fields. Implement `pick(obj, keys)` so it returns a **new** object
+  containing only the properties of `obj` whose names appear in the `keys`
+  array. Keys that don't exist on `obj` are simply skipped — they must not
+  appear in the result.
+
+  For example,
+  `pick({ id: 7, name: "Ada", email: "ada@example.com" }, ["id", "name"])`
+  returns `{ id: 7, name: "Ada" }`.
+functionName: pick
+starterCode: |
+  function pick(obj, keys) {
+    // your code here
+  }
+tests:
+  - name: "Pick a subset of fields"
+    args:
+      [
+        { id: 7, name: "Ada", email: "ada@example.com", admin: true },
+        ["id", "name"],
+      ]
+    expected: { id: 7, name: "Ada" }
+  - name: "Pick a single field"
+    args:
+      [
+        { city: "London", country: "UK", population: 8900000 },
+        ["country"],
+      ]
+    expected: { country: "UK" }
+  - name: "Missing keys are skipped"
+    args:
+      [
+        { name: "Grace", role: "admiral" },
+        ["name", "rank", "ship"],
+      ]
+    expected: { name: "Grace" }
+solution: |
+  function pick(obj, keys) {
+    const result = {};
+    for (const key of keys) {
+      if (key in obj) {
+        result[key] = obj[key];
+      }
+    }
+    return result;
+  }
+solutionExplanation: |
+  The core insight: loop over the **keys you want**, not over the object.
+  The `keys` array is the shopping list — for each entry, check whether the
+  object actually has it, and copy it over if so.
+
+  Step by step:
+
+  1. Start with an empty object `result` — building a fresh object (instead
+     of deleting from the original) keeps the function pure.
+  2. For each `key` in the list, test `key in obj`. The `in` operator asks
+     "does this property exist on the object?".
+  3. If it exists, copy it with bracket notation: `result[key] = obj[key]`.
+     Brackets are required because `key` is a variable holding the property
+     name.
+
+  The gotcha the edge case guards: if you skip the existence check and write
+  `result[key] = obj[key]` unconditionally, a missing key like `"rank"`
+  would still land in the result with the value `undefined` — and
+  `{ name: "Grace", rank: undefined }` is *not* deep-equal to
+  `{ name: "Grace" }`. The `in` check is what keeps missing keys truly
+  absent rather than present-but-undefined.
+
+  An alternative you might have tried: filtering `Object.entries(obj)` by
+  whether `keys.includes(key)`. That works too, but it walks the whole
+  object and does a list search per property — looping the (usually shorter)
+  `keys` array reads more directly as "take exactly these".

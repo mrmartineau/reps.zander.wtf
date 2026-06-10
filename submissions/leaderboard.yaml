@@ -1,0 +1,111 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Build the Leaderboard"
+difficulty: medium
+prompt: |
+  Your quiz app shows a leaderboard after every round. Implement
+  `leaderboard(players)` where each player is `{ name, score }`. Return a
+  **new** array sorted by `score` descending; when two players have the same
+  score, break the tie by `name` ascending (alphabetical). The input array
+  must not be mutated.
+
+  For example:
+
+  ```js
+  leaderboard([
+    { name: "Cleo", score: 50 },
+    { name: "Ada", score: 80 },
+    { name: "Bo", score: 65 },
+  ])
+  // → [
+  //     { name: "Ada", score: 80 },
+  //     { name: "Bo", score: 65 },
+  //     { name: "Cleo", score: 50 },
+  //   ]
+  ```
+functionName: leaderboard
+starterCode: |
+  function leaderboard(players) {
+    // your code here
+  }
+tests:
+  - name: "Distinct scores"
+    args:
+      [
+        [
+          { name: "Cleo", score: 50 },
+          { name: "Ada", score: 80 },
+          { name: "Bo", score: 65 },
+        ],
+      ]
+    expected:
+      [
+        { name: "Ada", score: 80 },
+        { name: "Bo", score: 65 },
+        { name: "Cleo", score: 50 },
+      ]
+  - name: "Larger round"
+    args:
+      [
+        [
+          { name: "Nia", score: 120 },
+          { name: "Otis", score: 95 },
+          { name: "Remy", score: 140 },
+          { name: "Suki", score: 110 },
+        ],
+      ]
+    expected:
+      [
+        { name: "Remy", score: 140 },
+        { name: "Nia", score: 120 },
+        { name: "Suki", score: 110 },
+        { name: "Otis", score: 95 },
+      ]
+  - name: "Tied scores fall back to names"
+    args:
+      [
+        [
+          { name: "Zane", score: 70 },
+          { name: "Mia", score: 90 },
+          { name: "Ada", score: 70 },
+        ],
+      ]
+    expected:
+      [
+        { name: "Mia", score: 90 },
+        { name: "Ada", score: 70 },
+        { name: "Zane", score: 70 },
+      ]
+solution: |
+  function leaderboard(players) {
+    return [...players].sort((a, b) => {
+      if (b.score !== a.score) {
+        return b.score - a.score;
+      }
+      return a.name < b.name ? -1 : 1;
+    });
+  }
+solutionExplanation: |
+  The core insight: a "sort by X, then by Y" requirement is a **two-level
+  comparator**. Inside the compare function, decide on the primary key
+  first; only when it's a dead heat do you even look at the secondary key.
+
+  Build the comparator step by step:
+
+  1. Primary key, score *descending*: `b.score - a.score`. (For ascending
+     you'd write `a - b`; flipping the operands flips the order.) If the
+     scores differ, return that and you're done — names are irrelevant.
+  2. Secondary key, name *ascending*: only reached when scores are equal.
+     Comparing strings with `<` gives a plain character-code ordering, so
+     `a.name < b.name ? -1 : 1` puts `"Ada"` before `"Zane"`.
+
+  The other requirement is the quiet one: **don't mutate the input**.
+  `Array.prototype.sort` sorts *in place* — calling `players.sort(...)`
+  would reorder the caller's array behind their back. Copying first with
+  `[...players]` (or `players.slice()`) and sorting the copy is the standard
+  fix. (Modern runtimes also have `toSorted`, which is exactly
+  "copy-then-sort" as one method.)
+
+  The gotcha the edge case guards: without the tie-break, players with equal
+  scores stay in whatever relative order the sort leaves them — your output
+  might pass one test and fail another by luck. Any time a sort can produce
+  ties that matter, the comparator needs an explicit second level.

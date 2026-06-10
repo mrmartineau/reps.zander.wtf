@@ -1,0 +1,63 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Spot the Isogram"
+difficulty: easy
+prompt: |
+  Implement `isIsogram(str)` so it returns `true` if no letter appears more
+  than once in the string, ignoring case — `"D"` and `"d"` count as the same
+  letter. An empty string is considered an isogram.
+
+  For example, `isIsogram("Dermatoglyphics")` returns `true`, while
+  `isIsogram("Alphabet")` returns `false` (the letter `a` repeats).
+functionName: isIsogram
+starterCode: |
+  function isIsogram(str) {
+    // your code here
+  }
+tests:
+  - name: "A classic isogram"
+    args: ["Dermatoglyphics"]
+    expected: true
+  - name: "Repeated letter across cases"
+    args: ["Alphabet"]
+    expected: false
+  - name: "Empty string"
+    args: [""]
+    expected: true
+solution: |
+  function isIsogram(str) {
+    const seen = [];
+    for (const ch of str.toLowerCase()) {
+      if (seen.includes(ch)) {
+        return false;
+      }
+      seen.push(ch);
+    }
+    return true;
+  }
+solutionExplanation: |
+  The core insight: to detect a repeat, remember every letter you've already
+  seen, and bail out the moment the current letter is already in that memory.
+  You don't need to count occurrences — the *second* sighting alone is enough
+  to answer `false`.
+
+  Step by step:
+
+  1. Lowercase the whole string first, so `"A"` and `"a"` become the same
+     letter before any comparison happens. This is what makes `"Alphabet"`
+     fail: after lowercasing it's `"alphabet"`, and the second `a` collides
+     with the first.
+  2. Walk the characters, keeping a `seen` list. For each character:
+     - already in `seen`? Return `false` immediately — no need to look
+       further.
+     - otherwise, add it and keep going.
+  3. If the loop finishes without a collision, every letter was unique —
+     return `true`.
+
+  The empty-string edge case costs nothing: the loop body never runs, so you
+  fall straight through to `return true`, which matches the definition ("no
+  letter appears twice" is trivially true when there are no letters).
+
+  A neat alternative once you know `Set`: an isogram has no duplicates, so
+  `new Set(lower).size === lower.length`. Same idea — the set is the "seen"
+  memory — just expressed in one comparison. (Note the *return value* here is
+  a boolean; building a `Set` internally is fine.)
