@@ -1,0 +1,64 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+kind: react-hook
+title: "usePagination Hook"
+difficulty: medium
+prompt: |
+  Write a hook `usePagination(totalItems, pageSize, page)` that returns an
+  object `{ totalPages, hasPrev, hasNext }` describing a 1-based pager:
+
+  - `totalPages` — how many pages it takes to fit `totalItems` at `pageSize`
+    per page. A partial last page still counts, and an empty list still has
+    one (empty) page, so `totalPages` is never less than `1`.
+  - `hasPrev` — `true` when `page` is past the first page.
+  - `hasNext` — `true` when `page` is before the last page.
+
+  Reach for `useMemo` so the object is only rebuilt when the inputs change.
+
+  For example, `usePagination(42, 10, 1)` returns
+  `{ totalPages: 5, hasPrev: false, hasNext: true }`.
+functionName: usePagination
+starterCode: |
+  function usePagination(totalItems, pageSize, page) {
+    // Return { totalPages, hasPrev, hasNext }.
+  }
+tests:
+  - name: "First page of a long list"
+    args: [42, 10, 1]
+    expected: { totalPages: 5, hasPrev: false, hasNext: true }
+  - name: "Last page looks back, not forward"
+    args: [42, 10, 5]
+    expected: { totalPages: 5, hasPrev: true, hasNext: false }
+  - name: "An empty list is a single page"
+    args: [0, 10, 1]
+    expected: { totalPages: 1, hasPrev: false, hasNext: false }
+solution: |
+  function usePagination(totalItems, pageSize, page) {
+    return useMemo(() => {
+      const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+      return {
+        totalPages,
+        hasPrev: page > 1,
+        hasNext: page < totalPages,
+      };
+    }, [totalItems, pageSize, page]);
+  }
+solutionExplanation: |
+  Everything hangs off one number, so compute it first: `totalPages`.
+  `Math.ceil(totalItems / pageSize)` rounds the division *up*, which is how a
+  partial last page (42 items at 10 per page → 4.2 → 5 pages) still gets
+  counted. `Math.floor` or integer division is the classic off-by-one here —
+  it would report 4 pages and strand the last two items.
+
+  With `totalPages` in hand, the flags are direct translations of the prompt:
+  `hasPrev` is "are we past page 1" (`page > 1`) and `hasNext` is "are we
+  before the last page" (`page < totalPages`). No special-casing needed.
+
+  The edge the third test guards: zero items. `Math.ceil(0 / 10)` is `0`, and
+  a pager with zero pages breaks both flags (`page < 0` nonsense) and any UI
+  showing "page 1 of 0". Clamping with `Math.max(1, ...)` encodes the rule
+  "an empty list is still one empty page".
+
+  `useMemo` wraps the computation so the returned object keeps its identity
+  between renders until `totalItems`, `pageSize`, or `page` actually change —
+  that matters when the result feeds `useEffect` dependencies or memoised
+  children, which compare by reference.
