@@ -44,8 +44,15 @@ tests:
 solution: |
   function chunk(arr, size) {
     const out = [];
-    for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+    for (const item of arr) {
+      const last = out[out.length - 1];
+      if (!last || last.length === size) {
+        out.push([item]);        // no chunk yet, or it's full → start a new one
+      } else {
+        last.push(item);         // room left → add to current chunk
+      }
+    }
     return out;
   }
 solutionExplanation: |
-  Walk the array in steps of `size`, slicing out `[i, i + size)` each time. `slice` clamps to the array end, so the final chunk is naturally shorter when the length isn't an exact multiple of `size`.
+  Keep a list of chunks. For each item, look at the last chunk: if there isn't one yet, or it's already full, start a new chunk; otherwise add the item to it.
