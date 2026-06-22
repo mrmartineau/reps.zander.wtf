@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "reps",
-  "compatibility_date": "2026-06-03",
+  "compatibility_date": "2026-03-12",
   // Enable Workers preview URLs so PR previews get a versioned alias at
   // <alias>-reps.<subdomain>.workers.dev (see .github/workflows/pr-preview.yml).
   "preview_urls": true,
