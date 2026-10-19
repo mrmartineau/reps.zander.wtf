@@ -1,0 +1,83 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Run a List of Tests"
+difficulty: medium
+prompt: |
+  Implement `runTests(tests)`. It takes an array of tests, runs them all, and
+  returns a summary.
+
+  Each test is an object `{ name, fn }`. `fn` is called as `fn()`: it takes no
+  arguments. Like a real test runner, a test **fails** if `fn` throws, and
+  **passes** otherwise.
+
+  Return an object with:
+
+  - `passed` — how many tests passed
+  - `failed` — how many tests failed
+  - `failures` — the `name` of each failed test, in the order they ran
+
+  One failing test must **not** stop the rest from running.
+
+  For example, with three tests where only `"subtracts"` throws:
+
+  ```js
+  runTests([
+    { name: "adds", fn: () => {} },
+    { name: "subtracts", fn: () => { throw new Error("wrong"); } },
+    { name: "multiplies", fn: () => {} },
+  ]);
+  // → { passed: 2, failed: 1, failures: ["subtracts"] }
+  ```
+functionName: runTests
+starterCode: |
+  function runTests(tests) {
+    // your code here
+  }
+tests:
+  - name: "One failure in the middle"
+    args:
+      - - { name: "adds", fn: { $js: "() => { if (1 + 2 !== 3) throw new Error('bad'); }" } }
+        - { name: "subtracts", fn: { $js: "() => { throw new Error('wrong'); }" } }
+        - { name: "multiplies", fn: { $js: "() => { if (2 * 3 !== 6) throw new Error('bad'); }" } }
+    expected: { passed: 2, failed: 1, failures: ["subtracts"] }
+  - name: "Several failures"
+    args:
+      - - { name: "a", fn: { $js: "() => { throw new Error('a'); }" } }
+        - { name: "b", fn: { $js: "() => {}" } }
+        - { name: "c", fn: { $js: "() => { throw new Error('c'); }" } }
+    expected: { passed: 1, failed: 2, failures: ["a", "c"] }
+  - name: "No tests"
+    args: [[]]
+    expected: { passed: 0, failed: 0, failures: [] }
+solution: |
+  function runTests(tests) {
+    const failures = [];
+
+    for (const { name, fn } of tests) {
+      try {
+        fn();
+      } catch {
+        failures.push(name); // it threw, so this test failed
+      }
+    }
+
+    return {
+      passed: tests.length - failures.length,
+      failed: failures.length,
+      failures,
+    };
+  }
+solutionExplanation: |
+  This is `test()` in a loop. For each test, call `fn()` inside `try`/`catch`.
+  If it throws, it failed, so save its `name`.
+
+  The `try`/`catch` has to be **inside** the loop. That's what stops one
+  failure from ending the whole run. If you wrap the whole loop in one
+  `try`, the first throw jumps straight out, and the tests after it never run.
+
+  You only need to track one thing: the list of failures. The rest follows
+  from it:
+
+  - `failed` is `failures.length`
+  - `passed` is everything else: `tests.length - failures.length`
+
+  With no tests, the loop never runs, so you get `0`, `0` and `[]` for free.
