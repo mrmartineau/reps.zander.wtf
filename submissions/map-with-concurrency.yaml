@@ -1,0 +1,117 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Map with a Concurrency Limit"
+difficulty: hard
+prompt: |
+  Implement `mapWithConcurrency(items, limit, fn)`.
+
+  Call `fn` on every item, and return a promise of all the results.
+
+  `fn` is called as `fn(item)`: it takes one item and returns a promise.
+  `limit` is always a whole number, 1 or more.
+
+  Follow these four rules:
+
+  1. At most `limit` calls run **at the same time**.
+  2. When one call finishes, start the next one **straight away**. Don't wait
+     for a whole batch to finish.
+  3. Return the results in the **same order as the input**.
+  4. If one call fails, **reject** the whole thing, like `Promise.all`.
+
+  For example, say `wait(ms)` waits `ms` milliseconds, then resolves to `ms`.
+  `mapWithConcurrency([300, 100, 200], 2, wait)` goes like this:
+
+  - **0ms:** start `300` and `100`. That's 2 running — the limit.
+  - **100ms:** `100` finishes, so start `200` right away.
+  - **300ms:** `300` and `200` both finish.
+
+  It resolves to `[300, 100, 200]` — input order, not finish order.
+
+  In the second test, each call returns **how many calls were running when it
+  started** (counting itself). With a limit of 2, that should never go above
+  `2`.
+functionName: mapWithConcurrency
+starterCode: |
+  async function mapWithConcurrency(items, limit, fn) {
+    // your code here
+  }
+tests:
+  - name: "Keeps input order"
+    args:
+      - [40, 10, 20]
+      - 2
+      - $js: "(ms) => new Promise((resolve) => setTimeout(() => resolve(ms), ms))"
+    expected: [40, 10, 20]
+  - name: "Never more than the limit, no batching"
+    args:
+      - [100, 20, 20, 20]
+      - 2
+      - $js: |
+          (() => {
+            let running = 0;
+            return async (ms) => {
+              running++;
+              const runningAtStart = running;
+              await new Promise((resolve) => setTimeout(resolve, ms));
+              running--;
+              return runningAtStart;
+            };
+          })()
+    expected: [1, 2, 2, 2]
+  - name: "Rejects if one fails"
+    args:
+      - [1, "boom", 3]
+      - 2
+      - $js: "async (x) => { if (x === 'boom') throw new Error('boom'); return x; }"
+    rejects: "boom"
+solution: |
+  async function mapWithConcurrency(items, limit, fn) {
+    const results = [];
+    let next = 0; // index of the next item to start
+
+    // A worker keeps taking the next item until there are none left.
+    async function worker() {
+      while (next < items.length) {
+        const i = next++;
+        results[i] = await fn(items[i]); // save by index to keep the order
+      }
+    }
+
+    // Start `limit` workers, and wait for all of them to run out of work.
+    const workers = [];
+    for (let w = 0; w < Math.min(limit, items.length); w++) {
+      workers.push(worker());
+    }
+    await Promise.all(workers); // rejects as soon as any worker fails
+    return results;
+  }
+solutionExplanation: |
+  The trick is to stop thinking about items and think about **workers**.
+
+  Picture a checkout with `limit` tills and a queue of items. Each till serves
+  one item at a time. When a till is free, it takes the next item from the
+  queue. That alone gives you all four rules:
+
+  1. **At most `limit` at once** — there are only `limit` tills.
+  2. **Start the next one straight away** — a till takes a new item the moment
+     it's free. It doesn't wait for the other tills.
+  3. **Same order** — each item remembers its position in the queue, and its
+     result goes into `results[i]`.
+  4. **Reject on failure** — if `fn` throws, `await` throws inside that
+     worker, so its promise rejects. `Promise.all(workers)` passes that on.
+
+  In code, a "till" is the `worker` function: a `while` loop that takes the
+  next index with `next++` and `await`s `fn`. All workers share the same
+  `next`, so no two take the same item. That's safe because JavaScript runs
+  one piece of code at a time — `next++` can't be cut in half.
+
+  **You might have tried batches:** split the items into chunks of `limit` and
+  `await Promise.all` each chunk. That breaks rule 2. One slow item holds up
+  its whole chunk, while the other slots sit empty. In the second test, the
+  `100`ms call would block the rest, and you'd see `[1, 2, 1, 2]` instead of
+  `[1, 2, 2, 2]`.
+
+  **Or `Promise.all(items.map(fn))`:** that starts every call at once and
+  breaks rule 1. You'd see `[1, 2, 3, 4]`.
+
+  The `Math.min(limit, items.length)` is a small guard. There's no point
+  starting 5 workers for 2 items.

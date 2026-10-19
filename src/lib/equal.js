@@ -20,6 +20,12 @@ export function deepEqual(a, b) {
   return false;
 }
 
+// The message a `rejects` test compares against. Matches what was thrown even
+// for a bare `throw "boom"` or an Error with an empty message.
+export function errorMessage(err) {
+  return typeof err?.message === 'string' ? err.message : String(err);
+}
+
 // Compact, readable representation for showing expected vs received.
 export function show(value) {
   try {

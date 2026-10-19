@@ -1,0 +1,64 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Add a Timeout to a Promise"
+difficulty: medium
+prompt: |
+  Some promises take too long, like a slow network request. Implement
+  `withTimeout(promise, ms)`. It returns a new promise that:
+
+  - **Resolves** with the same value as `promise`, if `promise` resolves
+    within `ms` milliseconds.
+  - **Rejects** with `new Error("Timed out")` if `ms` milliseconds pass first.
+  - **Rejects** with the same error as `promise`, if `promise` rejects first.
+
+  For example, if `fetchUser()` takes 5 seconds,
+  `withTimeout(fetchUser(), 1000)` rejects with `"Timed out"` after 1 second.
+functionName: withTimeout
+starterCode: |
+  function withTimeout(promise, ms) {
+    // your code here
+  }
+tests:
+  - name: "Fast enough"
+    args:
+      - $js: "new Promise((resolve) => setTimeout(() => resolve('done'), 10))"
+      - 200
+    expected: "done"
+  - name: "Too slow"
+    args:
+      - $js: "new Promise((resolve) => setTimeout(() => resolve('done'), 300))"
+      - 50
+    rejects: "Timed out"
+  - name: "Keeps the original error"
+    args:
+      - $js: "new Promise((_, reject) => setTimeout(() => reject(new Error('server down')), 10))"
+      - 200
+    rejects: "server down"
+solution: |
+  function withTimeout(promise, ms) {
+    // A promise that rejects when the time is up.
+    const timer = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error("Timed out")), ms);
+    });
+
+    // Whichever one settles first wins.
+    return Promise.race([promise, timer]);
+  }
+solutionExplanation: |
+  The trick: **make the timeout a promise too**, then race the two.
+
+  1. `new Promise((_, reject) => ...)` makes a promise that you control. Use
+     `setTimeout` to call `reject` after `ms` milliseconds. Now "time is up"
+     is just another promise that fails.
+  2. `Promise.race([a, b])` settles the same way as whichever one settles
+     **first** — resolve or reject.
+
+  So if `promise` is fast, its value wins. If it's slow, the timer's error
+  wins. And if `promise` fails fast, its own error wins.
+
+  **The gotcha is the third test.** You might have wrapped the race in
+  `try`/`catch` and thrown `"Timed out"` from the `catch`. That turns *every*
+  error into a timeout, so `"server down"` gets lost. Let the race pass
+  errors through as they are.
+
+  In real code, you'd also call `clearTimeout` once the race is over, so the
+  timer doesn't keep running.

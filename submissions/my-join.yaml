@@ -1,0 +1,51 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Build Your Own join"
+difficulty: easy
+prompt: |
+  Implement `myJoin(arr, separator = ",")` so it works like
+  `arr.join(separator)` — **without using `.join`**.
+
+  Turn each item into a string and glue them together with `separator`
+  **between** them (not at the start or end).
+
+  Like the real `join`, `null` and `undefined` items become an empty string.
+
+  For example, `myJoin(["a", "b", "c"], "-")` returns `"a-b-c"`, and
+  `myJoin([1, null, 3], "-")` returns `"1--3"`.
+functionName: myJoin
+starterCode: |
+  function myJoin(arr, separator = ",") {
+    // your code here
+  }
+tests:
+  - name: "Joins with a dash"
+    args: [["a", "b", "c"], "-"]
+    expected: "a-b-c"
+  - name: "Default separator"
+    args: [[1, 2, 3]]
+    expected: "1,2,3"
+  - name: "null becomes empty"
+    args: [[1, null, 3], "-"]
+    expected: "1--3"
+solution: |
+  function myJoin(arr, separator = ",") {
+    let result = "";
+    for (let i = 0; i < arr.length; i++) {
+      // Add the separator before every item except the first.
+      if (i > 0) result += separator;
+      const item = arr[i];
+      result += item == null ? "" : String(item);
+    }
+    return result;
+  }
+solutionExplanation: |
+  Build the string one item at a time. The only tricky bit is the separator:
+  it goes **between** items, so there's one less separator than items.
+
+  The easy way is "add the separator before every item except the first"
+  (`if (i > 0)`). If you add it after every item instead, you end up with an
+  extra one on the end: `"a-b-c-"`.
+
+  For `null` and `undefined`, `item == null` catches both (the loose `==` is
+  handy here). Use `""` for those, and `String(item)` for everything else.
+  Without that check you'd get `"1-null-3"`.

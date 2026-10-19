@@ -1,0 +1,51 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Build Your Own every"
+difficulty: easy
+prompt: |
+  Implement `myEvery(arr, fn)` so it works like `arr.every(fn)` — **without
+  using `.every`**.
+
+  Return `true` if `fn` returns something truthy for **every** item.
+  Otherwise return `false`.
+
+  `fn` is called as `fn(item, index, arr)`: the item, its position, and the
+  whole array.
+
+  For example, `myEvery([1, 2, 3], x => x > 0)` returns `true`, and
+  `myEvery([1, -2, 3], x => x > 0)` returns `false`.
+
+  Watch out: what should an empty array return?
+functionName: myEvery
+starterCode: |
+  function myEvery(arr, fn) {
+    // your code here
+  }
+tests:
+  - name: "All positive"
+    args: [[1, 2, 3], { $js: "x => x > 0" }]
+    expected: true
+  - name: "One fails"
+    args: [[1, -2, 3], { $js: "x => x > 0" }]
+    expected: false
+  - name: "Empty array is true"
+    args: [[], { $js: "x => x > 0" }]
+    expected: true
+solution: |
+  function myEvery(arr, fn) {
+    for (let i = 0; i < arr.length; i++) {
+      // One no is enough to fail.
+      if (!fn(arr[i], i, arr)) {
+        return false;
+      }
+    }
+    return true;
+  }
+solutionExplanation: |
+  `every` is `some` flipped around. Instead of looking for one yes, look for
+  one **no**. The first item that fails means the answer is `false`.
+
+  If the loop ends without a failure, every item passed, so return `true`.
+
+  The surprise is the empty array: it returns `true`. Think of it as "no item
+  broke the rule". There are no items, so nothing broke it. This falls out of
+  the code for free — the loop never runs, and you reach `return true`.

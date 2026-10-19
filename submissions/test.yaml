@@ -1,0 +1,71 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Build a Tiny test()"
+difficulty: easy
+prompt: |
+  Test runners like Jest and Vitest give you a `test` function. You pass it a
+  description and a callback:
+
+  ```js
+  test("adds numbers", () => {
+    if (1 + 1 !== 2) throw new Error("bad maths");
+  });
+  ```
+
+  Implement `test(description, fn)`. Run `fn`, then return:
+
+  - `true` if `fn` runs without throwing (the test **passed**)
+  - `false` if `fn` throws (the test **failed**)
+
+  `fn` is called as `fn()`: it takes no arguments.
+
+  A test fails **only** when its callback throws. What the callback returns
+  doesn't matter — even `false`.
+functionName: test
+starterCode: |
+  function test(description, fn) {
+    // your code here
+  }
+tests:
+  - name: "Passing test"
+    args:
+      - "adds numbers"
+      - $js: "() => { if (1 + 1 !== 2) throw new Error('bad maths'); }"
+    expected: true
+  - name: "Failing test"
+    args:
+      - "always fails"
+      - $js: "() => { throw new Error('nope'); }"
+    expected: false
+  - name: "Returning false still passes"
+    args:
+      - "returns false"
+      - $js: "() => false"
+    expected: true
+solution: |
+  function test(description, fn) {
+    try {
+      fn();
+      console.log(`✓ ${description}`);
+      return true; // it ran without throwing: pass
+    } catch (err) {
+      console.log(`✗ ${description}: ${err.message}`);
+      return false; // it threw: fail
+    }
+  }
+solutionExplanation: |
+  The core idea: **a test fails by throwing.** Every check in a real test
+  (`expect(...).toBe(...)`, `assert(...)`) throws an error when it's wrong. So
+  the runner doesn't need to know anything about the checks. It only needs to
+  know: did the callback throw?
+
+  `try`/`catch` answers exactly that. Call `fn()` inside `try`. If you reach
+  the next line, nothing threw, so return `true`. If anything threw, you land
+  in `catch`, so return `false`.
+
+  The third test is the gotcha. You might have written `return fn() !== false`
+  or `return Boolean(fn())`. But a test callback usually returns nothing, and
+  its return value is ignored. Only a throw makes it fail.
+
+  The `console.log` lines are optional. Only the return value is checked, but
+  printing `✓` or `✗` with the description is what real runners do — and it's
+  why `test` takes a description at all.

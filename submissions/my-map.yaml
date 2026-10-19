@@ -1,0 +1,49 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Build Your Own map"
+difficulty: easy
+prompt: |
+  Implement `myMap(arr, fn)` so it works like `arr.map(fn)` — **without using
+  `.map`**.
+
+  Call `fn` once for each item and collect what it returns into a new array.
+
+  `fn` is called as `fn(item, index, arr)`: the item, its position, and the
+  whole array.
+
+  For example, `myMap([1, 2, 3], x => x * 2)` returns `[2, 4, 6]`, and
+  `myMap(['a', 'b'], (item, i) => item + i)` returns `['a0', 'b1']`.
+functionName: myMap
+starterCode: |
+  function myMap(arr, fn) {
+    // your code here
+  }
+tests:
+  - name: "Doubles each number"
+    args: [[1, 2, 3], { $js: "x => x * 2" }]
+    expected: [2, 4, 6]
+  - name: "Passes the index and the array"
+    args: [["a", "b", "c"], { $js: "(item, i, arr) => item + (i + 1) + '/' + arr.length" }]
+    expected: ["a1/3", "b2/3", "c3/3"]
+  - name: "Empty array"
+    args: [[], { $js: "x => x * 2" }]
+    expected: []
+solution: |
+  function myMap(arr, fn) {
+    const result = [];
+    for (let i = 0; i < arr.length; i++) {
+      // Whatever fn returns goes into the new array.
+      result.push(fn(arr[i], i, arr));
+    }
+    return result;
+  }
+solutionExplanation: |
+  `map` is just a loop that **collects**. Start with an empty array, visit each
+  item, and push whatever `fn` gives back.
+
+  The one thing people forget is the extra arguments. The real `map` calls
+  `fn(item, index, array)`, not just `fn(item)`. The second test uses all
+  three, so it fails if you only pass the item — `i` and `arr` are
+  `undefined`.
+
+  You never touch the original array. `map` always returns a **new** array of
+  the same length.

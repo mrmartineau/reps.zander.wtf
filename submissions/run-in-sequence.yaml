@@ -1,0 +1,83 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Fix the Async Loop"
+difficulty: medium
+prompt: |
+  **This one has a bug for you to fix.**
+
+  `runInSequence(tasks)` takes an array of async tasks. It should:
+
+  1. Run them **one at a time**. Each task starts only after the one before
+     it has finished.
+  2. Return a promise of their results, **in order**.
+
+  Each task is called as `task()`: it takes no arguments and returns a
+  promise.
+
+  The starter code looks right, but it doesn't work. Run the tests to see what
+  it does, then fix it.
+
+  In the second test, each task returns **how many tasks were running when it
+  started** (counting itself). One at a time means that should always be `1`.
+functionName: runInSequence
+starterCode: |
+  async function runInSequence(tasks) {
+    const results = [];
+    tasks.forEach(async (task) => {
+      results.push(await task());
+    });
+    return results;
+  }
+tests:
+  - name: "Returns every result"
+    args:
+      - - $js: "async () => { await new Promise((r) => setTimeout(r, 30)); return 'a'; }"
+        - $js: "async () => { await new Promise((r) => setTimeout(r, 10)); return 'b'; }"
+        - $js: "async () => { await new Promise((r) => setTimeout(r, 20)); return 'c'; }"
+    expected: ["a", "b", "c"]
+  - name: "One at a time"
+    args:
+      - $js: |
+          (() => {
+            let running = 0;
+            const task = (ms) => async () => {
+              running++;
+              const runningAtStart = running;
+              await new Promise((resolve) => setTimeout(resolve, ms));
+              running--;
+              return runningAtStart;
+            };
+            return [task(30), task(10), task(20)];
+          })()
+    expected: [1, 1, 1]
+  - name: "No tasks"
+    args: [[]]
+    expected: []
+solution: |
+  async function runInSequence(tasks) {
+    const results = [];
+    for (const task of tasks) {
+      results.push(await task()); // wait for this one before the next
+    }
+    return results;
+  }
+solutionExplanation: |
+  The bug: **`forEach` doesn't wait for `async` callbacks.**
+
+  An `async` callback returns a promise. `forEach` calls it, ignores that
+  promise, and moves straight on to the next item. So the starter code:
+
+  - starts **all** the tasks at once, and
+  - reaches `return results` before any task has finished, so it returns `[]`.
+
+  The `await` inside the callback only pauses that one callback. It doesn't
+  pause `forEach`, and it doesn't pause `runInSequence`.
+
+  The fix is a plain `for...of` loop. There, `await` pauses the **whole
+  function**, so each task finishes before the loop goes on to the next one.
+  The results get pushed in order, and you return only after the last one.
+
+  **You might have tried `Promise.all(tasks.map((task) => task()))`.** That
+  returns the right results in the right order, so the first test passes. But
+  `map` starts every task at once. The second test catches it: you'd get
+  `[1, 2, 3]`, not `[1, 1, 1]`. `Promise.all` is great when tasks *can* run
+  together — just not here.

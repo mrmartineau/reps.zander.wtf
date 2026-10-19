@@ -11,6 +11,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import yaml from 'js-yaml';
 import { transform } from 'sucrase';
+import { errorMessage } from '../src/lib/equal.js';
+import { revive } from '../src/lib/revive.js';
 
 // Mirrors src/lib/equal.js so validation matches in-browser behaviour exactly.
 function deepEqual(a, b) {
@@ -34,6 +36,10 @@ function deepEqual(a, b) {
 const REQUIRED_COMMON = ['id', 'title', 'difficulty', 'prompt', 'starterCode', 'tests', 'solution'];
 const DIFFICULTIES = ['easy', 'medium', 'hard'];
 const KINDS = ['function', 'react-component', 'react-hook'];
+// Same limit as the browser runner, so a promise that never settles fails
+// instead of hanging CI.
+const TIMEOUT_MS = 2000;
+const TIMED_OUT = Symbol('timed out');
 
 // Resolve args → list of yaml files.
 const args = process.argv.slice(2);
@@ -124,7 +130,10 @@ for (const file of files) {
       }
     } else {
       if (!Array.isArray(t.args)) fail(file, `test ${i} "args" must be an array`);
-      if (!('expected' in t)) fail(file, `test ${i} missing "expected"`);
+      const hasRejects = 'rejects' in t;
+      if (('expected' in t) === hasRejects) fail(file, `test ${i} needs exactly one of "expected" or "rejects"`);
+      if (hasRejects && typeof t.rejects !== 'string') fail(file, `test ${i} "rejects" must be an error message string`);
+      if (hasRejects && kind !== 'function') fail(file, `test ${i} "rejects" only works in plain function puzzles`);
     }
   });
 
@@ -158,11 +167,41 @@ for (const file of files) {
     continue;
   }
   for (const t of p.tests) {
-    let received;
+    // Revive outside the solution's try, so a broken `$js` arg can't pass as
+    // the solution's expected rejection.
+    let args;
     try {
-      received = fn(...structuredClone(t.args));
+      args = revive(structuredClone(t.args));
     } catch (e) {
-      fail(file, `solution threw on "${t.name}": ${e.message}`);
+      fail(file, `"${t.name}" has a broken $js arg: ${errorMessage(e)}`);
+      continue;
+    }
+    let received;
+    let error = null;
+    let timer;
+    try {
+      const timeout = new Promise((resolve) => {
+        timer = setTimeout(resolve, TIMEOUT_MS, TIMED_OUT);
+      });
+      received = await Promise.race([fn(...args), timeout]);
+    } catch (e) {
+      error = errorMessage(e);
+    } finally {
+      clearTimeout(timer);
+    }
+    if (received === TIMED_OUT) {
+      fail(file, `solution timed out after ${TIMEOUT_MS} ms on "${t.name}"`);
+      continue;
+    }
+    if ('rejects' in t) {
+      if (error !== t.rejects) {
+        const got = error == null ? JSON.stringify(received) : `error "${error}"`;
+        fail(file, `"${t.name}" expected error "${t.rejects}" but got ${got}`);
+      }
+      continue;
+    }
+    if (error != null) {
+      fail(file, `solution threw on "${t.name}": ${error}`);
       continue;
     }
     if (received instanceof Map || received instanceof Set) {

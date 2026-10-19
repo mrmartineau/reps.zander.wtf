@@ -1,0 +1,56 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Build Your Own flat"
+difficulty: medium
+prompt: |
+  Implement `myFlat(arr, depth = 1)` so it works like `arr.flat(depth)` —
+  **without using `.flat` or `.flatMap`**.
+
+  It takes nested arrays and pulls their items up into the outer array.
+  `depth` says how many levels to open. By default it opens **one** level.
+
+  For example:
+
+  - `myFlat([1, [2, [3]]])` returns `[1, 2, [3]]` (one level)
+  - `myFlat([1, [2, [3]]], 2)` returns `[1, 2, 3]` (two levels)
+functionName: myFlat
+starterCode: |
+  function myFlat(arr, depth = 1) {
+    // your code here
+  }
+tests:
+  - name: "One level by default"
+    args: [[1, [2, 3], [4, [5]]]]
+    expected: [1, 2, 3, 4, [5]]
+  - name: "Two levels"
+    args: [[1, [2, [3, [4]]]], 2]
+    expected: [1, 2, 3, [4]]
+  - name: "Depth 0 changes nothing"
+    args: [[1, [2]], 0]
+    expected: [1, [2]]
+solution: |
+  function myFlat(arr, depth = 1) {
+    const result = [];
+    for (const item of arr) {
+      if (Array.isArray(item) && depth > 0) {
+        // Open this array, and let it open one less level inside.
+        result.push(...myFlat(item, depth - 1));
+      } else {
+        result.push(item);
+      }
+    }
+    return result;
+  }
+solutionExplanation: |
+  Look at each item. If it's not an array, keep it as it is. If it **is** an
+  array, you need to open it — and its items might be arrays too.
+
+  That's where recursion helps. Call `myFlat` on the inner array with
+  `depth - 1`, then spread its result into yours. Each level down has one less
+  level left to open.
+
+  When `depth` reaches `0`, stop opening: just push the item, array or not.
+  That's why the last test returns the input unchanged — with `depth` at `0`,
+  the `if` never opens anything.
+
+  Trace `myFlat([1, [2, [3]]], 1)`: `1` is kept. `[2, [3]]` is opened with
+  depth `0`, which keeps `2` and keeps `[3]` as it is. Result: `[1, 2, [3]]`.

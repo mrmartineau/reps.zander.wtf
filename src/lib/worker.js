@@ -1,10 +1,11 @@
 // Runs entirely off the main thread so a runaway solution (infinite loop)
 // can be killed by terminating the worker from the runner.
-import { deepEqual, show } from './equal.js';
+import { deepEqual, errorMessage, show } from './equal.js';
+import { revive } from './revive.js';
 
 const MAX_LOG_LINES = 100;
 
-self.onmessage = (e) => {
+self.onmessage = async (e) => {
   const { code, functionName, test } = e.data;
 
   // Capture the user's console output so it can be surfaced next to the result.
@@ -43,8 +44,30 @@ self.onmessage = (e) => {
 
     // Defensive copy of args so a solution that mutates inputs can't poison
     // the comparison.
-    const args = structuredClone(test.args);
-    const received = fn(...args);
+    const args = revive(structuredClone(test.args));
+
+    // `rejects` tests pass only if the call throws (or its promise rejects)
+    // with exactly that message.
+    if (test.rejects != null) {
+      let message = null;
+      let received;
+      try {
+        received = await fn(...args);
+      } catch (err) {
+        message = errorMessage(err);
+      }
+      self.postMessage({
+        pass: message === test.rejects,
+        received: message == null ? `no error (returned ${show(received)})` : `error ${show(message)}`,
+        expected: `error ${show(test.rejects)}`,
+        logs,
+      });
+      return;
+    }
+
+    // Awaiting a plain value is a no-op, so sync and async solutions share
+    // this path.
+    const received = await fn(...args);
     const pass = deepEqual(received, test.expected);
 
     self.postMessage({

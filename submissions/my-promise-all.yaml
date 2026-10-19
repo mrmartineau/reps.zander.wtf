@@ -1,0 +1,85 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Build Your Own Promise.all"
+difficulty: medium
+prompt: |
+  Implement `myPromiseAll(items)` so it works like `Promise.all(items)` —
+  **without using `Promise.all`, `Promise.allSettled`, `Promise.any` or
+  `Promise.race`**.
+
+  Return a promise that:
+
+  1. **Resolves** with an array of every result, once they have all finished.
+  2. Keeps the results in the **same order as the input**, even if a later
+     promise finishes first.
+  3. **Rejects** straight away if any promise rejects, with that same error.
+
+  Items can also be plain values (not promises); treat them as already done.
+  An empty array resolves to `[]`.
+
+  For example, if `slow` resolves to `"slow"` after 50ms and `fast` resolves to
+  `"fast"` at once, `myPromiseAll([slow, fast, "plain"])` resolves to
+  `["slow", "fast", "plain"]`.
+functionName: myPromiseAll
+starterCode: |
+  function myPromiseAll(items) {
+    return new Promise((resolve, reject) => {
+      // your code here
+    });
+  }
+tests:
+  - name: "Keeps input order"
+    args:
+      - - $js: "new Promise((resolve) => setTimeout(() => resolve('slow'), 50))"
+        - $js: "Promise.resolve('fast')"
+        - "plain"
+    expected: ["slow", "fast", "plain"]
+  - name: "Rejects if one fails"
+    args:
+      - - $js: "new Promise((resolve) => setTimeout(() => resolve('slow'), 50))"
+        - $js: "new Promise((_, reject) => setTimeout(() => reject(new Error('nope')), 10))"
+    rejects: "nope"
+  - name: "Empty array"
+    args: [[]]
+    expected: []
+solution: |
+  function myPromiseAll(items) {
+    return new Promise((resolve, reject) => {
+      const results = [];
+      let finished = 0;
+
+      // Nothing to wait for.
+      if (items.length === 0) {
+        resolve(results);
+        return;
+      }
+
+      items.forEach((item, i) => {
+        // Promise.resolve turns a plain value into a promise, so both work.
+        Promise.resolve(item).then((value) => {
+          results[i] = value; // save by index, so order matches the input
+          finished++;
+          if (finished === items.length) resolve(results);
+        }, reject); // the first failure rejects the whole thing
+      });
+    });
+  }
+solutionExplanation: |
+  The core idea: **start everything at once, and count how many have
+  finished.** When the count reaches the total, you're done.
+
+  Step by step:
+
+  1. Loop over the items. Wrap each one in `Promise.resolve(item)` so plain
+     values and promises can be handled the same way.
+  2. When one finishes, store its value at **its own index**:
+     `results[i] = value`. That's what keeps the order right. If you used
+     `results.push(value)` instead, the fast one would land first and you'd
+     get `["fast", "plain", "slow"]`.
+  3. Add one to `finished`. If it equals `items.length`, call `resolve`.
+  4. Pass `reject` as the error handler. The first rejection rejects the whole
+     promise. Later calls to `resolve` or `reject` are ignored, so you don't
+     need to guard against them.
+
+  The edge case is the empty array. With no items, nothing ever finishes, so
+  the counter never reaches the total and the promise would wait forever.
+  Check for it up front and resolve with `[]`.

@@ -1,0 +1,75 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Build an Async test()"
+difficulty: medium
+prompt: |
+  Real tests often wait for something, like a fetch or a timer. So the test
+  callback can be `async`:
+
+  ```js
+  testAsync("loads the user", async () => {
+    const user = await getUser(1);
+    if (user.name !== "Ann") throw new Error("wrong user");
+  });
+  ```
+
+  Implement `testAsync(description, fn)`. It returns a **promise** that
+  resolves to:
+
+  - `true` if `fn` finishes without an error (the test **passed**)
+  - `false` if `fn` throws, or returns a promise that rejects (the test
+    **failed**)
+
+  `fn` is called as `fn()`: it takes no arguments. It may return a promise, or
+  it may be a normal function that returns nothing.
+functionName: testAsync
+starterCode: |
+  async function testAsync(description, fn) {
+    // your code here
+  }
+tests:
+  - name: "Async test passes"
+    args:
+      - "waits, then passes"
+      - $js: "async () => { await new Promise((resolve) => setTimeout(resolve, 20)); }"
+    expected: true
+  - name: "Async test fails later"
+    args:
+      - "waits, then fails"
+      - $js: "async () => { await new Promise((resolve) => setTimeout(resolve, 20)); throw new Error('too late'); }"
+    expected: false
+  - name: "Normal function that throws"
+    args:
+      - "fails at once"
+      - $js: "() => { throw new Error('now'); }"
+    expected: false
+solution: |
+  async function testAsync(description, fn) {
+    try {
+      await fn(); // waits if fn returns a promise; fine if it doesn't
+      return true;
+    } catch {
+      return false; // a throw or a rejected promise both land here
+    }
+  }
+solutionExplanation: |
+  This is the plain `test()` with one extra word: `await`.
+
+  Inside an `async` function, `await` on a rejected promise **throws** at that
+  line. So one `try`/`catch` catches both ways to fail:
+
+  - `fn` throws straight away → the `catch` runs.
+  - `fn` returns a promise that rejects later → `await` throws → the `catch`
+    runs.
+
+  And `await` on something that isn't a promise (like `undefined`) just carries
+  on, so normal functions work too.
+
+  **The gotcha is forgetting `await`.** Without it, `fn()` gives back a
+  promise, nothing has failed *yet*, and you return `true` straight away. The
+  second test catches this: its error comes 20ms later, after you've already
+  said "passed".
+
+  **You might have tried `.then()`:** `return fn().then(() => true, () =>
+  false)`. That handles async failures, but the third test breaks it. That
+  `fn` throws before it returns anything, so the error escapes before
+  `.then()` is ever reached. `try` + `await` covers both cases in one place.
