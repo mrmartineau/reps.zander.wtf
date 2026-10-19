@@ -472,6 +472,82 @@
     {
       "id": 118,
       "title": "Compact an Array"
+    },
+    {
+      "id": 119,
+      "title": "Add a Timeout to a Promise"
+    },
+    {
+      "id": 120,
+      "title": "Build Your Own join"
+    },
+    {
+      "id": 121,
+      "title": "Build Your Own Promise.any"
+    },
+    {
+      "id": 122,
+      "title": "Parse JSON Safely"
+    },
+    {
+      "id": 123,
+      "title": "Run a List of Tests"
+    },
+    {
+      "id": 124,
+      "title": "Build Your Own flat"
+    },
+    {
+      "id": 125,
+      "title": "Build Your Own reduce"
+    },
+    {
+      "id": 126,
+      "title": "Retry a Failing Call"
+    },
+    {
+      "id": 127,
+      "title": "Build Your Own some"
+    },
+    {
+      "id": 128,
+      "title": "Build Your Own map"
+    },
+    {
+      "id": 129,
+      "title": "Build Your Own every"
+    },
+    {
+      "id": 130,
+      "title": "Build Your Own find"
+    },
+    {
+      "id": 131,
+      "title": "Build a Tiny test()"
+    },
+    {
+      "id": 132,
+      "title": "Build Your Own Promise.all"
+    },
+    {
+      "id": 133,
+      "title": "Build Your Own filter"
+    },
+    {
+      "id": 134,
+      "title": "Build an Async test()"
+    },
+    {
+      "id": 135,
+      "title": "Fix the Async Loop"
+    },
+    {
+      "id": 136,
+      "title": "Build Your Own includes"
+    },
+    {
+      "id": 137,
+      "title": "Map with a Concurrency Limit"
     }
   ]
 }
