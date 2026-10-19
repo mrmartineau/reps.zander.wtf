@@ -20,9 +20,9 @@ tests:
   - name: "Doubles each number"
     args: [[1, 2, 3], { $js: "x => x * 2" }]
     expected: [2, 4, 6]
-  - name: "Passes the index too"
-    args: [["a", "b", "c"], { $js: "(item, i) => item + i" }]
-    expected: ["a0", "b1", "c2"]
+  - name: "Passes the index and the array"
+    args: [["a", "b", "c"], { $js: "(item, i, arr) => item + (i + 1) + '/' + arr.length" }]
+    expected: ["a1/3", "b2/3", "c3/3"]
   - name: "Empty array"
     args: [[], { $js: "x => x * 2" }]
     expected: []
@@ -40,8 +40,9 @@ solutionExplanation: |
   item, and push whatever `fn` gives back.
 
   The one thing people forget is the extra arguments. The real `map` calls
-  `fn(item, index, array)`, not just `fn(item)`. That's why the second test
-  fails if you only pass the item — `item + i` becomes `"a" + undefined`.
+  `fn(item, index, array)`, not just `fn(item)`. The second test uses all
+  three, so it fails if you only pass the item — `i` and `arr` are
+  `undefined`.
 
   You never touch the original array. `map` always returns a **new** array of
   the same length.

@@ -1,6 +1,6 @@
 // Runs entirely off the main thread so a runaway solution (infinite loop)
 // can be killed by terminating the worker from the runner.
-import { deepEqual, show } from './equal.js';
+import { deepEqual, errorMessage, show } from './equal.js';
 import { revive } from './revive.js';
 
 const MAX_LOG_LINES = 100;
@@ -54,7 +54,7 @@ self.onmessage = async (e) => {
       try {
         received = await fn(...args);
       } catch (err) {
-        message = err && err.message ? err.message : String(err);
+        message = errorMessage(err);
       }
       self.postMessage({
         pass: message === test.rejects,

@@ -4,7 +4,8 @@ difficulty: hard
 prompt: |
   Implement `mapWithConcurrency(items, limit, fn)`.
 
-  `fn` is an async function. It takes one item and returns a promise. Call
+  `fn` is an async function. It takes one item and returns a promise.
+  `limit` is always a whole number, 1 or more. Call
   `fn` on every item, and return a promise of all the results. But follow
   these four rules:
 

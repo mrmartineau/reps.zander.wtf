@@ -36,6 +36,7 @@ solution: |
 
     // No starting value given? Use the first item, and begin at the second.
     if (arguments.length < 3) {
+      if (arr.length === 0) throw new TypeError("Reduce of empty array with no initial value");
       acc = arr[0];
       start = 1;
     }
@@ -59,3 +60,6 @@ solutionExplanation: |
   isn't quite right, because someone could pass `undefined` on purpose.
   `arguments.length` tells you how many arguments were actually given, so
   `arguments.length < 3` means "no `initial`".
+
+  With no `initial` **and** an empty array, there's nothing to start from. The
+  real `reduce` throws a `TypeError` here, so the solution does the same.
