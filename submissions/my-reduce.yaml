@@ -1,0 +1,61 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Build Your Own reduce"
+difficulty: medium
+prompt: |
+  Implement `myReduce(arr, fn, initial)` so it works like
+  `arr.reduce(fn, initial)` — **without using `.reduce`**.
+
+  Keep a running value (the "accumulator"). For each item, call
+  `fn(accumulator, item, index, arr)` and use what it returns as the new
+  accumulator. Return the accumulator at the end.
+
+  If you **don't** pass `initial`, the first item becomes the starting value
+  and the loop starts from the second item.
+
+  For example, `myReduce([1, 2, 3], (sum, x) => sum + x, 0)` returns `6`, and
+  `myReduce([2, 3, 4], (a, b) => a * b)` returns `24`.
+functionName: myReduce
+starterCode: |
+  function myReduce(arr, fn, initial) {
+    // your code here
+  }
+tests:
+  - name: "Sums with a starting value"
+    args: [[1, 2, 3, 4], { $js: "(sum, x) => sum + x" }, 0]
+    expected: 10
+  - name: "Builds an object"
+    args: [["a", "b", "a"], { $js: "(counts, x) => ({ ...counts, [x]: (counts[x] || 0) + 1 })" }, {}]
+    expected: { a: 2, b: 1 }
+  - name: "No starting value"
+    args: [[2, 3, 4], { $js: "(a, b) => a * b" }]
+    expected: 24
+solution: |
+  function myReduce(arr, fn, initial) {
+    let acc = initial;
+    let start = 0;
+
+    // No starting value given? Use the first item, and begin at the second.
+    if (arguments.length < 3) {
+      acc = arr[0];
+      start = 1;
+    }
+
+    for (let i = start; i < arr.length; i++) {
+      acc = fn(acc, arr[i], i, arr);
+    }
+    return acc;
+  }
+solutionExplanation: |
+  `reduce` boils a list down to **one value**. Keep a variable, `acc`, and
+  replace it with `fn(acc, item)` at every step. Whatever is left at the end is
+  the answer.
+
+  The trick is the missing starting value. In the third test there is no
+  `initial`, so `acc` would be `undefined`, and `undefined * 2` is `NaN`. The
+  real `reduce` handles this by using the **first item** as the start and
+  looping from index `1`.
+
+  How do you know if `initial` was passed? Checking `initial === undefined`
+  isn't quite right, because someone could pass `undefined` on purpose.
+  `arguments.length` tells you how many arguments were actually given, so
+  `arguments.length < 3` means "no `initial`".

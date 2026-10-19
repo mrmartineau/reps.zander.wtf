@@ -1,0 +1,47 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Build Your Own find"
+difficulty: easy
+prompt: |
+  Implement `myFind(arr, fn)` so it works like `arr.find(fn)` — **without
+  using `.find`**.
+
+  Return the **first** item where `fn(item, index, arr)` is truthy. If no item
+  matches, return `undefined`.
+
+  For example, `myFind([4, 9, 12], n => n > 8)` returns `9`.
+functionName: myFind
+starterCode: |
+  function myFind(arr, fn) {
+    // your code here
+  }
+tests:
+  - name: "Finds the first adult"
+    args:
+      - [{ name: "Ann", age: 17 }, { name: "Bo", age: 21 }, { name: "Cy", age: 30 }]
+      - { $js: "user => user.age >= 18" }
+    expected: { name: "Bo", age: 21 }
+  - name: "Finds a word"
+    args: [["apple", "banana", "cherry"], { $js: "word => word.startsWith('c')" }]
+    expected: "cherry"
+  - name: "First match wins"
+    args: [[4, 9, 12, 15], { $js: "n => n > 8" }]
+    expected: 9
+solution: |
+  function myFind(arr, fn) {
+    for (let i = 0; i < arr.length; i++) {
+      // Stop as soon as one matches.
+      if (fn(arr[i], i, arr)) {
+        return arr[i];
+      }
+    }
+    return undefined; // nothing matched
+  }
+solutionExplanation: |
+  `find` is a loop that **stops early**. The moment `fn` says yes, `return`
+  that item — there's no need to look at the rest.
+
+  If you get to the end of the loop, nothing matched, so return `undefined`.
+
+  You might have tried `myFilter(arr, fn)[0]`. It gives the right answer, but
+  it checks every item even after it found one. Returning early is the whole
+  point of `find`.

@@ -1,0 +1,50 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Build Your Own includes"
+difficulty: medium
+prompt: |
+  Implement `myIncludes(arr, value)` so it works like `arr.includes(value)` —
+  **without using `.includes`, `.indexOf` or `.some`**.
+
+  Return `true` if any item in `arr` equals `value`, otherwise `false`.
+
+  One catch: the real `includes` can find `NaN`. `[1, NaN].includes(NaN)` is
+  `true`, even though `NaN === NaN` is `false`. Yours should do the same.
+
+  For example, `myIncludes([1, 2, 3], 2)` returns `true`.
+functionName: myIncludes
+starterCode: |
+  function myIncludes(arr, value) {
+    // your code here
+  }
+tests:
+  - name: "Finds a number"
+    args: [[1, 2, 3], 2]
+    expected: true
+  - name: "Missing value"
+    args: [["a", "b"], "c"]
+    expected: false
+  - name: "Finds NaN"
+    args: [[1, .nan, 3], .nan]
+    expected: true
+solution: |
+  function myIncludes(arr, value) {
+    for (const item of arr) {
+      if (item === value) return true;
+      // NaN is the only value not equal to itself, so check it on its own.
+      if (Number.isNaN(item) && Number.isNaN(value)) return true;
+    }
+    return false;
+  }
+solutionExplanation: |
+  The easy part is a loop with `===`: return `true` on the first match, and
+  `false` if the loop ends.
+
+  The hard part is `NaN`. It is the only value in JavaScript that is **not
+  equal to itself**, so `NaN === NaN` is `false` and a plain `===` check never
+  finds it. That's why the third test fails on a first try.
+
+  The fix is one extra check: if both the item and the value are `NaN`, count
+  it as a match. `Number.isNaN(x)` tells you if `x` is `NaN`.
+
+  This is also the real difference between `includes` and `indexOf`:
+  `[NaN].indexOf(NaN)` is `-1`, but `[NaN].includes(NaN)` is `true`.
