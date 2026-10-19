@@ -160,6 +160,11 @@ Field notes:
 - **`args`** are spread into the call: `args: [a, b]` → `fn(a, b)`.
 - **`expected`** is the literal expected return value. Don't compute it — write
   it out; the validator confirms your `solution` actually produces it.
+- **Callbacks and promises:** YAML can't hold a function, so write
+  `{ $js: "x => x * 2" }` in `args`. It's evaluated into a real value just
+  before the call. A returned promise is awaited, so async puzzles work too.
+- **`rejects: "message"`** replaces `expected` when the call should throw (or
+  its promise should reject). It passes only on exactly that error message.
 - **`solution`** is the recommended answer shown on demand. Keep it **clear and
   idiomatic**, not code-golfed — players read it to learn.
 

@@ -63,6 +63,12 @@ Rules that trip people up (the validator enforces these):
 - **`expected` is a literal.** Write the value out; don't compute it. The
   validator runs your `solution` and asserts it deep-equals `expected`.
 - **`args` is spread into the call:** `args: [a, b]` → `fn(a, b)`.
+- **Callbacks/promises in `args`:** write `{ $js: "x => x * 2" }` — it's
+  evaluated into a real value before the call (`src/lib/revive.js`). Returned
+  promises are awaited, so async puzzles work. Players can't see `args`, so
+  describe each test's callback in the `prompt`.
+- **Expected errors:** use `rejects: "message"` instead of `expected`; it
+  passes only if the call throws/rejects with exactly that message.
 - Inputs are deep-cloned before each run, so mutating arguments is safe — but
   returning a fresh value is nicer style.
 

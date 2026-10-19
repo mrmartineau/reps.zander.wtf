@@ -11,6 +11,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import yaml from 'js-yaml';
 import { transform } from 'sucrase';
+import { revive } from '../src/lib/revive.js';
 
 // Mirrors src/lib/equal.js so validation matches in-browser behaviour exactly.
 function deepEqual(a, b) {
@@ -124,7 +125,7 @@ for (const file of files) {
       }
     } else {
       if (!Array.isArray(t.args)) fail(file, `test ${i} "args" must be an array`);
-      if (!('expected' in t)) fail(file, `test ${i} missing "expected"`);
+      if (!('expected' in t) && t.rejects == null) fail(file, `test ${i} needs "expected" or "rejects"`);
     }
   });
 
@@ -160,9 +161,14 @@ for (const file of files) {
   for (const t of p.tests) {
     let received;
     try {
-      received = fn(...structuredClone(t.args));
+      received = await fn(...revive(structuredClone(t.args)));
     } catch (e) {
-      fail(file, `solution threw on "${t.name}": ${e.message}`);
+      if (t.rejects != null && e?.message === t.rejects) continue;
+      fail(file, `solution threw on "${t.name}": ${e?.message ?? e}`);
+      continue;
+    }
+    if (t.rejects != null) {
+      fail(file, `"${t.name}" expected an error "${t.rejects}" but got ${JSON.stringify(received)}`);
       continue;
     }
     if (received instanceof Map || received instanceof Set) {
