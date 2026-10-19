@@ -1,0 +1,88 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Build Your Own Promise.any"
+difficulty: medium
+prompt: |
+  Implement `myPromiseAny(items)` so it works like `Promise.any(items)` —
+  **without using `Promise.any`, `Promise.all`, `Promise.allSettled` or
+  `Promise.race`**.
+
+  It's the opposite of `Promise.all`. Return a promise that:
+
+  1. **Resolves** with the value of the **first** promise that resolves.
+  2. **Ignores** rejections, as long as some other promise might still
+     resolve.
+  3. **Rejects** with `new Error("All promises were rejected")` if every
+     promise rejects.
+
+  Items can also be plain values (not promises); treat them as already
+  resolved. An empty array has nothing that can resolve, so it rejects.
+
+  For example, if `a` rejects after 10ms and `b` resolves to `"b"` after 20ms,
+  `myPromiseAny([a, b])` resolves to `"b"`.
+functionName: myPromiseAny
+starterCode: |
+  function myPromiseAny(items) {
+    return new Promise((resolve, reject) => {
+      // your code here
+    });
+  }
+tests:
+  - name: "First success wins"
+    args:
+      - - $js: "new Promise((_, reject) => setTimeout(() => reject(new Error('a failed')), 10))"
+        - $js: "new Promise((resolve) => setTimeout(() => resolve('slow'), 30))"
+        - $js: "new Promise((resolve) => setTimeout(() => resolve('fast'), 20))"
+    expected: "fast"
+  - name: "All fail"
+    args:
+      - - $js: "new Promise((_, reject) => setTimeout(() => reject(new Error('a failed')), 10))"
+        - $js: "new Promise((_, reject) => setTimeout(() => reject(new Error('b failed')), 20))"
+    rejects: "All promises were rejected"
+  - name: "Empty array"
+    args: [[]]
+    rejects: "All promises were rejected"
+solution: |
+  function myPromiseAny(items) {
+    return new Promise((resolve, reject) => {
+      const allFailed = () => reject(new Error("All promises were rejected"));
+      let failed = 0;
+
+      // Nothing can resolve, so fail now.
+      if (items.length === 0) {
+        allFailed();
+        return;
+      }
+
+      for (const item of items) {
+        Promise.resolve(item).then(
+          resolve, // the first success wins
+          () => {
+            failed++;
+            if (failed === items.length) allFailed(); // that was the last hope
+          },
+        );
+      }
+    });
+  }
+solutionExplanation: |
+  If you've done `Promise.all`, this is the same shape **turned inside out**:
+
+  - `Promise.all` resolves when everything works, and rejects on the first
+    failure.
+  - `Promise.any` resolves on the first success, and rejects when everything
+    fails.
+
+  So pass `resolve` as the success handler for every item. The first one to
+  succeed calls it. Later calls to `resolve` are ignored, so you don't need to
+  guard against them.
+
+  For failures, **count**. Each rejection adds one to `failed`. Only when
+  `failed` reaches `items.length` is there no hope left, so that's when you
+  reject.
+
+  **The gotcha is the empty array.** With no items, nothing ever fails, so the
+  count never reaches the total, and the promise waits forever. Check for it
+  up front and reject at once.
+
+  (The real `Promise.any` rejects with an `AggregateError`, which also holds
+  every error. A plain `Error` keeps this puzzle simpler.)

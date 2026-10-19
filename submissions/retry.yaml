@@ -1,0 +1,94 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Retry a Failing Call"
+difficulty: medium
+prompt: |
+  Network calls sometimes fail once, then work the next time. Implement
+  `retry(fn, times)`:
+
+  - Call `fn()`. It returns a promise.
+  - If the promise **resolves**, return its value. You're done.
+  - If it **rejects**, call `fn()` again.
+  - Call `fn` at most `times` times **in total**. If every call fails, reject
+    with the error from the **last** call.
+
+  `fn` is called as `fn()`: it takes no arguments and returns a promise.
+
+  For example, if `fn` fails twice and then works, `retry(fn, 3)` resolves
+  with the value from the third call. But `retry(fn, 2)` rejects with the
+  second call's error.
+functionName: retry
+starterCode: |
+  async function retry(fn, times) {
+    // your code here
+  }
+tests:
+  - name: "Works on the last try"
+    args:
+      - $js: |
+          (() => {
+            let tries = 0;
+            return async () => {
+              tries++;
+              if (tries < 3) throw new Error(`fail ${tries}`);
+              return `worked on try ${tries}`;
+            };
+          })()
+      - 3
+    expected: "worked on try 3"
+  - name: "Gives up with the last error"
+    args:
+      - $js: |
+          (() => {
+            let tries = 0;
+            return async () => {
+              tries++;
+              throw new Error(`fail ${tries}`);
+            };
+          })()
+      - 3
+    rejects: "fail 3"
+  - name: "One try means no retries"
+    args:
+      - $js: |
+          (() => {
+            let tries = 0;
+            return async () => {
+              tries++;
+              if (tries < 3) throw new Error(`fail ${tries}`);
+              return `worked on try ${tries}`;
+            };
+          })()
+      - 1
+    rejects: "fail 1"
+solution: |
+  async function retry(fn, times) {
+    let lastError;
+
+    for (let attempt = 1; attempt <= times; attempt++) {
+      try {
+        return await fn(); // it worked: stop here
+      } catch (err) {
+        lastError = err; // it failed: remember why, then loop again
+      }
+    }
+
+    throw lastError; // every try failed
+  }
+solutionExplanation: |
+  A loop with a `try`/`catch` inside it. Each time round the loop is one try:
+
+  - In `try`, call `fn()`. If it works, `return` the value. That ends the
+    loop and the function at once.
+  - In `catch`, save the error and let the loop go round again.
+  - If the loop ends, every try failed. Throw the last error you saved.
+
+  **The big gotcha is `return await`.** You might have written
+  `return fn()` without `await`. That returns the promise straight away, so
+  the `try` finishes before the promise has failed. The `catch` never runs,
+  and nothing is retried. With `await`, a rejection **throws on that line**,
+  inside the `try`, so `catch` sees it.
+
+  **The second gotcha is counting.** `times` is the total number of calls,
+  not the number of extra retries. So `times = 1` means call once and never
+  retry, which is what the third test checks. `attempt <= times`, starting
+  from `1`, makes that easy to read.

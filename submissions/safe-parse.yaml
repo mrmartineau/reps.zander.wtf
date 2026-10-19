@@ -1,0 +1,50 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Parse JSON Safely"
+difficulty: easy
+prompt: |
+  `JSON.parse` **throws** an error when its input isn't valid JSON. That can
+  crash your app if the JSON comes from a user or a server.
+
+  Implement `safeParse(json, fallback)`:
+
+  - If `json` is valid JSON, return the parsed value.
+  - If it isn't, return `fallback` instead of throwing.
+
+  For example, `safeParse('{"a": 1}', {})` returns `{ a: 1 }`, and
+  `safeParse('{ oops', {})` returns `{}`.
+
+  Careful: `"null"`, `"false"` and `"0"` are all valid JSON.
+functionName: safeParse
+starterCode: |
+  function safeParse(json, fallback) {
+    // your code here
+  }
+tests:
+  - name: "Valid JSON"
+    args: ['{"name": "Ann", "age": 30}', {}]
+    expected: { name: "Ann", age: 30 }
+  - name: "Broken JSON uses the fallback"
+    args: ["{ broken", { error: "bad json" }]
+    expected: { error: "bad json" }
+  - name: "Valid null is not a failure"
+    args: ["null", "fallback"]
+    expected: null
+solution: |
+  function safeParse(json, fallback) {
+    try {
+      return JSON.parse(json);
+    } catch {
+      return fallback; // JSON.parse threw, so the input was invalid
+    }
+  }
+solutionExplanation: |
+  `try`/`catch` is made for this. Put the risky call in `try`. If it throws,
+  JavaScript jumps to `catch` instead of crashing, and you return the
+  fallback there.
+
+  You don't need the error itself, so `catch` with no `(err)` is fine.
+
+  **The gotcha is the third test.** You might have tried
+  `return JSON.parse(json) || fallback` (or `?? fallback`). That treats a
+  *valid* `null` as a failure, and gives back `"fallback"`. Only a **throw**
+  means the JSON was bad, so only `catch` should return the fallback.
