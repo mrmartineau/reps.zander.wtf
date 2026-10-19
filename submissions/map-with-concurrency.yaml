@@ -4,10 +4,12 @@ difficulty: hard
 prompt: |
   Implement `mapWithConcurrency(items, limit, fn)`.
 
-  `fn` is an async function. It takes one item and returns a promise.
-  `limit` is always a whole number, 1 or more. Call
-  `fn` on every item, and return a promise of all the results. But follow
-  these four rules:
+  Call `fn` on every item, and return a promise of all the results.
+
+  `fn` is called as `fn(item)`: it takes one item and returns a promise.
+  `limit` is always a whole number, 1 or more.
+
+  Follow these four rules:
 
   1. At most `limit` calls run **at the same time**.
   2. When one call finishes, start the next one **straight away**. Don't wait

@@ -6,7 +6,8 @@ prompt: |
   `.map`**.
 
   Call `fn` once for each item and collect what it returns into a new array.
-  Like the real thing, `fn` gets three arguments: the item, its index, and the
+
+  `fn` is called as `fn(item, index, arr)`: the item, its position, and the
   whole array.
 
   For example, `myMap([1, 2, 3], x => x * 2)` returns `[2, 4, 6]`, and

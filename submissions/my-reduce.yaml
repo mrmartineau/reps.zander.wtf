@@ -5,9 +5,11 @@ prompt: |
   Implement `myReduce(arr, fn, initial)` so it works like
   `arr.reduce(fn, initial)` — **without using `.reduce`**.
 
-  Keep a running value (the "accumulator"). For each item, call
-  `fn(accumulator, item, index, arr)` and use what it returns as the new
-  accumulator. Return the accumulator at the end.
+  Keep a running value (the "accumulator"). For each item, call `fn` and use
+  what it returns as the new accumulator. Return the accumulator at the end.
+
+  `fn` is called as `fn(accumulator, item, index, arr)`: the running value,
+  the item, its position, and the whole array.
 
   If you **don't** pass `initial`, the first item becomes the starting value
   and the loop starts from the second item.

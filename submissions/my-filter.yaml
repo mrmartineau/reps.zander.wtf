@@ -6,7 +6,10 @@ prompt: |
   using `.filter`**.
 
   Call `fn` for each item. Keep the item if `fn` returns something truthy;
-  skip it otherwise. `fn` gets the item, its index, and the whole array.
+  skip it otherwise.
+
+  `fn` is called as `fn(item, index, arr)`: the item, its position, and the
+  whole array.
 
   For example, `myFilter([1, 2, 3, 4], x => x % 2 === 0)` returns `[2, 4]`.
 functionName: myFilter

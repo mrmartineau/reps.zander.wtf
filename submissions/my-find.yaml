@@ -5,8 +5,11 @@ prompt: |
   Implement `myFind(arr, fn)` so it works like `arr.find(fn)` — **without
   using `.find`**.
 
-  Return the **first** item where `fn(item, index, arr)` is truthy. If no item
+  Return the **first** item where `fn` returns something truthy. If no item
   matches, return `undefined`.
+
+  `fn` is called as `fn(item, index, arr)`: the item, its position, and the
+  whole array.
 
   For example, `myFind([4, 9, 12], n => n > 8)` returns `9`.
 functionName: myFind

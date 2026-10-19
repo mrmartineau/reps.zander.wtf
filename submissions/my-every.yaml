@@ -5,8 +5,11 @@ prompt: |
   Implement `myEvery(arr, fn)` so it works like `arr.every(fn)` — **without
   using `.every`**.
 
-  Return `true` if `fn(item, index, arr)` is truthy for **every** item.
+  Return `true` if `fn` returns something truthy for **every** item.
   Otherwise return `false`.
+
+  `fn` is called as `fn(item, index, arr)`: the item, its position, and the
+  whole array.
 
   For example, `myEvery([1, 2, 3], x => x > 0)` returns `true`, and
   `myEvery([1, -2, 3], x => x > 0)` returns `false`.

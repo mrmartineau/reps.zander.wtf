@@ -5,8 +5,11 @@ prompt: |
   Implement `mySome(arr, fn)` so it works like `arr.some(fn)` — **without
   using `.some`**.
 
-  Return `true` if `fn(item, index, arr)` is truthy for **at least one** item.
+  Return `true` if `fn` returns something truthy for **at least one** item.
   Otherwise return `false`.
+
+  `fn` is called as `fn(item, index, arr)`: the item, its position, and the
+  whole array.
 
   For example, `mySome([1, 3, 4], x => x % 2 === 0)` returns `true`, because
   `4` is even.
