@@ -10,10 +10,12 @@ prompt: |
   For example, `containsDuplicate([1, 2, 3, 1])` returns `true`, because `1`
   appears twice.
 
-  **Speed matters here.** The third test passes in **300,000** different
+  **Speed matters here.** The second test passes in **300,000** different
   numbers. Each test gets 2 seconds. If you compare every number with every
   other number, that is about 45 billion comparisons, and the test runs out of
   time. Find a way to look at each number only once.
+
+  The third test is an empty array, which has no duplicates.
 functionName: containsDuplicate
 starterCode: |
   function containsDuplicate(nums) {
@@ -23,12 +25,12 @@ tests:
   - name: "Has a duplicate"
     args: [[1, 2, 3, 1]]
     expected: true
-  - name: "All different"
-    args: [[4, 8, 15, 16, 23, 42]]
-    expected: false
-  - name: "300,000 numbers, in under 2 seconds"
+  - name: "300,000 different numbers, in under 2 seconds"
     args:
       - $js: "Array.from({ length: 300000 }, (_, i) => i)"
+    expected: false
+  - name: "Empty array"
+    args: [[]]
     expected: false
 solution: |
   function containsDuplicate(nums) {
@@ -44,7 +46,7 @@ solutionExplanation: |
 
   The first idea most people have is two loops. For each number, check every
   number after it. That is correct, but for `n` numbers it does about `n × n`
-  comparisons. We call that **O(n²)**. With 6 numbers, that's nothing. With
+  comparisons. We call that **O(n²)**. With 4 numbers, that's nothing. With
   300,000 numbers, it is about 45 billion comparisons. That takes far longer
   than 2 seconds.
 

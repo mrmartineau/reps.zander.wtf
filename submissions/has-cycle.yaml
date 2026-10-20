@@ -23,7 +23,7 @@ prompt: |
 
   The tests:
 
-  1. `1 → 2 → 3`, then `null`. No loop → `false`.
+  1. `1 → 2 → 3 → 4`, then `null`. No loop → `false`.
   2. `1 → 2 → 3 → 4`, and `4` points back to `2` (the picture above) →
      `true`.
   3. One node whose `next` is **itself** → `true`.
@@ -35,7 +35,7 @@ starterCode: |
 tests:
   - name: "No loop"
     args:
-      - { val: 1, next: { val: 2, next: { val: 3, next: null } } }
+      - { val: 1, next: { val: 2, next: { val: 3, next: { val: 4, next: null } } } }
     expected: false
   - name: "Last node points back to the second"
     args:
@@ -88,7 +88,9 @@ solutionExplanation: |
 
   **The gotcha** is the `while (fast && fast.next)` check. `fast` jumps 2
   nodes. So check both `fast` and `fast.next` before you read
-  `fast.next.next`. If not, a list that ends at `null` crashes.
+  `fast.next.next`. In test 1, `fast` goes `1 → 3 → null`. If you only check
+  `fast.next`, you read `null.next` and crash. A list with an even number of
+  nodes always does this.
 
   Test 3 is the smallest loop: a node whose `next` is itself. On the first
   step, `slow` and `fast` both land on that same node, so the answer is

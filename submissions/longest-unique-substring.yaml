@@ -14,11 +14,11 @@ prompt: |
   The tests:
 
   1. `"abcabcbb"` → `3`.
-  2. `"abba"` → `2`. Look closely at what happens when you reach the last `a`.
-  3. **A big one.** A string of **100,000** characters: 50,000 different
+  2. **A big one.** A string of **100,000** characters: 50,000 different
      characters, then the same 50,000 again. The answer is `50000`.
+  3. `"abba"` → `2`. Look closely at what happens when you reach the last `a`.
 
-  **Speed matters in test 3.** If you start a new check from every position,
+  **Speed matters in test 2.** If you start a new check from every position,
   that is billions of steps, and the test runs out of its 2 seconds. Find a way
   to walk the string only once.
 functionName: longestUniqueSubstring
@@ -30,13 +30,13 @@ tests:
   - name: "Repeats in the middle"
     args: ["abcabcbb"]
     expected: 3
-  - name: "A repeat from before the window"
-    args: ["abba"]
-    expected: 2
   - name: "100,000 characters, in under 2 seconds"
     args:
       - $js: "Array.from({ length: 50000 }, (_, i) => String.fromCharCode(256 + i)).join('').repeat(2)"
     expected: 50000
+  - name: "A repeat from before the window"
+    args: ["abba"]
+    expected: 2
 solution: |
   function longestUniqueSubstring(str) {
     const lastSeen = new Map(); // character → index where we last saw it
@@ -80,6 +80,6 @@ solutionExplanation: |
   counts.
 
   **Why the slow way fails:** "for each start, walk forward until a repeat"
-  is correct. But in test 3, each start walks up to 50,000 characters. With
+  is correct. But in test 2, each start walks up to 50,000 characters. With
   100,000 starts, that's billions of steps: **O(n²)**. The window is **O(n)**,
   because `i` and `start` each go through the string at most once.
