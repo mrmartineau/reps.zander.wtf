@@ -1,4 +1,4 @@
-id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+id: 145
 title: "Find the Loop in a Linked List"
 difficulty: medium
 prompt: |
