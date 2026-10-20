@@ -47,7 +47,7 @@ export function SolutionPanel({ solution, explanation }) {
           </div>
           <ReadOnlyCode value={solution} />
           {explanation && (
-            <Markdown className="solution-explanation markdown">{explanation}</Markdown>
+            <Markdown className="solution-explanation prose markdown">{explanation}</Markdown>
           )}
         </div>
       )}
