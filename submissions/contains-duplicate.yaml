@@ -1,0 +1,65 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Contains a Duplicate"
+difficulty: easy
+prompt: |
+  Implement `containsDuplicate(nums)`.
+
+  Return `true` if any number appears **more than once** in `nums`. Return
+  `false` if every number is different.
+
+  For example, `containsDuplicate([1, 2, 3, 1])` returns `true`, because `1`
+  appears twice.
+
+  **Speed matters here.** The third test passes in **300,000** different
+  numbers. Each test gets 2 seconds. If you compare every number with every
+  other number, that is about 45 billion comparisons, and the test runs out of
+  time. Find a way to look at each number only once.
+functionName: containsDuplicate
+starterCode: |
+  function containsDuplicate(nums) {
+    // your code here
+  }
+tests:
+  - name: "Has a duplicate"
+    args: [[1, 2, 3, 1]]
+    expected: true
+  - name: "All different"
+    args: [[4, 8, 15, 16, 23, 42]]
+    expected: false
+  - name: "300,000 numbers, in under 2 seconds"
+    args:
+      - $js: "Array.from({ length: 300000 }, (_, i) => i)"
+    expected: false
+solution: |
+  function containsDuplicate(nums) {
+    const seen = new Set();
+    for (const n of nums) {
+      if (seen.has(n)) return true; // we met this number before
+      seen.add(n);
+    }
+    return false;
+  }
+solutionExplanation: |
+  This puzzle is about **Big O**: how the work grows when the input grows.
+
+  The first idea most people have is two loops. For each number, check every
+  number after it. That is correct, but for `n` numbers it does about `n × n`
+  comparisons. We call that **O(n²)**. With 6 numbers, that's nothing. With
+  300,000 numbers, it is about 45 billion comparisons. That takes far longer
+  than 2 seconds.
+
+  `nums.indexOf(n) !== i` looks like one loop, but `indexOf` is a loop too. So
+  it is still O(n²).
+
+  The trick is to **remember what you have seen**. A `Set` can tell you "have I
+  seen this number?" in about the same time, no matter how big it is. So walk
+  the array once. For each number, check the `Set`. If it's there, you found a
+  duplicate. If not, add it. That is one pass, or **O(n)**.
+
+  There is also a short version: a `Set` drops duplicates, so
+  `new Set(nums).size !== nums.length` gives the same answer. It always reads
+  the whole array, but the loop above can stop at the first duplicate.
+
+  **Another way that works:** sort a copy, then check each number against the
+  one next to it. Duplicates end up side by side. Sorting is **O(n log n)**:
+  slower than O(n), but much faster than O(n²), so it passes too.

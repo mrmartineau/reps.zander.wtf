@@ -1,0 +1,95 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Find the Loop in a Linked List"
+difficulty: medium
+prompt: |
+  Implement `hasCycle(head)`.
+
+  A **linked list** is a chain of nodes. Each node is an object
+  `{ val, next }`. `next` is the next node, or `null` at the end.
+
+  But some lists have **no end**. The last node points back to an earlier
+  node, so the list goes round in a loop:
+
+  ```
+  1 → 2 → 3 → 4
+      ↑       ↓
+      └───────┘
+  ```
+
+  Return `true` if the list has a loop, and `false` if it ends with `null`.
+
+  Be careful: if you follow `next` until you reach `null`, a loop never ends.
+  Your code keeps going, and the test runs out of time.
+
+  The tests:
+
+  1. `1 → 2 → 3`, then `null`. No loop → `false`.
+  2. `1 → 2 → 3 → 4`, and `4` points back to `2` (the picture above) →
+     `true`.
+  3. One node whose `next` is **itself** → `true`.
+functionName: hasCycle
+starterCode: |
+  function hasCycle(head) {
+    // your code here
+  }
+tests:
+  - name: "No loop"
+    args:
+      - { val: 1, next: { val: 2, next: { val: 3, next: null } } }
+    expected: false
+  - name: "Last node points back to the second"
+    args:
+      - $js: |
+          (() => {
+            const nodes = [1, 2, 3, 4].map((val) => ({ val, next: null }));
+            nodes.forEach((node, i) => { node.next = nodes[i + 1] ?? null; });
+            nodes[3].next = nodes[1];
+            return nodes[0];
+          })()
+    expected: true
+  - name: "One node points to itself"
+    args:
+      - $js: "(() => { const node = { val: 1, next: null }; node.next = node; return node; })()"
+    expected: true
+solution: |
+  function hasCycle(head) {
+    let slow = head;
+    let fast = head;
+
+    while (fast && fast.next) {
+      slow = slow.next; // 1 step
+      fast = fast.next.next; // 2 steps
+      if (slow === fast) return true; // fast caught up from behind: a loop
+    }
+
+    return false; // fast reached the end, so there is no loop
+  }
+solutionExplanation: |
+  There are two good ways to solve this.
+
+  **Way 1: remember every node you visit.** Walk the list and put each node in
+  a `Set`. If you reach a node that is already in the `Set`, you have been
+  here before, so there is a loop. If you reach `null`, there isn't. This
+  works because a `Set` of objects compares **the objects themselves**, not
+  their values. Two different nodes with `val: 1` are still two different
+  nodes.
+
+  **Way 2: two runners (the solution above).** This is a famous trick called
+  **Floyd's tortoise and hare**. Start two pointers at the head. `slow` moves
+  1 node at a time. `fast` moves 2 nodes at a time.
+
+  - **No loop:** `fast` reaches `null` first, and you stop.
+  - **A loop:** both runners end up going round the loop. Each step, `fast`
+    gets 1 node closer to `slow`. So it can't jump over `slow`. It must land
+    on it. When `slow === fast`, you found the loop.
+
+  Way 2 needs no extra memory. Way 1 stores every node. For an interview,
+  Way 2 is the answer people expect. Way 1 is a fine first step.
+
+  **The gotcha** is the `while (fast && fast.next)` check. `fast` jumps 2
+  nodes. So check both `fast` and `fast.next` before you read
+  `fast.next.next`. If not, a list that ends at `null` crashes.
+
+  Test 3 is the smallest loop: a node whose `next` is itself. On the first
+  step, `slow` and `fast` both land on that same node, so the answer is
+  `true`.

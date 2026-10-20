@@ -1,0 +1,88 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Depth of a Binary Tree"
+difficulty: easy
+prompt: |
+  Implement `treeDepth(root)`.
+
+  A **binary tree** is made of nodes. Each node is an object
+  `{ val, left, right }`. `left` and `right` are child nodes, or `null` if
+  there is no child. `root` is the top node, or `null` for an empty tree.
+
+  Return the **depth** of the tree: the number of nodes on the longest path
+  from the root down to the bottom.
+
+  For example, this tree has depth `3`:
+
+  ```
+      3
+     / \
+    9   20
+       /  \
+      15   7
+  ```
+
+  The tests use the tree above, then a tree where each node only has a `left`
+  child (`1`, then `2`, then `3`, then `4`), then an empty tree (`null`).
+functionName: treeDepth
+starterCode: |
+  function treeDepth(root) {
+    // your code here
+  }
+tests:
+  - name: "Three levels"
+    args:
+      - val: 3
+        left: { val: 9, left: null, right: null }
+        right:
+          val: 20
+          left: { val: 15, left: null, right: null }
+          right: { val: 7, left: null, right: null }
+    expected: 3
+  - name: "Leans all the way left"
+    args:
+      - val: 1
+        left:
+          val: 2
+          left:
+            val: 3
+            left: { val: 4, left: null, right: null }
+            right: null
+          right: null
+        right: null
+    expected: 4
+  - name: "Empty tree"
+    args: [null]
+    expected: 0
+solution: |
+  function treeDepth(root) {
+    if (root === null) return 0; // an empty tree has no depth
+    return 1 + Math.max(treeDepth(root.left), treeDepth(root.right));
+  }
+solutionExplanation: |
+  The trick is **recursion**: a tree is made of smaller trees.
+
+  The `left` child of a node is the top of its own little tree. So is the
+  `right` child. So the depth of a tree is:
+
+  > 1 (for this node) + the depth of whichever side is deeper.
+
+  And you get the depth of each side by asking the same question again. That
+  is why `treeDepth` calls itself.
+
+  Every recursive function needs a place to **stop**. Here it's the empty
+  tree: `null` has depth `0`. Each call goes one level down. So you always
+  reach a `null` at the bottom, and the calls stop.
+
+  Here's the first test, from the bottom up:
+
+  - `9`, `15` and `7` have two `null` children: `1 + max(0, 0) = 1`.
+  - `20`: `1 + max(1, 1) = 2`.
+  - `3`: `1 + max(1, 2) = 3`.
+
+  **The gotcha** is the lopsided tree in test 2. If you only follow `right`,
+  or count the levels on one side, you get the wrong answer. `Math.max` checks
+  both sides at every node.
+
+  This way of walking a tree, going deep down one side before the other, is
+  called **depth-first search** (DFS). You'll use the same shape for lots of
+  tree puzzles.

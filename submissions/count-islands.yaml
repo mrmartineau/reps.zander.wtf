@@ -1,0 +1,126 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Count the Islands"
+difficulty: hard
+prompt: |
+  Implement `countIslands(grid)`.
+
+  `grid` is a map, as an array of rows. `1` is land and `0` is water.
+
+  An **island** is a group of land squares that touch **up, down, left or
+  right**. Squares that only touch at a corner (diagonally) are **not**
+  joined.
+
+  Return the number of islands.
+
+  For example, this grid has `3` islands:
+
+  ```js
+  countIslands([
+    [1, 1, 0, 0, 0],
+    [1, 1, 0, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 0, 1, 1],
+  ]); // 3
+  ```
+
+  The tests use the grid above, then the grid below (5 islands, because
+  corners don't join), then an empty grid `[]`, which has `0` islands.
+
+  ```js
+  [
+    [1, 0, 1],
+    [0, 1, 0],
+    [1, 0, 1],
+  ]
+  ```
+functionName: countIslands
+starterCode: |
+  function countIslands(grid) {
+    // your code here
+  }
+tests:
+  - name: "Three islands"
+    args:
+      - - [1, 1, 0, 0, 0]
+        - [1, 1, 0, 0, 0]
+        - [0, 0, 1, 0, 0]
+        - [0, 0, 0, 1, 1]
+    expected: 3
+  - name: "Corners don't join"
+    args:
+      - - [1, 0, 1]
+        - [0, 1, 0]
+        - [1, 0, 1]
+    expected: 5
+  - name: "Empty grid"
+    args: [[]]
+    expected: 0
+solution: |
+  function countIslands(grid) {
+    grid = grid.map((row) => [...row]); // a copy, so we don't change the input
+    let islands = 0;
+
+    for (let r = 0; r < grid.length; r++) {
+      for (let c = 0; c < grid[r].length; c++) {
+        if (grid[r][c] !== 1) continue;
+
+        // New land: count it, then sink the whole island so we don't count it again.
+        islands++;
+        grid[r][c] = 0;
+        const toVisit = [[r, c]];
+
+        while (toVisit.length > 0) {
+          const [y, x] = toVisit.pop();
+          for (const [dy, dx] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+            const ny = y + dy;
+            const nx = x + dx;
+            // `?.` gives undefined outside the grid, so no bounds checks are needed.
+            if (grid[ny]?.[nx] === 1) {
+              grid[ny][nx] = 0;
+              toVisit.push([ny, nx]);
+            }
+          }
+        }
+      }
+    }
+
+    return islands;
+  }
+solutionExplanation: |
+  The trick is: **when you find land, sink the whole island**.
+
+  Scan the grid square by square. When you find a `1`, that's a new island, so
+  add 1 to the count. But the rest of that island is still on the map. Later
+  in the scan, you'd find its other squares and count them again.
+
+  So, right away, visit every square of that island and set it to `0`. This
+  is called a **flood fill**. When the scan finds the next `1`, it must belong
+  to a new island.
+
+  To flood fill:
+
+  1. Put the first square on a `toVisit` list.
+  2. Take a square off the list. Check its 4 neighbours: up, down, left and
+     right.
+  3. For each neighbour that is land, set it to `0` and add it to the list.
+  4. Repeat until the list is empty.
+
+  Set a square to `0` **when you add it to the list**, not when you take it
+  off. If not, two neighbours can both add the same square.
+
+  A grid like this is a **graph**: each square is a point, and it connects to
+  its 4 neighbours. The flood fill is a graph search. With `pop()`, it's
+  **depth-first search**. With `shift()`, it's **breadth-first search**. Both
+  find the same island.
+
+  **The gotchas:**
+
+  - **Diagonals.** Only check 4 neighbours, not 8. Test 2 has 5 islands that
+    touch only at the corners.
+  - **The edge of the map.** `grid[-1]` is `undefined`, and `undefined[0]`
+    crashes. The `?.` in `grid[ny]?.[nx]` turns that into `undefined` and
+    not a crash.
+  - **The empty grid.** Code that reads `grid[0].length` crashes on `[]`.
+
+  The solution copies the grid first. Sinking changes the squares, and it's
+  good manners not to change data that you didn't create.
