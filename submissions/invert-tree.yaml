@@ -1,0 +1,96 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Mirror a Binary Tree"
+difficulty: medium
+prompt: |
+  Implement `invertTree(root)`.
+
+  A **binary tree** is made of nodes. Each node is an object
+  `{ val, left, right }`. `left` and `right` are child nodes, or `null` if
+  there is no child. `root` is the top node, or `null` for an empty tree.
+
+  Return the **mirror image** of the tree: at every node, swap `left` and
+  `right`.
+
+  For example:
+
+  ```
+       4                4
+     /   \            /   \
+    2     7    →     7     2
+   / \   / \        / \   / \
+  1   3 6   9      9   6 3   1
+  ```
+
+  The tests use the tree above, then a node `1` with only a `left` child `2`,
+  then an empty tree (`null`).
+functionName: invertTree
+starterCode: |
+  function invertTree(root) {
+    // your code here
+  }
+tests:
+  - name: "Full tree"
+    args:
+      - val: 4
+        left:
+          val: 2
+          left: { val: 1, left: null, right: null }
+          right: { val: 3, left: null, right: null }
+        right:
+          val: 7
+          left: { val: 6, left: null, right: null }
+          right: { val: 9, left: null, right: null }
+    expected:
+      val: 4
+      left:
+        val: 7
+        left: { val: 9, left: null, right: null }
+        right: { val: 6, left: null, right: null }
+      right:
+        val: 2
+        left: { val: 3, left: null, right: null }
+        right: { val: 1, left: null, right: null }
+  - name: "Only a left child"
+    args:
+      - { val: 1, left: { val: 2, left: null, right: null }, right: null }
+    expected: { val: 1, left: null, right: { val: 2, left: null, right: null } }
+  - name: "Empty tree"
+    args: [null]
+    expected: null
+solution: |
+  function invertTree(root) {
+    if (root === null) return null;
+    return {
+      val: root.val,
+      left: invertTree(root.right), // the mirrored right side goes on the left
+      right: invertTree(root.left), // and the mirrored left side on the right
+    };
+  }
+solutionExplanation: |
+  The trick is to **swap the children, and mirror each child too**.
+
+  It's tempting to swap only the top node's `left` and `right`. But look at
+  the example again. The `7` side moved to the left, **and** its own children
+  `6` and `9` swapped too. Every level is mirrored, not just the top one.
+
+  So at each node, do two things:
+
+  1. Mirror the right side. That becomes the new `left`.
+  2. Mirror the left side. That becomes the new `right`.
+
+  "Mirror a side" is the same job again on a smaller tree, so `invertTree`
+  calls itself. It stops at `null`: the mirror of nothing is nothing.
+
+  **The gotcha** is when you swap in place:
+
+  ```js
+  root.left = invertTree(root.right);
+  root.right = invertTree(root.left); // root.left has already changed!
+  ```
+
+  The second line reads the **new** `left`, not the old one. Save one side in
+  a variable first, or use `[a, b] = [b, a]`. The solution avoids the problem:
+  it builds a new node and does not change the old tree.
+
+  Test 2 checks that missing children move too: the `null` on the right moves
+  to the left, and `2` moves to the right.

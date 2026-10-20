@@ -1,0 +1,85 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Longest Run Without Repeats"
+difficulty: hard
+prompt: |
+  Implement `longestUniqueSubstring(str)`.
+
+  Return the length of the longest **substring** of `str` with no repeated
+  character. A substring is a run of characters next to each other, with no
+  gaps.
+
+  For example, `longestUniqueSubstring("abcabcbb")` returns `3`. The longest
+  run with no repeats is `"abc"`.
+
+  The tests:
+
+  1. `"abcabcbb"` → `3`.
+  2. **A big one.** A string of **100,000** characters: 50,000 different
+     characters, then the same 50,000 again. The answer is `50000`.
+  3. `"abba"` → `2`. Look closely at what happens when you reach the last `a`.
+
+  **Speed matters in test 2.** If you start a new check from every position,
+  that is billions of steps, and the test runs out of its 2 seconds. Find a way
+  to walk the string only once.
+functionName: longestUniqueSubstring
+starterCode: |
+  function longestUniqueSubstring(str) {
+    // your code here
+  }
+tests:
+  - name: "Repeats in the middle"
+    args: ["abcabcbb"]
+    expected: 3
+  - name: "100,000 characters, in under 2 seconds"
+    args:
+      - $js: "Array.from({ length: 50000 }, (_, i) => String.fromCharCode(256 + i)).join('').repeat(2)"
+    expected: 50000
+  - name: "A repeat from before the window"
+    args: ["abba"]
+    expected: 2
+solution: |
+  function longestUniqueSubstring(str) {
+    const lastSeen = new Map(); // character → index where we last saw it
+    let start = 0; // where the current window starts
+    let best = 0;
+
+    for (let i = 0; i < str.length; i++) {
+      const ch = str[i];
+      // A repeat inside the window: move the start past the old copy.
+      if (lastSeen.has(ch) && lastSeen.get(ch) >= start) {
+        start = lastSeen.get(ch) + 1;
+      }
+      lastSeen.set(ch, i);
+      best = Math.max(best, i - start + 1);
+    }
+
+    return best;
+  }
+solutionExplanation: |
+  The trick is a **sliding window**: two pointers, `start` and `i`, that mark
+  a run with no repeats. Both pointers only move forward, so you walk the
+  string once.
+
+  Move `i` forward one character at a time. Each time, the window
+  `start..i` must stay free of repeats:
+
+  - If the new character is **not** in the window, the window just gets
+    longer.
+  - If it **is** in the window, move `start` to just after the old copy. Now
+    the window has no repeats again.
+
+  To know where the old copy is, keep a `Map` of each character to the last
+  index where you saw it. After each step, the window length is
+  `i - start + 1`. Keep the biggest one.
+
+  **The gotcha is `"abba"`.** At the last `a`, the `Map` says you saw `a` at
+  index `0`. But the window already starts at index `2` (the second `b` moved
+  it there). That old `a` is **not** in the window any more. If you move
+  `start` back to `1`, the window becomes `"bba"`, and you return `3`. That is
+  why the check is `lastSeen.get(ch) >= start`: only a copy inside the window
+  counts.
+
+  **Why the slow way fails:** "for each start, walk forward until a repeat"
+  is correct. But in test 2, each start walks up to 50,000 characters. With
+  100,000 starts, that's billions of steps: **O(n²)**. The window is **O(n)**,
+  because `i` and `start` each go through the string at most once.

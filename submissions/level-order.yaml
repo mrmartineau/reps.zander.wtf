@@ -1,0 +1,110 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Tree Level by Level"
+difficulty: medium
+prompt: |
+  Implement `levelOrder(root)`.
+
+  A **binary tree** is made of nodes. Each node is an object
+  `{ val, left, right }`. `left` and `right` are child nodes, or `null` if
+  there is no child. `root` is the top node, or `null` for an empty tree.
+
+  Return the values **one level at a time**, from the top down. Each level is
+  an array, from left to right.
+
+  For example, this tree returns `[[3], [9, 20], [15, 7]]`:
+
+  ```
+      3
+     / \
+    9   20
+       /  \
+      15   7
+  ```
+
+  The tests use the tree above, then the tree below, then an empty tree
+  (`null`), which returns `[]`.
+
+  ```
+      1
+     / \
+    2   3
+   /     \
+  4       5
+  ```
+functionName: levelOrder
+starterCode: |
+  function levelOrder(root) {
+    // your code here
+  }
+tests:
+  - name: "Three levels"
+    args:
+      - val: 3
+        left: { val: 9, left: null, right: null }
+        right:
+          val: 20
+          left: { val: 15, left: null, right: null }
+          right: { val: 7, left: null, right: null }
+    expected: [[3], [9, 20], [15, 7]]
+  - name: "Cousins on one level"
+    args:
+      - val: 1
+        left:
+          val: 2
+          left: { val: 4, left: null, right: null }
+          right: null
+        right:
+          val: 3
+          left: null
+          right: { val: 5, left: null, right: null }
+    expected: [[1], [2, 3], [4, 5]]
+  - name: "Empty tree"
+    args: [null]
+    expected: []
+solution: |
+  function levelOrder(root) {
+    const levels = [];
+    let level = root ? [root] : []; // the nodes on the current level
+
+    while (level.length > 0) {
+      levels.push(level.map((node) => node.val));
+
+      // Collect the children of this level, left to right: that's the next level.
+      const next = [];
+      for (const node of level) {
+        if (node.left) next.push(node.left);
+        if (node.right) next.push(node.right);
+      }
+      level = next;
+    }
+
+    return levels;
+  }
+solutionExplanation: |
+  The trick is to **go across, not down**. This is called **breadth-first
+  search** (BFS).
+
+  Most tree puzzles use recursion, which goes deep down one side first. But
+  here you need all the nodes at the same level together. In the second test,
+  `4` and `5` have different parents, but they still go in the same array.
+
+  So keep a list of the nodes on the current level. Then repeat:
+
+  1. Save their values as one level.
+  2. Collect all their children, left to right. That list is the next level.
+  3. Stop when a level is empty.
+
+  Here's the second test:
+
+  - Level `[1]` → children `[2, 3]`.
+  - Level `[2, 3]` → children `[4, 5]` (`4` from `2`, then `5` from `3`).
+  - Level `[4, 5]` → no children, so stop.
+
+  **The gotcha** is the empty tree. If you start with `[root]` when `root` is
+  `null`, you try to read `null.val` and crash. Start with an empty list
+  instead.
+
+  **You might have seen** BFS written with one queue: take a node from the
+  front with `shift()`, and add its children to the back. That works too. But
+  then you must count how many nodes belong to each level. Building a fresh
+  `next` array for each level keeps the levels apart for free.

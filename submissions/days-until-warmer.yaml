@@ -1,0 +1,86 @@
+id: 0 # leave as 0 — a maintainer assigns the real id on acceptance
+title: "Days Until Warmer"
+difficulty: medium
+prompt: |
+  Implement `daysUntilWarmer(temps)`.
+
+  `temps[i]` is the temperature on day `i`. For each day, find how many days
+  you must wait for a **warmer** day. If no warmer day comes, use `0`.
+
+  Return an array of those waits, one for each day.
+
+  For example:
+
+  ```js
+  daysUntilWarmer([73, 74, 75, 71, 69, 72, 76, 73]);
+  // [1, 1, 4, 2, 1, 1, 0, 0]
+  ```
+
+  Day 2 is `75`. The next warmer day is day 6 (`76`), so it waits `4` days.
+  Days 6 and 7 never get warmer, so they get `0`.
+
+  The tests use the example above, then `[30, 40, 50, 60]`, then
+  `[50, 50, 50]`. The same temperature is **not** warmer.
+functionName: daysUntilWarmer
+starterCode: |
+  function daysUntilWarmer(temps) {
+    // your code here
+  }
+tests:
+  - name: "Ups and downs"
+    args: [[73, 74, 75, 71, 69, 72, 76, 73]]
+    expected: [1, 1, 4, 2, 1, 1, 0, 0]
+  - name: "Warmer every day"
+    args: [[30, 40, 50, 60]]
+    expected: [1, 1, 1, 0]
+  - name: "Same isn't warmer"
+    args: [[50, 50, 50]]
+    expected: [0, 0, 0]
+solution: |
+  function daysUntilWarmer(temps) {
+    const waits = temps.map(() => 0);
+    const waiting = []; // a stack of days that have not found a warmer day yet
+
+    temps.forEach((temp, day) => {
+      // Today is warmer than the day on top of the stack, so that day's wait is over.
+      while (waiting.length > 0 && temps[waiting.at(-1)] < temp) {
+        const earlier = waiting.pop();
+        waits[earlier] = day - earlier;
+      }
+      waiting.push(day);
+    });
+
+    return waits; // days still on the stack never got warmer, so they stay 0
+  }
+solutionExplanation: |
+  The simple way is two loops. For each day, look ahead until you find a
+  warmer one. That passes these tests. But for `n` days it can take about
+  `n × n` steps (**O(n²)**). Think of a long cold spell: every day looks ahead
+  over the whole spell.
+
+  The trick is to turn it around. **Don't look ahead. Keep a list of the days
+  that are still waiting**, and let each new day answer them.
+
+  Keep the waiting days on a **stack**: the last one in is the first one out.
+  For each new day:
+
+  1. Is today warmer than the day on top of the stack? Then that day's wait is
+     over: `today - thatDay`. Pop it, and check the next one down.
+  2. Stop at a day that's as warm as today, or warmer. It must keep waiting.
+  3. Push today onto the stack. It waits for a warmer day too.
+
+  Why is it safe to stop at step 2? The stack is always in order from warmest
+  at the bottom to coolest at the top. So if today can't beat the top day, it
+  can't beat any day below it. This is called a **monotonic stack**: a stack
+  that stays sorted.
+
+  Here's part of the example. On day 5 (`72`), the stack holds days 2, 3, 4
+  (`75`, `71`, `69`). `72` beats `69` (wait 1) and `71` (wait 2), but not
+  `75`. Then day 6 (`76`) beats `72` and `75`. Day 2 gets `6 - 2 = 4`.
+
+  Each day is pushed once and popped at most once. So the whole thing is
+  **O(n)**.
+
+  **The gotcha** is equal temperatures. Use `<`, not `<=`, so `50` does not
+  count as warmer than `50`. Days left on the stack at the end never got a
+  warmer day, and they keep their `0`.
