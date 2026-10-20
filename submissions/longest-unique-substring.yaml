@@ -42,9 +42,10 @@ solution: |
     const lastSeen = new Map(); // character → index where we last saw it
     let start = 0; // where the current window starts
     let best = 0;
+    const chars = Array.from(str); // code points, so emoji count as one
 
-    for (let i = 0; i < str.length; i++) {
-      const ch = str[i];
+    for (let i = 0; i < chars.length; i++) {
+      const ch = chars[i];
       // A repeat inside the window: move the start past the old copy.
       if (lastSeen.has(ch) && lastSeen.get(ch) >= start) {
         start = lastSeen.get(ch) + 1;

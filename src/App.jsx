@@ -431,7 +431,7 @@ export default function App() {
           />
         </div>
 
-        <Markdown className="prompt prose">{puzzle.prompt}</Markdown>
+        <Markdown className="prompt markdown">{puzzle.prompt}</Markdown>
 
         <CodeEditor
           value={code}
