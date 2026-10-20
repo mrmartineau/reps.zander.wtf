@@ -154,7 +154,7 @@ export function SubmissionsApp() {
                 )}
               </div>
 
-              <Markdown className="prompt">{puzzle.prompt || '_No prompt._'}</Markdown>
+              <Markdown className="prompt prose">{puzzle.prompt || '_No prompt._'}</Markdown>
 
               <CodeEditor
                 value={code}
